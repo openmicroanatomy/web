@@ -39,7 +39,6 @@ class Viewer extends Component {
             .then(
             (result) => {
                 var downsamples = [];
-                var levels = [];
                 var levelCount = parseInt(result["openslide.level-count"])
 
                 var slideWidth = parseInt(result["openslide.level[0].width"]);
@@ -50,52 +49,14 @@ class Viewer extends Component {
 
                 for (let i = 0; i < levelCount; i++) {
                     downsamples.push(Math.floor(result["openslide.level[" + i + "].downsample"]))
-
-                    console.log("openslide.level[" + i + "].width");
-
-                    levels.push({
-                        width: parseInt(result["openslide.level[" + i + "].width"]),
-                        height: parseInt(result["openslide.level[" + i + "].height"]),
-                        tileHeight: tileHeight,
-                        tileWidth: tileWidth,
-                        getTileUrl: function(level, x, y) {
-                            console.log("hi mom");
-                            var downsample = downsamples[level];
-        
-                            var adjustY = 0;
-                            var adjustX = 0;
-        
-                            var tileY = y * tileHeight * downsample;
-                            var tileX = x * tileWidth  * downsample;
-        
-                            if ((tileX + downsample * tileWidth) > slideWidth) {
-                                adjustX = tileWidth - Math.floor(Math.abs((tileX - slideWidth) / downsample));
-                            }
-        
-                            if ((tileY + downsample * tileHeight) > slideHeight) {
-                                adjustY = tileHeight - Math.floor(Math.abs((tileY - slideHeight) / downsample));
-                            }
-        
-                            var height = tileHeight - adjustY;
-                            var width  = tileWidth  - adjustX;
-        
-                            return "http://localhost:7777/tiles/" + id + "-level-" + level + "-tiles/" + level + "_" + tileX + "_" + tileY + "_" + width + "_" + height + ".jpg"
-                        }
-                    });
                 }
-
-                levels.reverse();
-
-                console.log(downsamples, levels, slideWidth, slideHeight, tileHeight, tileWidth);
 
                 new OpenSeadragon({
                     id: "Viewer",
                     prefixUrl: "assets/images/",
                     // debugMode: true,
                     flip: true,
-                    navigatorSizeRatio: 0.25,
-                    defaultZoomLevel: levelCount - 1,
-                    // showNavigator: true,
+                    defaultZoomLevel: 0,
                     tileSources: {
                         width: slideWidth,
                         height: slideHeight,
@@ -103,6 +64,9 @@ class Viewer extends Component {
                         tileWidth: tileWidth,
                         minLevel: 0,
                         maxLevel: levelCount - 1,
+                        getLevelScale: function(level) {
+                            return 1 / downsamples[levelCount - level - 1];
+                        },
                         getTileUrl: function(level, x, y) {
                             level = levelCount - level - 1;
 
