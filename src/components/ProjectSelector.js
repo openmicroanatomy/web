@@ -1,71 +1,55 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
-class ProjectSelector extends Component {
-    constructor(props) {
-        super(props);
+function ProjectSelector({ organization, OnProjectChange }) {
+    const [subjects, setSubjects] = useState([]);
+    const [error, setError] = useState(null);
 
-        this.state = {
-            subjects: [],
-            error: null
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.organization == this.props.organization) {
-            return;
-        }
-
-        this.setState({
-            subjects: []
-        });
+    useEffect(() => {
+        setSubjects([]);
 
         fetch("http://localhost:7777/api/v0/workspaces")
             .then(res => res.json())
             .then(
-            (result) => {
-                result.forEach(element => {
-                    if (element.owner.id == this.props.organization) {
-                        this.setState({
-                            subjects: element.subjects
-                        });
-                    }
-                });
-            },
-            (error) => {
-                this.setState({
-                    subjects: [],
-                    error
-                });
-            }
-        )
+                (result) => {
+                    result.forEach(element => {
+                        if (element.owner.id === organization) {
+                            setSubjects(element.subjects);
+                        }
+                    });
+                },
+                (error) => {
+                    setSubjects([]);
+                    setError(error);
+                }
+            );
+        
+    }, [ organization ]);
+
+    if (error) {
+        return "Error with ProjectSelector";
     }
 
-
-    render() {
-        const { subjects } = this.state; 
-
-        if (subjects.length == 0) {
-            return null;
-        }
-
-        return (
-            <div className="ProjectSelector">
-                {subjects.map(subject => (
-                    <>
-                        <p class="text-xl underline">{subject.name}</p>
-                        
-                        <ul>
-                            {subject.projects.map(project => (
-                                <li>
-                                    <a class="cursor-pointer" onClick={() => this.props.onUpdate(project.id)}>{project.name}</a>
-                                </li>
-                            ))}
-                        </ul>
-                    </>
-                ))}
-            </div>
-        );
+    if (subjects.length === 0) {
+        return "No subjects";
     }
-}
+
+    return (
+        <div className="ProjectSelector">
+            {subjects.map(subject => (
+                <>
+                    <p class="text-xl underline">{subject.name}</p>
+                    
+                    <ul>
+                        {subject.projects.map(project => (
+                            <li>
+                                <a class="cursor-pointer" onClick={() => OnProjectChange(project.id)}>{project.name}</a>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            ))}
+        </div>
+    );
+};
 
 export default ProjectSelector;
