@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import Modal from 'react-modal';
-import './App.css';
-import Viewer from "./components/Viewer";
+import "tailwindcss/tailwind.css"
+import ProjectView from "./components/ProjectView";
 import OrganizationSelector from "./components/OrganizationSelector";
 import ProjectSelector from "./components/ProjectSelector";
 
@@ -44,28 +43,22 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <div className="App" class="mx-auto font-mono h-screen">
+        <div class="bg-blue-500 p-2">
+          <p class="text-white font-bold text-lg text-center">For the complete experience download QuPath Edu <a href="#" class="underline">here</a></p>
+        </div>
+
         {this.state.project !== null ?
-          <Viewer project={this.state.project} />
+          <ProjectView project={this.state.project} />
         :
-          <header className="App-header">
+          <header className="App-header" class="mx-auto w-64 space-y-12 mt-4">
+            <h1 class="text-xl">QuPath Edu Viewer</h1>
+
             <OrganizationSelector onUpdate={this.OnOrganizationChange} />
 
             <ProjectSelector organization={this.state.organization} onUpdate={this.OnProjectChange} />
           </header>
         }
-         
-          {/* <br />
-
-          <button onClick={this.login}>Continue as guest</button>
-          <button onClick={this.login}>Login using Microsoft</button>
-          
-          <br />
-
-          <input type="text" name="username" placeholder="Username"></input>
-          <input type="text" name="password" placeholder="Password"></input>
-
-          <button onClick={this.login}>Login</button> */}
       </div>
     );
   }

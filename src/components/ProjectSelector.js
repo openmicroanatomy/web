@@ -52,14 +52,12 @@ class ProjectSelector extends Component {
             <div className="ProjectSelector">
                 {subjects.map(subject => (
                     <>
-                        <p>{subject.name}</p>
+                        <p class="text-xl underline">{subject.name}</p>
                         
                         <ul>
                             {subject.projects.map(project => (
                                 <li>
-                                    <a onClick={() => this.props.onUpdate(project.id)}>
-                                        {project.name}
-                                    </a>
+                                    <a class="cursor-pointer" onClick={() => this.props.onUpdate(project.id)}>{project.name}</a>
                                 </li>
                             ))}
                         </ul>

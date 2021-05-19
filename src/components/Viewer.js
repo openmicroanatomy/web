@@ -1,40 +1,42 @@
-import React, { Component } from "react";
 import OpenSeadragon from "openseadragon";
+import React, { Component } from "react";
+//import OpenSeadragon from "openseadragon";
+//import * as d3 from "d3";
+//import * as OpenSeadragon from "openseadragon";
 
 class Viewer extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            data: null,
             error: null,
             viewer: null
         }
-
-        this.changeView = this.changeView.bind(this);
     }
 
     componentDidMount() {
-        fetch("http://localhost:7777/api/v0/projects/" + this.props.project)
-            .then(res => res.json())
-            .then(
-            (result) => {
-                this.setState({
-                    data: result
-                })
-            },
-            (error) => {
-                this.setState({
-                    error
-                });
-            }
-        )
+        this.setState({
+            viewer: window.OpenSeadragon({
+                id: "Viewer",
+                prefixUrl: "assets/images/",
+                defaultZoomLevel: 0,
+                //debugMode: process.env.NODE_ENV !== "production",
+                showNavigator: true,
+                navigatorSizeRatio: 0.15,
+                showNavigationControl: false
+            })
+        });
     }
 
-    changeView(uri) {
-        let id = new URL(uri).pathname.substr(1);
+    componentDidUpdate(prevProps) {
+        console.log("hi mom");
+        if (prevProps.slide == this.props.slide || this.props.slide === null) {
+            return;
+        }
 
-        fetch("http://localhost:7777/api/v0/slides/" + id)
+        const slide = this.props.slide;
+
+        fetch("http://localhost:7777/api/v0/slides/" + this.props.slide)
             .then(res => res.json())
             .then(
             (result) => {
@@ -51,13 +53,7 @@ class Viewer extends Component {
                     downsamples.push(Math.floor(result["openslide.level[" + i + "].downsample"]))
                 }
 
-                new OpenSeadragon({
-                    id: "Viewer",
-                    prefixUrl: "assets/images/",
-                    // debugMode: true,
-                    flip: true,
-                    defaultZoomLevel: 0,
-                    tileSources: {
+                this.state.viewer.open({
                         width: slideWidth,
                         height: slideHeight,
                         tileHeight: tileHeight,
@@ -91,10 +87,65 @@ class Viewer extends Component {
                             var height = tileHeight - adjustY;
                             var width  = tileWidth  - adjustX;
         
-                            return "http://localhost:7777/tiles/" + id + "-level-" + level + "-tiles/" + level + "_" + tileX + "_" + tileY + "_" + width + "_" + height + ".jpg"
+                            return "http://localhost:7777/tiles/" + slide + "-level-" + level + "-tiles/" + level + "_" + tileX + "_" + tileY + "_" + width + "_" + height + ".jpg"
                         }
+                });
+                
+                // This could also be openslide.mpp-x or openslide.mpp-y 
+                // TODO: Create fallback aperio.MPP does not exist
+                const mpp = parseFloat(result["aperio.MPP"]);
+
+                this.state.viewer.scalebar({
+                    xOffset: 10,
+                    yOffset: 10,
+                    barThickness: 3,
+                    color: '#555555',
+                    fontColor: '#333333',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    pixelsPerMeter: mpp ? (1e6 / mpp) : 0
+                });
+
+                const overlay = this.state.viewer.svgOverlay();
+
+                window.d3.select(overlay.node()).selectAll("*").remove();
+
+                Array.from(this.props.annotations).forEach(annotation => {
+                    if (annotation.geometry.type == "LineString") {
+                        drawLine(annotation.geometry.coordinates);
+                    } else if (annotation.geometry.type == "Polygon") {
+                        drawPolygon(annotation.geometry.coordinates[0]);
                     }
                 });
+
+                function drawLine(coordinates) {
+                    window.d3.select(overlay.node()).append("line")
+                        .style('stroke', '#f00')
+                        .style("stroke-width", 0.001)
+                        .attr("x1", scaleX(coordinates[0][0]))
+                        .attr("y1", scaleY(coordinates[0][1]))
+                        .attr("x2", scaleX(coordinates[1][0]))
+                        .attr("y2", scaleY(coordinates[1][1]));
+                }
+
+                function drawPolygon(coordinates) {
+                    window.d3.select(overlay.node()).append("polygon")
+                        .style('stroke', '#f00')
+                        .style("stroke-width", 0.001)
+                        .style("fill", "transparent")
+                        .attr("points", function(point) { 
+                            return coordinates.map(function(point) {
+                                return [scaleX(point[0]), scaleY(point[1])].join(",");
+                            }).join(" ");
+                        });
+                }
+
+                function scaleX(x) {
+                    return x / slideWidth;
+                }
+
+                function scaleY(y) {
+                    return y / slideHeight;
+                }
             },
             (error) => {
                 // TODO
@@ -103,34 +154,7 @@ class Viewer extends Component {
     }
 
     render() {
-        const { data } = this.state;
-
-        let styles = {
-            width: '50vw',
-            height: '50vh'
-        }
-
-        if (data) {
-            return (
-                <main>
-                    <div id="Slides">
-                        {data.id}
-
-                        <h2>Slides</h2>
-                        {data.images.map(image => (
-                            <div className="Slide">
-                                <p onClick={() => this.changeView(image.serverBuilder.uri)}>{image.imageName}</p>
-                                <img src={"data:image/png;base64," + image.thumbnail} width="64px" />
-                            </div>
-                        ))}
-                    </div>
-
-                    <div id="Viewer" style={styles} />
-                </main>
-            );
-        } else {
-            return "<p>Fetching data ...</p>";
-        }
+        return <div id="Viewer" class="h-full w-full" />;
     }
 }
 

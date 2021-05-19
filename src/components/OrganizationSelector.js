@@ -32,7 +32,8 @@ class OrganizationSelector extends Component {
 
         return (
             <div id="OrganizationSelector">
-                <h1>Select organization</h1>
+                <p class="text-xl">Select organization</p>
+
                 <select name="organization" onChange={this.props.onUpdate}>
                     <option>Select ...</option>
                     {this.state.organizations.map(organization => (
