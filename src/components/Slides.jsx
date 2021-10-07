@@ -15,7 +15,7 @@ function Slides({ slides, OnSlideChange }) {
 
                             <div class="col-span-5">
                                 <p>{slide.imageName}</p>
-                                <p class="font-light text-xs">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                                <p class="font-light text-xs">{slide.description}</p>
                             </div>
                         </div>
                     ))}

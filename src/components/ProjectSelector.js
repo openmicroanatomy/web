@@ -7,7 +7,7 @@ function ProjectSelector({ organization, OnProjectChange }) {
     useEffect(() => {
         setSubjects([]);
 
-        fetch("http://localhost:7777/api/v0/workspaces")
+        fetch("http://yli-hallila.fi:7777/api/v0/workspaces")
             .then(res => res.json())
             .then(
                 (result) => {

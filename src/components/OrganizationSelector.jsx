@@ -5,7 +5,7 @@ function OrganizationSelector({ OnOrganizationChange }) {
     const [ error, setError ] = useState(null);
 
     useEffect(() => {
-        fetch("http://localhost:7777/api/v0/organizations")
+        fetch("http://yli-hallila.fi:7777/api/v0/organizations")
             .then(res => res.json())
             .then(
                 (result) => {

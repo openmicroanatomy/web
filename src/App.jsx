@@ -9,12 +9,10 @@ const App = () => {
     const [ organization, setOrganization ] = useState(null);
 
     const OnOrganizationChange = (newOrganization) => {
-        console.log("OnOrganizationChange");
         setOrganization(newOrganization);
     };
 
     const OnProjectChange = (newProject) => {
-        console.log("OnProjectChange");
         setProject(newProject);
     };
 
@@ -25,7 +23,7 @@ const App = () => {
             </div>
 
             {project !== null ?
-                <ProjectView project={project} />
+                <ProjectView project={project} OnProjectChange={OnProjectChange} />
             :
                 <header className="App-header" class="mx-auto w-64 space-y-12 mt-4">
                     <h1 class="text-xl">QuPath Edu Viewer</h1>

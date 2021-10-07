@@ -23,7 +23,7 @@ function Viewer({ slide, annotations }) {
             return;
         }
 
-        fetch("http://localhost:7777/api/v0/slides/" + slide)
+        fetch("http://yli-hallila.fi:7777/api/v0/slides/" + slide)
             .then(res => res.json())
             .then(
             (result) => {
@@ -72,7 +72,12 @@ function Viewer({ slide, annotations }) {
                         var height = tileHeight - adjustY;
                         var width  = tileWidth  - adjustX;
     
-                        return "http://localhost:7777/tiles/" + slide + "-level-" + level + "-tiles/" + level + "_" + tileX + "_" + tileY + "_" + width + "_" + height + ".jpg"
+                        return result["openslide.remoteserver.uri"]
+                                    .replace("{tileX}", tileX)
+                                    .replace("{tileY}", tileY)
+                                    .replace("{level}", level)
+                                    .replace("{tileWidth}", width)
+                                    .replace("{tileHeight}", height)
                     }
                 });
                 
