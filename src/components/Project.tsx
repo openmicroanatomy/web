@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Annotations from "./Annotations";
 import Viewer from "./Viewer";
 
