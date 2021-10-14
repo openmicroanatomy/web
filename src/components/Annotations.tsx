@@ -9,7 +9,6 @@ function Annotations({ annotations }: AnnotationsProps) {
         <div id="Annotations">
             {annotations ? (
                 <>
-                    <p className="text-xl p-4">Annotations</p>
                     {annotations.map((annotation) => (
                         <div key={annotation.properties.name} className="grid grid-cols-4 p-2 border-b border-t mb-2">
                             <div className="col-span-4">

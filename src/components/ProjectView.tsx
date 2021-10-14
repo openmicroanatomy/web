@@ -5,6 +5,8 @@ import { ProjectData } from "../types";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
 import Viewer from "./Viewer";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import "../styles/Tabs.css";
 
 interface ProjectViewProps {
     projectId: string;
@@ -59,9 +61,21 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                             &lt; return to projects
                         </a>
 
-                        <Slides images={projectData.images} onSlideChange={onSlideChange} />
-                        <Annotations annotations={annotations} />
+                        <Tabs>
+                            <TabList>
+                                <Tab>Slides</Tab>
+                                <Tab>Annotations</Tab>
+                            </TabList>
+
+                            <TabPanel>
+                                <Slides images={projectData.images} onSlideChange={onSlideChange} />
+                            </TabPanel>
+                            <TabPanel>
+                                <Annotations annotations={annotations} />
+                            </TabPanel>
+                        </Tabs>
                     </div>
+
                     <div className="w-3/4 border">
                         <Viewer slideId={slide} annotations={annotations} />
                     </div>

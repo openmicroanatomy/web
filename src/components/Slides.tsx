@@ -10,8 +10,6 @@ function Slides({ images, onSlideChange }: SlidesProps) {
         <div id="Slides">
             {images ? (
                 <>
-                    <p className="text-xl p-4">Slides</p>
-
                     {images.map((slide) => (
                         <div
                             key={slide.entryID}

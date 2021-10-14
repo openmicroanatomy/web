@@ -1,0 +1,15 @@
+.react-tabs ul[role=tablist] {
+    @apply pb-2
+}
+
+.react-tabs__tab-list {
+    @apply flex
+}
+
+.react-tabs__tab {
+    @apply border-b-4 p-2 hover:border-blue-400 cursor-pointer
+}
+
+.react-tabs__tab--selected {
+    @apply border-blue-500 
+}
