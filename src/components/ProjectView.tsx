@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { fetchApi } from "../lib/api";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { fetchProjectData } from "../lib/api";
 import { ProjectData } from "../types";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
@@ -14,7 +15,6 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState("");
-    const [error, setError] = useState<Error | null>(null);
 
     const onSlideChange = (newSlide: string) => {
         if (projectData) {
@@ -36,37 +36,37 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
 
     useEffect(() => {
         const apiHelper = async () => {
-            const result = await fetchApi(`/projects/${projectId}`);
-            setProjectData(result);
+            try {
+                const result = await fetchProjectData(projectId);
+                setProjectData(result);
+            } catch (e) {
+                setProjectData(null);
+                if (e instanceof Error) {
+                    toast.error(e.message);
+                }
+            }
         };
 
-        try {
-            apiHelper();
-        } catch (e) {
-            setProjectData(null);
-            if (e instanceof Error) {
-                setError(e);
-            }
-        }
+        apiHelper();
     }, [projectId]);
-
-    if (error) {
-        return <>"Error with ProjectView"</>;
-    }
 
     return (
         <main className="flex flex-wrap flex-grow p-4 h-full">
-            <div className="w-1/4 border">
-                <a className="p-4 italic cursor-pointer" onClick={() => onProjectChange("")}>
-                    &lt; return to projects
-                </a>
+            {projectData && (
+                <>
+                    <div className="w-1/4 border">
+                        <a className="p-4 italic cursor-pointer" onClick={() => onProjectChange("")}>
+                            &lt; return to projects
+                        </a>
 
-                <Slides images={projectData?.images} onSlideChange={onSlideChange} />
-                <Annotations annotations={annotations} />
-            </div>
-            <div className="w-3/4 border">
-                <Viewer slideId={slide} annotations={annotations} />
-            </div>
+                        <Slides images={projectData.images} onSlideChange={onSlideChange} />
+                        <Annotations annotations={annotations} />
+                    </div>
+                    <div className="w-3/4 border">
+                        <Viewer slideId={slide} annotations={annotations} />
+                    </div>
+                </>
+            )}
         </main>
     );
 }

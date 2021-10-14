@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { fetchApi } from "../lib/api";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { fetchWorkspaces } from "../lib/api";
 import { Subject, Workspace } from "../types";
 
 interface ProjectSelectorProps {
@@ -9,34 +10,29 @@ interface ProjectSelectorProps {
 
 function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorProps) {
     const [subjects, setSubjects] = useState<Subject[]>([]);
-    const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         const apiHelper = async () => {
-            const result = await fetchApi("/workspaces");
-            result.forEach((workspace: Workspace) => {
-                if (workspace.owner.id === organizationId) {
-                    setSubjects(workspace.subjects);
+            try {
+                const result = await fetchWorkspaces();
+                result.forEach((workspace: Workspace) => {
+                    if (workspace.owner.id === organizationId) {
+                        setSubjects(workspace.subjects);
+                    }
+                });
+            } catch (e) {
+                setSubjects([]);
+                if (e instanceof Error) {
+                    toast.error(e.message);
                 }
-            });
+            }
         };
 
-        try {
-            apiHelper();
-        } catch (e) {
-            setSubjects([]);
-            if (e instanceof Error) {
-                setError(e);
-            }
-        }
+        apiHelper();
     }, [organizationId]);
 
-    if (error) {
-        return <>"Error with ProjectSelector"</>;
-    }
-
     if (subjects.length === 0) {
-        return <>"No subjects"</>;
+        return <p>No subjects</p>;
     }
 
     return (

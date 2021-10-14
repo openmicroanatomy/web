@@ -1,12 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { RecoilRoot } from "recoil";
+import RecoilNexus from "recoil-nexus";
 import App from "./App";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <RecoilRoot>
+            <RecoilNexus />
+            <App />
+        </RecoilRoot>
     </React.StrictMode>,
     document.getElementById("root")
 );

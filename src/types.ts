@@ -1,3 +1,10 @@
+export interface Host {
+    id: string;
+    name: string;
+    host: string;
+    img: string;
+}
+
 export interface Organization {
     id: string;
     name: string;

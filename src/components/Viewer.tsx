@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { fetchApi } from "../lib/api";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { fetchSlide } from "../lib/api";
 import { Annotation, LineString, Polygon } from "../types";
 
 interface ViewerProps {
@@ -32,7 +33,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
         // TODO: Refactor this to its own class/functions etc.
         const apiHelper = async () => {
-            const result = await fetchApi(`/slides/${slideId}`);
+            const result = await fetchSlide(slideId);
             const downsamples: number[] = [];
             const levelCount = parseInt(result["openslide.level-count"]);
 
@@ -162,12 +163,13 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             setViewer(null);
             if (e instanceof Error) {
                 setError(e);
+                toast.error(e.message);
             }
         }
     }, [slideId]);
 
     if (error) {
-        return <>"Error with Viewer"</>;
+        return <p>Unexpected error with Viewer</p>;
     }
 
     return <div id="Viewer" className="h-full w-full" />;
