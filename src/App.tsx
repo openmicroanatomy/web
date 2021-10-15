@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSetRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
 import HostSelector from "./components/HostSelector";
 import OrganizationSelector from "./components/OrganizationSelector";
 import ProjectSelector from "./components/ProjectSelector";
 import ProjectView from "./components/ProjectView";
+import { hostState } from "./lib/atoms";
+import { getValue } from "./lib/localStorage";
 
 const App = () => {
+    const setHost = useSetRecoilState(hostState);
     const [organization, setOrganization] = useState("");
     const [projectId, setProjectId] = useState("");
+
+    useEffect(() => {
+        const cachedHost = getValue("qupath_host");
+        if (cachedHost) {
+            setHost(cachedHost);
+        }
+    }, []);
 
     const onOrganizationChange = (newOrganization: string) => {
         setOrganization(newOrganization);
@@ -20,7 +31,7 @@ const App = () => {
     };
 
     return (
-        <div className="App mx-auto font-mono h-screen">
+        <div className="App mx-auto font-mono h-screen bg-gray-100">
             <ToastContainer />
             <div className="bg-blue-500 p-2">
                 <p className="text-white font-bold text-lg text-center">
