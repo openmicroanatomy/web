@@ -32,11 +32,15 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
     }, [organizationId]);
 
     if (subjects.length === 0) {
-        return <p>No subjects</p>;
+        return (
+            <div id="ProjectSelector">
+                <p className="font-bold">No subjects</p>
+            </div>
+        );
     }
 
     return (
-        <div className="ProjectSelector">
+        <div id="ProjectSelector">
             {subjects.map((subject) => (
                 <span key={subject.id}>
                     <p className="text-xl underline">{subject.name}</p>

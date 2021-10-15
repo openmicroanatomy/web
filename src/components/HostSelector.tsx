@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import validator from "validator";
 import { fetchHosts } from "../lib/api";
 import { hostState } from "../lib/atoms";
@@ -19,6 +19,7 @@ function HostSelector() {
     const [chosenHost, setChosenHost] = useState<ChosenHost>(defaultHost);
     const [urlError, setUrlError] = useState(false);
     const setHost = useSetRecoilState(hostState);
+    const currentHost = useRecoilValue(hostState);
 
     const onPublicHostChange = (hostId: string) => {
         const newHost = hosts.find((host: Host) => host.id === hostId);
@@ -63,36 +64,57 @@ function HostSelector() {
 
     return (
         <div id="HostSelector">
-            <p className="text-xl">Choose a host</p>
-            <select disabled={chosenHost.private} name="host" onChange={(e) => onPublicHostChange(e.target.value)}>
-                <option>Select a public host</option>
+            {currentHost ? (
+                <>
+                    <p>Conncted to: {currentHost.name}</p>
 
-                {hosts.map((host: Host) => (
-                    <option value={host.id} key={host.id}>
-                        {host.name}
-                    </option>
-                ))}
-            </select>
-            <p className="text-xl font-bold my-4">OR</p>
-            <form>
-                <input
-                    type="text"
-                    placeholder="Enter private a host"
-                    onChange={(e) => onPrivateHostChange(e.target.value)}
-                />
-            </form>
-            <p className={urlError ? "visible" : "invisible"}>Not a valid URL.</p>
-            <button
-                className="button"
-                type="button"
-                disabled={!chosenHost.host || (!chosenHost.private && !chosenHost.host && !urlError)}
-                onClick={() => {
-                    setHost(chosenHost.host);
-                    setValue("qupath_host", chosenHost.host);
-                }}
-            >
-                Save preferences
-            </button>
+                    <button
+                        className="button w-full"
+                        onClick={() => {
+                            setHost(null);
+                            setValue("qupath_host", null);
+                        }}
+                    >Change host</button>
+                </>
+            ) : (
+                <>
+                    <p className="text-xl">Choose a host</p>
+                    <select className="w-full" disabled={chosenHost.private} name="host" onChange={(e) => onPublicHostChange(e.target.value)}>
+                        <option>Select a public host</option>
+    
+                        {hosts.map((host: Host) => (
+                            <option value={host.id} key={host.id}>
+                                {host.name}
+                            </option>
+                        ))}
+                    </select>
+    
+                    <p className="text-xl text-center font-bold my-4">OR</p>
+    
+                    <form>
+                        <input
+                            type="text"
+                            placeholder="Enter private a host"
+                            onChange={(e) => onPrivateHostChange(e.target.value)}
+                            className="w-full"
+                        />
+                    </form>
+    
+                    <p className={urlError ? "visible" : "invisible"}>Not a valid URL.</p>
+                    
+                    <button
+                        className="button w-full"
+                        type="button"
+                        disabled={!chosenHost.host || (!chosenHost.private && !chosenHost.host && !urlError)}
+                        onClick={() => {
+                            setHost(chosenHost.host);
+                            setValue("qupath_host", chosenHost.host);
+                        }}
+                    >
+                        Save preferences
+                    </button>
+                </>
+            )}
         </div>
     );
 }

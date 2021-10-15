@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
 import HostSelector from "./components/HostSelector";
 import OrganizationSelector from "./components/OrganizationSelector";
@@ -12,6 +12,7 @@ import { getValue } from "./lib/localStorage";
 
 const App = () => {
     const setHost = useSetRecoilState(hostState);
+    const currentHost = useRecoilValue(hostState);
     const [organization, setOrganization] = useState("");
     const [projectId, setProjectId] = useState("");
 
@@ -42,17 +43,22 @@ const App = () => {
                 </p>
             </div>
 
-            <header className="App-header mx-auto w-72 space-y-12 mt-4">
-                <h1 className="text-3xl">QuPath Edu Cloud</h1>
-                <HostSelector />
-            </header>
-
-            {projectId !== "" ? (
+            {projectId ? (
                 <ProjectView projectId={projectId} onProjectChange={onProjectChange} />
             ) : (
                 <div className="App-header mx-auto w-72 space-y-12 mt-4">
-                    <OrganizationSelector onOrganizationChange={onOrganizationChange} />
-                    <ProjectSelector organizationId={organization} onProjectChange={onProjectChange} />
+                    <header className="App-header mx-auto w-72 space-y-12 mt-4">
+                        <h1 className="text-3xl">QuPath Edu Cloud</h1>
+                    </header>
+                    
+                    <HostSelector />
+
+                    {currentHost ? (
+                        <>
+                            <OrganizationSelector onOrganizationChange={onOrganizationChange} />
+                            <ProjectSelector organizationId={organization} onProjectChange={onProjectChange} />
+                        </>
+                    ) : null }
                 </div>
             )}
         </div>

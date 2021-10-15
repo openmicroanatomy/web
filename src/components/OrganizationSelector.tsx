@@ -35,7 +35,6 @@ function OrganizationSelector({ onOrganizationChange }: OrganizationSelectorProp
     if (!host) {
         return (
             <div id="OrganizationSelector">
-                {" "}
                 <p className="font-bold">No host selected</p>
             </div>
         );
@@ -44,10 +43,9 @@ function OrganizationSelector({ onOrganizationChange }: OrganizationSelectorProp
     return (
         <div id="OrganizationSelector">
             <p className="text-xl">Select organization</p>
-            <p>Current host: {host.name}</p>
 
             {organizations.length > 0 && (
-                <select name="organization" onChange={(e) => onOrganizationChange(e.target.value)}>
+                <select className="w-full" name="organization" onChange={(e) => onOrganizationChange(e.target.value)}>
                     <option>Select ...</option>
 
                     {organizations.map((organization: Organization) => (
