@@ -45,7 +45,9 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
                 <span key={subject.id}>
                     <p className="text-xl underline">{subject.name}</p>
                     <ul>
-                        {subject.projects.map((project) => (
+                        {subject.projects.sort((a, b) => {
+                            return a.name.localeCompare(b.name)
+                        }).map(project => (
                             <li key={project.id}>
                                 <a className="cursor-pointer" onClick={() => onProjectChange(project.id)}>
                                     {project.name}
