@@ -15,6 +15,8 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
             return;
         }
 
+        setSubjects([]);
+
         const apiHelper = async () => {
             try {
                 const result = await fetchWorkspaces();
@@ -41,10 +43,12 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
 
     return (
         <div id="ProjectSelector">
+            <p className="text-xl">Subjects</p>
+
             {subjects.map((subject) => (
                 <span key={subject.id}>
-                    <p className="text-xl underline">{subject.name}</p>
-                    <ul>
+                    <p className="text-lg underline">{subject.name}</p>
+                    <ul className="list-disc list-inside">
                         {subject.projects.sort((a, b) => {
                             return a.name.localeCompare(b.name)
                         }).map(project => (

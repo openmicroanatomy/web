@@ -42,11 +42,11 @@ function OrganizationSelector({ onOrganizationChange }: OrganizationSelectorProp
 
     return (
         <div id="OrganizationSelector">
-            <p className="text-xl">Select organization</p>
+            <p className="text-xl">Organization</p>
 
             {organizations.length > 0 && (
-                <select className="w-full" name="organization" onChange={(e) => onOrganizationChange(e.target.value)}>
-                    <option>Select ...</option>
+                <select className="w-full" name="organization" onChange={(e) => onOrganizationChange(e.target.value)} defaultValue="">
+                    <option disabled value="">Select organization ...</option>
 
                     {organizations.map((organization: Organization) => (
                         <option value={organization.id} key={organization.id}>
