@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
 import { fetchProjectData } from "../lib/api";
+import "../styles/Tabs.css";
 import { ProjectData } from "../types";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
 import Viewer from "./Viewer";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import "../styles/Tabs.css";
 
 interface ProjectViewProps {
     projectId: string;
@@ -60,7 +60,6 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                         <a className="p-4 italic cursor-pointer" onClick={() => onProjectChange("")}>
                             &lt; return to projects
                         </a>
-
                         <Tabs>
                             <TabList>
                                 <Tab>Slides</Tab>

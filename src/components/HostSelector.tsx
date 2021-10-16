@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
+import { ThreeDots } from "react-loading-icons";
 import { toast } from "react-toastify";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import validator from "validator";
-import { fetchHosts } from "../lib/api";
+import { fetchHosts, isValidHost } from "../lib/api";
 import { hostState } from "../lib/atoms";
 import { setValue } from "../lib/localStorage";
 import "../styles/Buttons.css";
 import { Host } from "../types";
 
-interface ChosenHost {
+interface Selection {
     private: boolean;
     host: Host | null;
 }
@@ -16,31 +17,45 @@ interface ChosenHost {
 function HostSelector() {
     const [hosts, setHosts] = useState<Host[]>([]);
     const defaultHost = { private: false, host: null };
-    const [chosenHost, setChosenHost] = useState<ChosenHost>(defaultHost);
+    const [selection, setSelection] = useState<Selection>(defaultHost);
     const [urlError, setUrlError] = useState(false);
     const setHost = useSetRecoilState(hostState);
     const currentHost = useRecoilValue(hostState);
+    const [waiting, setWaiting] = useState<boolean>(false);
 
     const onPublicHostChange = (hostId: string) => {
         const newHost = hosts.find((host: Host) => host.id === hostId);
         if (newHost) {
-            setChosenHost({ private: false, host: newHost });
+            setSelection({ private: false, host: newHost });
         } else {
-            setChosenHost(defaultHost);
+            setSelection(defaultHost);
         }
     };
 
     const onPrivateHostChange = (url: string) => {
         if (url.length === 0) {
             setUrlError(false);
-            setChosenHost(defaultHost);
+            setSelection(defaultHost);
         } else if (validator.isURL(url)) {
             setUrlError(false);
-            setChosenHost({ private: true, host: { id: "custom-host", name: "Custom host", host: url, img: "" } });
+            setSelection({ private: true, host: { id: "custom-host", name: "Custom host", host: url, img: "" } });
         } else {
             setUrlError(true);
-            setChosenHost(defaultHost);
+            setSelection({ ...defaultHost, private: true });
         }
+    };
+
+    const onSave = async () => {
+        setWaiting(true);
+        const valid = selection.host ? await isValidHost(selection.host.host) : false;
+        if (valid) {
+            setHost(selection.host);
+            setValue("qupath_host", selection.host);
+        } else {
+            toast.error("Please check your internet connection and that you're connecting to the correct server.");
+        }
+
+        setWaiting(false);
     };
 
     useEffect(() => {
@@ -74,23 +89,31 @@ function HostSelector() {
                             setHost(null);
                             setValue("qupath_host", null);
                         }}
-                    >Change host</button>
+                    >
+                        Change host
+                    </button>
                 </>
             ) : (
                 <>
                     <p className="text-xl">Choose a host</p>
-                    <select className="w-full" disabled={chosenHost.private} name="host" onChange={(e) => onPublicHostChange(e.target.value)}>
+                    <select
+                        className="w-full"
+                        disabled={selection.private}
+                        name="host"
+                        onChange={(e) => onPublicHostChange(e.target.value)}
+                        value={selection.private ? "" : selection.host ? selection.host.id : ""}
+                    >
                         <option>Select a public host</option>
-    
+
                         {hosts.map((host: Host) => (
                             <option value={host.id} key={host.id}>
                                 {host.name}
                             </option>
                         ))}
                     </select>
-    
+
                     <p className="text-xl text-center font-bold my-4">OR</p>
-    
+
                     <form>
                         <input
                             type="text"
@@ -99,19 +122,17 @@ function HostSelector() {
                             className="w-full"
                         />
                     </form>
-    
+
                     <p className={urlError ? "visible" : "invisible"}>Not a valid URL.</p>
-                    
+
                     <button
                         className="button w-full"
                         type="button"
-                        disabled={!chosenHost.host || (!chosenHost.private && !chosenHost.host && !urlError)}
-                        onClick={() => {
-                            setHost(chosenHost.host);
-                            setValue("qupath_host", chosenHost.host);
-                        }}
+                        disabled={waiting || !selection.host || (!selection.private && !selection.host && !urlError)}
+                        onClick={() => onSave()}
                     >
                         Save preferences
+                        {waiting && <ThreeDots className="m-auto" stroke="white" speed={2} />}
                     </button>
                 </>
             )}

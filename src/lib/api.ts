@@ -2,16 +2,6 @@ import { getRecoil } from "recoil-nexus";
 import { hostState } from "../lib/atoms";
 
 /**
- * Returns the API URL with the specified path.
- *
- * @param path
- * @returns API URL as string
- */
-export function getApiUrl(host = "", path = "") {
-    return `${host}${path}`;
-}
-
-/**
  * Helper to make GET requests to the API.
  *
  * @param path
@@ -26,31 +16,47 @@ async function request(path: string, init: RequestInit = {}) {
     // temporary backend fix. TODO: REMOVE SOON!
     const temp = host.host.replace("https://qupath.yli-hallila.fi:7777", "http://yli-hallila.fi:7777");
 
-    const requestUrl = getApiUrl(temp, path);
-
     try {
-        const response = await fetch(requestUrl, {
+        const response = await fetch(`${temp}${path}`, {
             ...init,
             mode: "cors",
         });
 
         if (!response) {
-            throw new Error("Invalid response");
+            throw new Error("Invalid response.");
         } else if (!response.ok) {
-            throw new Error("Request failed");
+            throw new Error("Request failed.");
         } else if (!response.body) {
-            throw new Error("No data");
+            throw new Error("No data.");
         }
 
         return response.json();
-    } catch (e) {
-        throw new Error("Connection refused");
+    } catch {
+        throw new Error("Connection refused.");
     }
 }
 
 export const fetchHosts = async () => {
     const response = await fetch(process.env.REACT_APP_SERVERS_URL || "http://localhost:7778/api/servers");
     return response.json();
+};
+
+export const isValidHost = async (url: string) => {
+    if (!url) {
+        return false;
+    }
+
+    // temporary backend fix. TODO: REMOVE SOON!
+    const temp = url.replace("https://qupath.yli-hallila.fi:7777", "http://yli-hallila.fi:7777");
+
+    try {
+        const response = await fetch(temp);
+
+        // TODO: enable response.ok check when backend supports it.
+        return response; // && response.ok;
+    } catch {
+        return false;
+    }
 };
 
 export const fetchOrganizations = () => {
