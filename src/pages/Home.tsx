@@ -4,13 +4,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
 import validator from "validator";
-import HostSelector from "../components/HostSelector";
-import OrganizationSelector from "../components/OrganizationSelector";
-import ProjectSelector from "../components/ProjectSelector";
-import ProjectView from "../components/ProjectView";
-import { hostState } from "../lib/atoms";
-import { getValue, setValue } from "../lib/localStorage";
-import Constants from "../lib/constants";
+import HostSelector from "components/HostSelector";
+import OrganizationSelector from "components/OrganizationSelector";
+import ProjectSelector from "components/ProjectSelector";
+import ProjectView from "components/ProjectView";
+import { hostState } from "lib/atoms";
+import { getValue, setValue } from "lib/localStorage";
+import Constants from "lib/constants";
 
 const Home = () => {
     const setHost = useSetRecoilState(hostState);

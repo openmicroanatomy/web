@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchWorkspaces } from "../lib/api";
-import { Subject, Workspace } from "../types";
+import { fetchWorkspaces } from "lib/api";
+import { Subject, Workspace } from "types";
 
 interface ProjectSelectorProps {
     organizationId: string;

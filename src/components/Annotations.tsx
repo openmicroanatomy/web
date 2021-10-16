@@ -1,4 +1,4 @@
-import { Annotation } from "../types";
+import { Annotation } from "types";
 
 interface AnnotationsProps {
     annotations?: Annotation[];

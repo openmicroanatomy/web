@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilValue } from "recoil";
-import { fetchOrganizations } from "../lib/api";
-import { hostState } from "../lib/atoms";
-import { Organization } from "../types";
+import { fetchOrganizations } from "lib/api";
+import { hostState } from "lib/atoms";
+import { Organization } from "types";
 
 interface OrganizationSelectorProps {
     onOrganizationChange: (newProject: string) => void;
