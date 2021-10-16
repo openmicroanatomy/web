@@ -8,6 +8,7 @@ import { hostState } from "../lib/atoms";
 import { setValue } from "../lib/localStorage";
 import "../styles/Buttons.css";
 import { Host } from "../types";
+import Constants from "../lib/constants";
 
 interface Selection {
     private: boolean;
@@ -50,7 +51,7 @@ function HostSelector() {
         const valid = selection.host ? await isValidHost(selection.host.host) : false;
         if (valid) {
             setHost(selection.host);
-            setValue("qupath_host", selection.host);
+            setValue(Constants.LOCALSTORAGE_HOST_KEY, selection.host);
         } else {
             toast.error("Please check your internet connection and that you're connecting to the correct server.");
         }
@@ -87,7 +88,7 @@ function HostSelector() {
                         className="button w-full"
                         onClick={() => {
                             setHost(null);
-                            setValue("qupath_host", null);
+                            setValue(Constants.LOCALSTORAGE_HOST_KEY, null);
                         }}
                     >
                         Change host

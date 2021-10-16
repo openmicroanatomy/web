@@ -10,6 +10,7 @@ import ProjectSelector from "../components/ProjectSelector";
 import ProjectView from "../components/ProjectView";
 import { hostState } from "../lib/atoms";
 import { getValue, setValue } from "../lib/localStorage";
+import Constants from "../lib/constants";
 
 const Home = () => {
     const setHost = useSetRecoilState(hostState);
@@ -27,12 +28,12 @@ const Home = () => {
                 if (queryUrl && validator.isURL(queryUrl)) {
                     const queryHost = { name: queryUrl, id: "query-host", host: queryUrl, img: "" };
                     setHost(queryHost);
-                    setValue("qupath_host", queryHost);
+                    setValue(Constants.LOCALSTORAGE_HOST_KEY, queryHost);
                 }
             }
 
             // Read from browser's local storage
-            const cachedHost = getValue("qupath_host");
+            const cachedHost = getValue(Constants.LOCALSTORAGE_HOST_KEY);
             if (cachedHost) {
                 setHost(cachedHost);
             }
