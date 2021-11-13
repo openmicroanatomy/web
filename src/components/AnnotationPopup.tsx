@@ -1,75 +1,66 @@
 import { validateEduAnswer } from "lib/helpers";
-import { useState } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { Annotation } from "types";
 import AnnotationQuiz from "./AnnotationQuiz";
+import { PopupActions } from "reactjs-popup/dist/types";
 
 interface AnnotationProps {
     annotation: Annotation;
 }
 
+enum AnnotationAnswerTypes {
+    QUIZ = "Show quiz",
+    TEXT = "Show answer",
+    UNDEFINED = "No answer"
+}
+
 function AnnotationPopup({ annotation }: AnnotationProps) {
-    const eduAnswers = validateEduAnswer(annotation.properties.metadata.EDU_ANSWER);
-    const annotationDescription = annotation.properties.metadata.ANNOTATION_DESCRIPTION;
+    const eduAnswers = validateEduAnswer(annotation.properties.metadata?.EDU_ANSWER);
+    const annotationDescription = annotation.properties.metadata?.ANNOTATION_DESCRIPTION;
 
-    const [answerVisible, setAnswerVisible] = useState(false);
-    const [quizVisible, setQuizVisible] = useState(false);
-
-    const handleShowAnswer = () => {
-        setQuizVisible(false);
-        setAnswerVisible(!answerVisible);
-    };
-
-    const handleShowQuiz = () => {
-        setAnswerVisible(false);
-        setQuizVisible(!quizVisible);
-    };
+    let answerType: AnnotationAnswerTypes;
+    if (eduAnswers.json) {
+        answerType = AnnotationAnswerTypes.QUIZ;
+    } else if (eduAnswers.data) {
+        answerType = AnnotationAnswerTypes.TEXT;
+    } else {
+        answerType = AnnotationAnswerTypes.UNDEFINED;
+    }
 
     return (
         <Popup
-            trigger={
-                <button>
-                    {annotation.geometry.type}
-                    {annotation.properties.name && `: ${annotation.properties.name}`}
-                </button>
-            }
+            trigger={<div className="cursor-pointer">{answerType}</div>}
             position="right center"
             modal
+            disabled={answerType == AnnotationAnswerTypes.UNDEFINED}
             arrowStyle={{ color: "#ddd" }}
-            contentStyle={{ width: 300, height: 200, backgroundColor: "#ddd" }}
+            contentStyle={{ width: 300, backgroundColor: "#ddd" }}
         >
-            <div className="p-4 flex justify-center flex-col">
-                {eduAnswers.json ? (
-                    <>
-                        {quizVisible ? (
-                            <AnnotationQuiz eduAnswers={eduAnswers.data} handleShowQuiz={handleShowQuiz} />
-                        ) : (
-                            <button className="button3d mr-4 w-28" onClick={() => handleShowQuiz()}>
-                                Show quiz
-                            </button>
-                        )}
-                    </>
-                ) : (
-                    <>
-                        {annotationDescription ? (
-                            <div className="">
-                                <button className="button3d w-36" onClick={() => handleShowAnswer()}>
-                                    {answerVisible ? "Hide" : "Show"} answer
-                                </button>
-                                <br />
-                                {answerVisible && <p className="pt-4 blur-3xl">{annotationDescription}</p>}
-                            </div>
+            {(close: PopupActions["close"]) => (
+                <div className="flex justify-center flex-col">
+                    <div className="text-right">
+                        <a onClick={close} className="button-close-dialog">&times;</a>
+                    </div>
+
+                    <div className="p-4">
+                        {eduAnswers.json ? (
+                            <AnnotationQuiz eduAnswers={eduAnswers.data} close={close} description={annotationDescription} />
                         ) : (
                             <>
-                                <button className="button" disabled>
-                                    No answer defined
-                                </button>
+                                {eduAnswers.data ? (
+                                    <>
+                                        <p>{eduAnswers.data}</p>
+                                        <p>{annotationDescription}</p>
+                                    </>
+                                ) : (
+                                    <p className="pt-4 blur-3xl">{annotationDescription}</p>
+                                )}
                             </>
                         )}
-                    </>
-                )}
-            </div>
+                    </div>
+                </div>
+            )}
         </Popup>
     );
 }

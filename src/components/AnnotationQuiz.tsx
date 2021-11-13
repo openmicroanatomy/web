@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { PopupActions } from "reactjs-popup/dist/types";
 import { EduAnswer } from "types";
 
 interface QuizProps {
     eduAnswers: EduAnswer[];
-    handleShowQuiz: () => void;
+    close: PopupActions["close"];
+    description: string | null | undefined;
 }
 
-function AnnotationQuiz({ eduAnswers, handleShowQuiz }: QuizProps) {
+function AnnotationQuiz({ eduAnswers, close, description }: QuizProps) {
     const [currentChoice, setCurrentChoice] = useState<string | null>(null);
     const [correctAnswer, setCorrectAnswer] = useState<boolean | null>(null);
 
@@ -52,7 +54,7 @@ function AnnotationQuiz({ eduAnswers, handleShowQuiz }: QuizProps) {
                         OK
                     </button>
 
-                    <button className="button3d mr-4" onClick={() => handleShowQuiz()}>
+                    <button className="button3d mr-4" onClick={close}>
                         Cancel
                     </button>
                 </>
@@ -67,8 +69,10 @@ function AnnotationQuiz({ eduAnswers, handleShowQuiz }: QuizProps) {
                         </>
                     )}
 
-                    <button className="button3d mr-4 mt-4" onClick={() => handleShowQuiz()}>
-                        OK
+                    <p>{description}</p>
+
+                    <button className="button3d mr-4 mt-4" onClick={close}>
+                        Close
                     </button>
                 </div>
             )}
