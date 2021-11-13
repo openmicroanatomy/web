@@ -23,7 +23,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                         </div>
                     ))}
 
-                    <div className="border-b text-center">
+                    <div className="border-b text-center bg-blue-500 text-white font-bold text-xl pt-2 pb-2">
                         {selectedAnnotation ? (
                             <AnnotationPopup annotation={selectedAnnotation} />
                         ) :

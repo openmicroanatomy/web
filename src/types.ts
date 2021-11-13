@@ -107,7 +107,7 @@ interface AnnotationProps {
     name: string;
     color: number[];
     isLocked: boolean;
-    metadata: AnnotationPropsMetaData | undefined;
+    metadata?: AnnotationPropsMetaData;
 }
 
 interface AnnotationPropsMetaData {
