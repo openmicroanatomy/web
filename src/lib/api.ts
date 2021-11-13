@@ -1,5 +1,5 @@
-import { getRecoil } from "recoil-nexus";
 import { hostState } from "lib/atoms";
+import { getRecoil } from "recoil-nexus";
 
 /**
  * Helper to make GET requests to the API.
@@ -13,11 +13,8 @@ async function request(path: string, init: RequestInit = {}) {
         throw new Error("Choose a host");
     }
 
-    // temporary backend fix. TODO: REMOVE SOON!
-    const temp = host.host.replace("https://qupath.yli-hallila.fi:7777", "http://yli-hallila.fi:7777");
-
     try {
-        const response = await fetch(`${temp}${path}`, {
+        const response = await fetch(`${host.host}${path}`, {
             ...init,
             mode: "cors",
         });
@@ -46,11 +43,8 @@ export const isValidHost = async (url: string) => {
         return false;
     }
 
-    // temporary backend fix. TODO: REMOVE SOON!
-    const temp = url.replace("https://qupath.yli-hallila.fi:7777", "http://yli-hallila.fi:7777");
-
     try {
-        const response = await fetch(temp);
+        const response = await fetch(url);
 
         // TODO: enable response.ok check when backend supports it.
         return response; // && response.ok;

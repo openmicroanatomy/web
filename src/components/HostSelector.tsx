@@ -1,14 +1,14 @@
+import { fetchHosts, isValidHost } from "lib/api";
+import { hostState } from "lib/atoms";
+import Constants from "lib/constants";
+import { setValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
 import { ThreeDots } from "react-loading-icons";
 import { toast } from "react-toastify";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import validator from "validator";
-import { fetchHosts, isValidHost } from "lib/api";
-import { hostState } from "lib/atoms";
-import { setValue } from "lib/localStorage";
 import "styles/Buttons.css";
 import { Host } from "types";
-import Constants from "lib/constants";
+import validator from "validator";
 
 interface Selection {
     private: boolean;

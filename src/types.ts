@@ -84,7 +84,7 @@ export interface Image {
     imageName: string;
     thumbnail: string;
     imageData: string; // Serialized Java fuckery
-    annotations: string; // Serialized Java fuckery
+    annotations: string;
 }
 
 // Commented out unused props
@@ -107,7 +107,17 @@ interface AnnotationProps {
     name: string;
     color: number[];
     isLocked: boolean;
-    metadata: { [key: string]: string };
+    metadata: AnnotationPropsMetaData;
+}
+
+interface AnnotationPropsMetaData {
+    ANNOTATION_DESCRIPTION?: string | null;
+    EDU_ANSWER?: string | null;
+}
+
+export interface EduAnswer {
+    choice: string;
+    isAnswer: boolean;
 }
 
 export interface Geometry {

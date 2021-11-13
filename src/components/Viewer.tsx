@@ -1,6 +1,6 @@
+import { fetchSlide } from "lib/api";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { fetchSlide } from "lib/api";
 import { Annotation, LineString, Polygon } from "types";
 
 interface ViewerProps {

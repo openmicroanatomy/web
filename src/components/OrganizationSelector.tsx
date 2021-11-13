@@ -1,8 +1,8 @@
+import { fetchOrganizations } from "lib/api";
+import { hostState } from "lib/atoms";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilValue } from "recoil";
-import { fetchOrganizations } from "lib/api";
-import { hostState } from "lib/atoms";
 import { Organization } from "types";
 
 interface OrganizationSelectorProps {
@@ -45,8 +45,15 @@ function OrganizationSelector({ onOrganizationChange }: OrganizationSelectorProp
             <p className="text-xl">Organization</p>
 
             {organizations.length > 0 && (
-                <select className="w-full" name="organization" onChange={(e) => onOrganizationChange(e.target.value)} defaultValue="">
-                    <option disabled value="">Select organization ...</option>
+                <select
+                    className="w-full"
+                    name="organization"
+                    onChange={(e) => onOrganizationChange(e.target.value)}
+                    defaultValue=""
+                >
+                    <option disabled value="">
+                        Select organization ...
+                    </option>
 
                     {organizations.map((organization: Organization) => (
                         <option value={organization.id} key={organization.id}>

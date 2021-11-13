@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { fetchWorkspaces } from "lib/api";
+import { useEffect, useState } from "react";
 import { Subject, Workspace } from "types";
 
 interface ProjectSelectorProps {
@@ -49,15 +49,17 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
                 <span key={subject.id}>
                     <p className="text-lg underline">{subject.name}</p>
                     <ul className="list-disc list-inside">
-                        {subject.projects.sort((a, b) => {
-                            return a.name.localeCompare(b.name)
-                        }).map(project => (
-                            <li key={project.id}>
-                                <a className="cursor-pointer" onClick={() => onProjectChange(project.id)}>
-                                    {project.name}
-                                </a>
-                            </li>
-                        ))}
+                        {subject.projects
+                            .sort((a, b) => {
+                                return a.name.localeCompare(b.name);
+                            })
+                            .map((project) => (
+                                <li key={project.id}>
+                                    <a className="cursor-pointer" onClick={() => onProjectChange(project.id)}>
+                                        {project.name}
+                                    </a>
+                                </li>
+                            ))}
                     </ul>
                 </span>
             ))}

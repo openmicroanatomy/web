@@ -1,7 +1,7 @@
+import { fetchProjectData } from "lib/api";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
-import { fetchProjectData } from "lib/api";
 import "styles/Tabs.css";
 import { ProjectData } from "types";
 import Annotations from "./Annotations";

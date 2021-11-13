@@ -1,4 +1,6 @@
+import "reactjs-popup/dist/index.css";
 import { Annotation } from "types";
+import AnnotationPopup from "./AnnotationPopup";
 
 interface AnnotationsProps {
     annotations?: Annotation[];
@@ -12,11 +14,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                     {annotations.map((annotation) => (
                         <div key={annotation.properties.name} className="grid grid-cols-4 p-2 border-b border-t mb-2">
                             <div className="col-span-4">
-                                <p>
-                                    {annotation.properties.name
-                                        ? `${annotation.geometry.type}: ${annotation.properties.name}`
-                                        : annotation.geometry.type}
-                                </p>
+                                <AnnotationPopup annotation={annotation} />
                             </div>
                         </div>
                     ))}
