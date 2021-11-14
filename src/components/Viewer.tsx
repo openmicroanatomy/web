@@ -1,6 +1,9 @@
 import { fetchSlide } from "lib/api";
+import { viewerState } from "lib/atoms";
+import OpenSeadragon, { Point } from "openseadragon";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useSetRecoilState } from "recoil";
 import { Annotation, LineString, Polygon } from "types";
 
 interface ViewerProps {
@@ -9,6 +12,7 @@ interface ViewerProps {
 }
 
 function Viewer({ slideId, annotations }: ViewerProps) {
+    const setViewport = useSetRecoilState(viewerState);
     const [viewer, setViewer] = useState<OpenSeadragon.Viewer | null>(null);
     const [error, setError] = useState<Error | null>(null);
 
@@ -121,6 +125,8 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             });
 
             function drawLine(coordinates: LineString) {
+                console.log(coordinates);
+
                 window.d3
                     .select(overlay.node())
                     .append("line")
@@ -149,12 +155,17 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             }
 
             function scaleX(x: number) {
+                //return viewer?.viewport.viewerElementToViewportCoordinates(new Point(x, 0)).x || null;
                 return x / slideWidth;
             }
 
             function scaleY(y: number) {
+                //return viewer?.viewport.viewerElementToViewportCoordinates(new Point(0, y)).y || null;
                 return y / slideHeight;
             }
+
+            overlay.resize();
+            setViewport(viewer.viewport);
         };
 
         try {
@@ -172,7 +183,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
         return <p>Unexpected error with Viewer</p>;
     }
 
-    return <div id="Viewer" className="h-full w-full" />;
+    return <div id="Viewer" className="h-full w-full bg-black" />;
 }
 
 export default Viewer;

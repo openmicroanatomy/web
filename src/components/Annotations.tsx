@@ -1,7 +1,10 @@
 import "reactjs-popup/dist/index.css";
 import { Annotation } from "types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnnotationPopup from "./AnnotationPopup";
+import { useRecoilValue } from "recoil";
+import { viewerState } from "lib/atoms";
+import { centroid } from "lib/helpers";
 
 interface AnnotationsProps {
     annotations?: Annotation[];
@@ -9,6 +12,21 @@ interface AnnotationsProps {
 
 function Annotations({ annotations }: AnnotationsProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
+    const viewport = useRecoilValue(viewerState);
+
+    useEffect(() => {
+        if (selectedAnnotation) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const screenWidth = (viewport as any)._contentSize.x;
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const screenHeight = (viewport as any)._contentSize.y;
+
+            const centre = centroid(selectedAnnotation.geometry, screenWidth, screenHeight);
+            viewport?.panTo(centre);
+        }
+
+    }, [selectedAnnotation]);
 
     return (
         <div id="Annotations">
@@ -17,8 +35,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                     {annotations.map((annotation) => (
                         <div key={annotation.properties.name} className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer">
                             <div className="col-span-4" onClick={() => setSelectedAnnotation(annotation)}>
-                                {annotation.geometry.type}
-                                {annotation.properties.name && `: ${annotation.properties.name}`}
+                                {annotation.properties.name && `${annotation.properties.name}`}
                             </div>
                         </div>
                     ))}
