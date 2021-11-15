@@ -14,7 +14,7 @@ export type ValidatedEduAnswer =
  * Validates eduAnswer between json, string and null.
  * Used by: AnnotationPropsMetaData.EDU_ANSWER in types.ts
  */
-export const validateEduAnswer = (input?: string | null): ValidatedEduAnswer => {
+export const validateEduAnswer = (input?: string | null | undefined): ValidatedEduAnswer => {
     try {
         if (input) {
             const parsed = JSON.parse(input);

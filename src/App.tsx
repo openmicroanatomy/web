@@ -10,10 +10,10 @@ const App = () => {
 
     return (
         <Router history={history}>
-            <div className="App mx-auto font-mono h-screen bg-gray-100">
+            <div className="App mx-auto font-mono h-screen flex flex-col">
                 <ToastContainer />
-                <div className="bg-blue-500 p-2">
-                    <p className="text-white font-bold text-lg text-center">
+                <div className="flex bg-blue-500 p-2 h-12 shadow-md">
+                    <p className="text-white font-bold text-lg text-center my-0 mx-auto">
                         For the complete experience download QuPath Edu{" "}
                         <a href="#" className="underline">
                             here

@@ -13,7 +13,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                 <>
                     {annotations.map((annotation) => (
                         <div key={annotation.properties.name} className="grid grid-cols-4 p-2 border-b border-t mb-2">
-                            <div className="col-span-4">
+                            <div>
                                 <AnnotationPopup annotation={annotation} />
                             </div>
                         </div>
