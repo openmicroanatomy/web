@@ -4,11 +4,12 @@ import { EduAnswer } from "types";
 
 interface QuizProps {
     eduAnswers: EduAnswer[];
+    annotationName: string;
     close: PopupActions["close"];
     description: string | null | undefined;
 }
 
-function AnnotationQuiz({ eduAnswers, close, description }: QuizProps) {
+function AnnotationQuiz({ eduAnswers, close, annotationName, description }: QuizProps) {
     const [currentChoice, setCurrentChoice] = useState<string | null>(null);
     const [correctAnswer, setCorrectAnswer] = useState<boolean | null>(null);
 
@@ -36,7 +37,7 @@ function AnnotationQuiz({ eduAnswers, close, description }: QuizProps) {
         <div className="mt-8">
             {correctAnswer === null ? (
                 <>
-                    <p>Name of the annotation</p>
+                    <p>{annotationName}</p>
                     <form>
                         <select
                             className="form-select w-full mb-4"

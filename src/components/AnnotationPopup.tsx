@@ -44,8 +44,7 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
                     </div>
 
                     <div className="p-4">
-                        {eduAnswers.json ? (
-                            <AnnotationQuiz eduAnswers={eduAnswers.data} close={close} description={annotationDescription} />
+                            <AnnotationQuiz eduAnswers={answer.data} annotationName={annotation.properties.name} description={description} close={close}  />
                         ) : (
                             <>
                                 {eduAnswers.data ? (
