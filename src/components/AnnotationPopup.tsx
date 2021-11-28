@@ -1,4 +1,4 @@
-import { validateEduAnswer } from "lib/helpers";
+import { AnnotationAnswerTypes, validateEduAnswer } from "lib/helpers";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { Annotation } from "types";
@@ -9,31 +9,15 @@ interface AnnotationProps {
     annotation: Annotation;
 }
 
-enum AnnotationAnswerTypes {
-    QUIZ = "Show quiz",
-    TEXT = "Show answer",
-    UNDEFINED = "No answer"
-}
-
 function AnnotationPopup({ annotation }: AnnotationProps) {
-    const eduAnswers = validateEduAnswer(annotation.properties.metadata?.EDU_ANSWER);
-    const annotationDescription = annotation.properties.metadata?.ANNOTATION_DESCRIPTION;
-
-    let answerType: AnnotationAnswerTypes;
-    if (eduAnswers.json) {
-        answerType = AnnotationAnswerTypes.QUIZ;
-    } else if (eduAnswers.data) {
-        answerType = AnnotationAnswerTypes.TEXT;
-    } else {
-        answerType = AnnotationAnswerTypes.UNDEFINED;
-    }
+    const answer = validateEduAnswer(annotation.properties.metadata?.Answer);
+    const description = annotation.properties.metadata?.ANNOTATION_DESCRIPTION;
 
     return (
         <Popup
-            trigger={<div className="cursor-pointer">{answerType}</div>}
+            trigger={<div className="cursor-pointer">{answer.type}</div>}
             position="right center"
             modal
-            disabled={answerType == AnnotationAnswerTypes.UNDEFINED}
             arrowStyle={{ color: "#ddd" }}
             contentStyle={{ width: 300, backgroundColor: "#ddd" }}
         >
@@ -44,16 +28,17 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
                     </div>
 
                     <div className="p-4">
+                        {answer.type == AnnotationAnswerTypes.QUIZ ? (
                             <AnnotationQuiz eduAnswers={answer.data} annotationName={annotation.properties.name} description={description} close={close}  />
                         ) : (
                             <>
-                                {eduAnswers.data ? (
+                                {answer.type == AnnotationAnswerTypes.TEXT ? (
                                     <>
-                                        <p>{eduAnswers.data}</p>
-                                        <p>{annotationDescription}</p>
+                                        <p>{answer.data}</p>
+                                        <p>{description}</p>
                                     </>
                                 ) : (
-                                    <p className="pt-4 blur-3xl">{annotationDescription}</p>
+                                    <p className="pt-4 blur-3xl">{description}</p>
                                 )}
                             </>
                         )}

@@ -113,6 +113,7 @@ interface AnnotationProps {
 interface AnnotationPropsMetaData {
     ANNOTATION_DESCRIPTION?: string | null;
     EDU_ANSWER?: string | null;
+    Answer?: string | null;
 }
 
 export interface EduAnswer {

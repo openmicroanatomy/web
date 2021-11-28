@@ -1,33 +1,42 @@
 import OpenSeadragon from "openseadragon";
 import { EduAnswer, Geometry, LineString, Polygon } from "types";
 
+export enum AnnotationAnswerTypes {
+    QUIZ = "Show quiz",
+    TEXT = "Show answer",
+    UNDEFINED = "Show description"
+}
+
 export type ValidatedEduAnswer =
-    | {
-          data: EduAnswer[];
-          json: true;
-      }
-    | {
-          data?: string | null;
-          json: false;
-      };
+    {
+        data: EduAnswer[];
+        type: AnnotationAnswerTypes.QUIZ;
+    } | {
+        data: string;
+        type: AnnotationAnswerTypes.TEXT;
+    } | {
+        data: null;
+        type: AnnotationAnswerTypes.UNDEFINED;
+    };
 
 /*
  * Validates eduAnswer between json, string and null.
  * Used by: AnnotationPropsMetaData.EDU_ANSWER in types.ts
  */
 export const validateEduAnswer = (input?: string | null | undefined): ValidatedEduAnswer => {
-    try {
-        if (input) {
+    if (input) {
+        try {
             const parsed = JSON.parse(input);
-            if (parsed && typeof parsed === "object") {
-                return { data: parsed, json: true };
-            }
-        }
 
-        return { data: input, json: false };
-    } catch {
-        return { data: input, json: false };
+            if (parsed && typeof parsed === "object") {
+                return { data: parsed, type: AnnotationAnswerTypes.QUIZ };
+            }
+        } catch {
+            return { data: input, type: AnnotationAnswerTypes.TEXT };
+        }
     }
+
+    return { data: null, type: AnnotationAnswerTypes.UNDEFINED };
 };
 
 export const centroid = (annotation: Geometry, slideWidth: number, slideHeight: number) => {
