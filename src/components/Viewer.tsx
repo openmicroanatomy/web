@@ -155,13 +155,14 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             }
 
             function scaleX(x: number) {
-                //return viewer?.viewport.viewerElementToViewportCoordinates(new Point(x, 0)).x || null;
                 return x / slideWidth;
             }
 
             function scaleY(y: number) {
-                //return viewer?.viewport.viewerElementToViewportCoordinates(new Point(0, y)).y || null;
-                return y / slideHeight;
+                // For some reason we need to multiply the y-coordinate by the ratio of the height and width.
+                // This is not necessary for the x-coordinate for some reason.
+                // This requires some further investigation into why this happens.
+                return (y / slideHeight) * (slideHeight / slideWidth);
             }
 
             overlay.resize();
