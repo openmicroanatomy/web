@@ -125,8 +125,6 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             });
 
             function drawLine(coordinates: LineString) {
-                console.log(coordinates);
-
                 window.d3
                     .select(overlay.node())
                     .append("line")
