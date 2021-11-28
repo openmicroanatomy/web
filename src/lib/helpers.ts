@@ -40,6 +40,9 @@ export const validateEduAnswer = (input?: string | null | undefined): ValidatedE
 };
 
 export const centroid = (annotation: Geometry, slideWidth: number, slideHeight: number) => {
+    // See Viewer.tsx#scaleY regarding the reason for y-factor
+    const yFactor = slideHeight / slideWidth;
+
     if (annotation.type == "LineString") {
         const coordinates = annotation.coordinates as LineString;
 
@@ -48,11 +51,11 @@ export const centroid = (annotation: Geometry, slideWidth: number, slideHeight: 
         const x2 = coordinates[1][0] / slideWidth
         const y2 = coordinates[1][1] / slideHeight;
 
-        return new OpenSeadragon.Point((x1 + x2) / 2, (y1 + y2) / 2);
+        return new OpenSeadragon.Point((x1 + x2) / 2, ((y1 + y2) / 2) * (yFactor));
     } else if (annotation.type == "Polygon") {
         const centroid = get_polygon_centroid(annotation.coordinates as Polygon);
 
-        return new OpenSeadragon.Point(centroid.x / slideWidth, centroid.y / slideHeight);
+        return new OpenSeadragon.Point(centroid.x / slideWidth, (centroid.y / slideHeight) * (yFactor));
     } else {
         console.warn("No centroid available for {}", annotation)
         return new OpenSeadragon.Point(0, 0);
