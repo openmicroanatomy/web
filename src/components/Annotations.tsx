@@ -30,7 +30,7 @@ function Annotations({ annotations }: AnnotationsProps) {
 
     return (
         <div id="Annotations">
-            {annotations ? (
+            {annotations && annotations?.length > 0 ? (
                 <>
                     {annotations.map((annotation) => (
                         <div key={annotation.properties.name} className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer">
@@ -51,7 +51,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                     { /* TODO: Add description of annotations without answers here */ }
                 </>
             ) : (
-                <p>No annotations</p>
+                <p className="text-center font-bold">No annotations</p>
             )}
         </div>
     );
