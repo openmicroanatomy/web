@@ -25,7 +25,11 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             showNavigator: true,
             navigatorSizeRatio: 0.15,
             navigatorAutoFade: false,
-            showNavigationControl: false
+            showNavigationControl: false,
+            gestureSettingsMouse: { 
+                clickToZoom: false,
+                dblClickToZoom: true
+            }
         });
 
         setViewer(viewer);
