@@ -24,7 +24,8 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             //debugMode: process.env.NODE_ENV !== "production",
             showNavigator: true,
             navigatorSizeRatio: 0.15,
-            showNavigationControl: false,
+            navigatorAutoFade: false,
+            showNavigationControl: false
         });
 
         setViewer(viewer);

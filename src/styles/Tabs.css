@@ -1,5 +1,5 @@
 .react-tabs ul[role=tablist] {
-    @apply pb-2
+    @apply pb-2 border-b-4
 }
 
 .react-tabs__tab-list {
@@ -7,7 +7,7 @@
 }
 
 .react-tabs__tab {
-    @apply border-b-4 p-2 hover:border-blue-400 cursor-pointer
+    @apply -mb-3 border-b-4 p-2 hover:border-blue-400 cursor-pointer
 }
 
 .react-tabs__tab--selected {
