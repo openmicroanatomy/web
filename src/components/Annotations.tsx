@@ -47,8 +47,6 @@ function Annotations({ annotations }: AnnotationsProps) {
                             <p>No annotation selected</p>
                         }
                     </div>
-
-                    { /* TODO: Add description of annotations without answers here */ }
                 </>
             ) : (
                 <p className="text-center font-bold">No annotations</p>

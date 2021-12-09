@@ -13,13 +13,31 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
     const answer = validateEduAnswer(annotation.properties.metadata?.Answer);
     const description = annotation.properties.metadata?.ANNOTATION_DESCRIPTION;
 
+    let text;
+
+    switch (answer.type) {
+        case AnnotationAnswerTypes.QUIZ: 
+            text = "Show quiz"
+            break;
+        case AnnotationAnswerTypes.TEXT:
+            text = "Show answer"
+            break;
+        case AnnotationAnswerTypes.UNDEFINED:
+            if (description) {
+                text = description;
+            } else {
+                text = "No description"
+            }
+    }
+
     return (
         <Popup
-            trigger={<div className="cursor-pointer">{answer.type}</div>}
+            trigger={<div className="cursor-pointer">{text}</div>}
             position="right center"
             modal
             arrowStyle={{ color: "#ddd" }}
             contentStyle={{ width: 300, backgroundColor: "#ddd" }}
+            disabled={answer.type == AnnotationAnswerTypes.UNDEFINED}
         >
             {(close: PopupActions["close"]) => (
                 <div className="flex justify-center flex-col">

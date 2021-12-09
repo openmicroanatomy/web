@@ -2,9 +2,9 @@ import OpenSeadragon from "openseadragon";
 import { EduAnswer, Geometry, LineString, Polygon } from "types";
 
 export enum AnnotationAnswerTypes {
-    QUIZ = "Show quiz",
-    TEXT = "Show answer",
-    UNDEFINED = "Show description"
+    QUIZ,
+    TEXT,
+    UNDEFINED
 }
 
 export type ValidatedEduAnswer =
