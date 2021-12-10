@@ -42,7 +42,14 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
         // TODO: Refactor this to its own class/functions etc.
         const apiHelper = async () => {
-            const result = await fetchSlide(slideId);
+            let result: { [key: string]: string};
+
+            try {
+                result = await fetchSlide(slideId);
+            } catch (e) {
+                throw e;
+            }
+            
             const downsamples: number[] = [];
             const levelCount = parseInt(result["openslide.level-count"]);
 
@@ -53,7 +60,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             const tileWidth = parseInt(result["openslide.level[0].tile-height"]);
 
             for (let i = 0; i < levelCount; i++) {
-                downsamples.push(Math.floor(result["openslide.level[" + i + "].downsample"]));
+                downsamples.push(Math.floor(parseInt(result["openslide.level[" + i + "].downsample"])));
             }
 
             viewer.open({
@@ -89,11 +96,11 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                     const width = tileWidth - adjustX;
 
                     return result["openslide.remoteserver.uri"]
-                        .replace("{tileX}", tileX)
-                        .replace("{tileY}", tileY)
-                        .replace("{level}", level)
-                        .replace("{tileWidth}", width)
-                        .replace("{tileHeight}", height);
+                        .replace("{tileX}", String(tileX as unknown))
+                        .replace("{tileY}", String(tileY as unknown))
+                        .replace("{level}", String(level as unknown))
+                        .replace("{tileWidth}", String(width as unknown))
+                        .replace("{tileHeight}", String(height as unknown));
                 },
             });
 
@@ -172,15 +179,13 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             setViewport(viewer.viewport);
         };
 
-        try {
-            apiHelper();
-        } catch (e) {
+        apiHelper().catch(e => {
             setViewer(null);
             if (e instanceof Error) {
                 setError(e);
                 toast.error(e.message);
             }
-        }
+        });
     }, [slideId]);
 
     if (error) {

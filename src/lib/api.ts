@@ -13,24 +13,26 @@ async function request(path: string, init: RequestInit = {}) {
         throw new Error("Choose a host");
     }
 
+    let response: Response;
+
     try {
-        const response = await fetch(`${host.host}${path}`, {
+        response = await fetch(`${host.host}${path}`, {
             ...init,
             mode: "cors",
         });
-
-        if (!response) {
-            throw new Error("Invalid response.");
-        } else if (!response.ok) {
-            throw new Error("Request failed.");
-        } else if (!response.body) {
-            throw new Error("No data.");
-        }
-
-        return response.json();
     } catch {
         throw new Error("Connection refused.");
     }
+
+    if (!response) {
+        throw new Error("Invalid response.");
+    } else if (!response.ok) {
+        throw new Error("Request failed.");
+    } else if (!response.body) {
+        throw new Error("No data.");
+    }
+
+    return response.json();
 }
 
 export const fetchHosts = async () => {
