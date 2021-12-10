@@ -8,7 +8,7 @@ interface SlidesProps {
 function Slides({ images, onSlideChange }: SlidesProps) {
     return (
         <div id="Slides">
-            {images ? (
+            {images && images.length > 0 ? (
                 <>
                     {images.map((slide) => (
                         <div
@@ -30,7 +30,7 @@ function Slides({ images, onSlideChange }: SlidesProps) {
                     ))}
                 </>
             ) : (
-                <p>No slides</p>
+                <p className="text-center font-bold">No slides</p>
             )}
         </div>
     );
