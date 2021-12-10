@@ -22,7 +22,7 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
                 const result = await fetchWorkspaces();
                 result.forEach((workspace: Workspace) => {
                     if (workspace.owner.id === organizationId) {
-                        setSubjects(workspace.subjects);
+                        setSubjects(workspace.subjects.sort((a, b) => a.name.localeCompare(b.name)));
                     }
                 });
             } catch {
