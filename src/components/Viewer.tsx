@@ -42,13 +42,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
         // TODO: Refactor this to its own class/functions etc.
         const apiHelper = async () => {
-            let result: { [key: string]: string};
-
-            try {
-                result = await fetchSlide(slideId);
-            } catch (e) {
-                throw e;
-            }
+            const result = await fetchSlide(slideId);
             
             const downsamples: number[] = [];
             const levelCount = parseInt(result["openslide.level-count"]);
