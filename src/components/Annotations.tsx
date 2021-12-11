@@ -25,7 +25,6 @@ function Annotations({ annotations }: AnnotationsProps) {
             const centre = centroid(selectedAnnotation.geometry, screenWidth, screenHeight);
             viewport?.panTo(centre);
         }
-
     }, [selectedAnnotation]);
 
     return (
@@ -33,9 +32,12 @@ function Annotations({ annotations }: AnnotationsProps) {
             {annotations && annotations?.length > 0 ? (
                 <>
                     {annotations.map((annotation) => (
-                        <div key={annotation.properties.name} className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer">
+                        <div
+                            key={annotation.properties.name}
+                            className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer"
+                        >
                             <div className="col-span-4" onClick={() => setSelectedAnnotation(annotation)}>
-                                {annotation.properties.name || "Unnamed annotation" }
+                                {annotation.properties.name || "Unnamed annotation"}
                             </div>
                         </div>
                     ))}
@@ -43,9 +45,9 @@ function Annotations({ annotations }: AnnotationsProps) {
                     <div className="border-b text-center bg-blue-500 text-white font-bold text-xl pt-2 pb-2">
                         {selectedAnnotation ? (
                             <AnnotationPopup annotation={selectedAnnotation} />
-                        ) :
+                        ) : (
                             <p>No annotation selected</p>
-                        }
+                        )}
                     </div>
                 </>
             ) : (

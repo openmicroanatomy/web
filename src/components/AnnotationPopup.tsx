@@ -16,17 +16,17 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
     let text;
 
     switch (answer.type) {
-        case AnnotationAnswerTypes.QUIZ: 
-            text = "Show quiz"
+        case AnnotationAnswerTypes.QUIZ:
+            text = "Show quiz";
             break;
         case AnnotationAnswerTypes.TEXT:
-            text = "Show answer"
+            text = "Show answer";
             break;
         case AnnotationAnswerTypes.UNDEFINED:
             if (description) {
                 text = description;
             } else {
-                text = "No description"
+                text = "No description";
             }
     }
 
@@ -42,12 +42,19 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
             {(close: PopupActions["close"]) => (
                 <div className="flex justify-center flex-col">
                     <div className="text-right">
-                        <a onClick={close} className="button-close-dialog">&times;</a>
+                        <a onClick={close} className="button-close-dialog">
+                            &times;
+                        </a>
                     </div>
 
                     <div className="p-4">
                         {answer.type == AnnotationAnswerTypes.QUIZ ? (
-                            <AnnotationQuiz eduAnswers={answer.data} annotationName={annotation.properties.name} description={description} close={close}  />
+                            <AnnotationQuiz
+                                eduAnswers={answer.data}
+                                annotationName={annotation.properties.name}
+                                description={description}
+                                close={close}
+                            />
                         ) : (
                             <>
                                 {answer.type == AnnotationAnswerTypes.TEXT ? (

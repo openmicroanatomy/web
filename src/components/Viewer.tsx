@@ -1,6 +1,6 @@
 import { fetchSlide } from "lib/api";
 import { viewerState } from "lib/atoms";
-import OpenSeadragon, { Point } from "openseadragon";
+import OpenSeadragon from "openseadragon";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSetRecoilState } from "recoil";
@@ -26,10 +26,10 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             navigatorSizeRatio: 0.15,
             navigatorAutoFade: false,
             showNavigationControl: false,
-            gestureSettingsMouse: { 
+            gestureSettingsMouse: {
                 clickToZoom: false,
-                dblClickToZoom: true
-            }
+                dblClickToZoom: true,
+            },
         });
 
         setViewer(viewer);
@@ -43,7 +43,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
         // TODO: Refactor this to its own class/functions etc.
         const apiHelper = async () => {
             const result = await fetchSlide(slideId);
-            
+
             const downsamples: number[] = [];
             const levelCount = parseInt(result["openslide.level-count"]);
 
@@ -173,7 +173,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             setViewport(viewer.viewport);
         };
 
-        apiHelper().catch(e => {
+        apiHelper().catch((e) => {
             setViewer(null);
             if (e instanceof Error) {
                 setError(e);

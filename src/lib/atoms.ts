@@ -10,5 +10,5 @@ export const hostState = atom({
 export const viewerState = atom({
     key: "viewerState",
     default: null as OpenSeadragon.Viewport | null,
-    dangerouslyAllowMutability: true
-})
+    dangerouslyAllowMutability: true,
+});

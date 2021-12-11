@@ -12,5 +12,5 @@
 }
 
 .button-close-dialog {
-    @apply bg-gray-400 cursor-pointer hover:bg-red-600 p-2 text-white font-bold
+    @apply bg-gray-400 cursor-pointer hover:bg-red-600 p-2 text-white font-bold;
 }

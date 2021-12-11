@@ -19,9 +19,9 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
 
         const apiHelper = async () => {
             try {
-                const result = await fetchWorkspaces() as Workspace[];
-                const workspace = result.find(workspace => workspace.owner.id === organizationId);
-                
+                const result = (await fetchWorkspaces()) as Workspace[];
+                const workspace = result.find((workspace) => workspace.owner.id === organizationId);
+
                 if (workspace) {
                     setSubjects(workspace.subjects.sort((a, b) => a.name.localeCompare(b.name)));
                 }

@@ -65,7 +65,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                                     return to projects
                                 </a>
 
-                                <a className="float-right cursor-pointer" onClick={() => setSidebarVisible(o => !o)}>
+                                <a className="float-right cursor-pointer" onClick={() => setSidebarVisible((o) => !o)}>
                                     &laquo; hide
                                 </a>
                             </div>
@@ -85,7 +85,10 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                             </Tabs>
                         </div>
                     ) : (
-                        <a className="cursor-pointer border rounded-sm p-1" onClick={() => setSidebarVisible(o => !o)}>
+                        <a
+                            className="cursor-pointer border rounded-sm p-1"
+                            onClick={() => setSidebarVisible((o) => !o)}
+                        >
                             &raquo;
                         </a>
                     )}
