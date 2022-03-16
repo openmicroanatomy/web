@@ -1,6 +1,7 @@
 {
     "name": "qupath-edu-cloud",
     "version": "0.1.0",
+    "license": "Zlib",
     "private": true,
     "dependencies": {
         "@craco/craco": "^6.1.1",
