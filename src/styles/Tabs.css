@@ -3,7 +3,7 @@
 }
 
 .react-tabs__tab {
-    @apply mb-0 border-b-4 p-2 hover: border-blue-400 cursor-pointer;
+    @apply mb-0 border-b-4 p-2 hover:border-blue-400 cursor-pointer;
 }
 
 .react-tabs__tab--selected {
