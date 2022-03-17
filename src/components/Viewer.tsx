@@ -36,6 +36,15 @@ function Viewer({ slideId, annotations }: ViewerProps) {
     }, []);
 
     useEffect(() => {
+        drawViewer();
+    }, [slideId]);
+
+    useEffect(() => {
+        // Without this the Viewer is not rendered if the user selects a slide prior to opening the Viewer tab, the viewer
+        drawViewer();
+    }, [viewer]);
+
+    function drawViewer() {
         if (!slideId || !viewer || !annotations) {
             return;
         }
@@ -180,7 +189,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                 toast.error(e.message);
             }
         });
-    }, [slideId]);
+    }
 
     if (error) {
         return <p>Unexpected error with Viewer</p>;

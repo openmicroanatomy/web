@@ -8,6 +8,7 @@ import { ProjectData } from "types";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
 import Viewer from "./Viewer";
+import ProjectInformation from "./ProjectInformation";
 
 interface ProjectViewProps {
     projectId: string;
@@ -94,7 +95,22 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                     )}
 
                     <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                        <Viewer slideId={slide} annotations={annotations} />
+                        <Tabs className="h-full">
+                            <TabList>
+                                <Tab>Project Information</Tab>
+                                <Tab>Viewer</Tab>
+                            </TabList>
+
+                            <TabPanel>
+                                <ProjectInformation data={projectData} />
+                            </TabPanel>
+
+                            { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
+                            <TabPanel style={{height: "calc(100% - 44px)"}}>
+                                <Viewer slideId={slide} annotations={annotations} />
+                            </TabPanel>
+                        </Tabs>
+
                     </div>
                 </>
             )}

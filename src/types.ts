@@ -56,6 +56,7 @@ export interface ProjectData {
     createTimestamp: number;
     modifyTimestamp: number;
     images: Image[];
+    projectInformation: string;
 }
 
 export interface Subject {
