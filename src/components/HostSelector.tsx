@@ -81,19 +81,22 @@ function HostSelector() {
     return (
         <div id="HostSelector">
             {currentHost ? (
-                <>
-                    <p>Conncted to: {currentHost.name}</p>
-
+                <div className="flex">
+                    <div
+                        className="button-like w-full m-1 text-center"
+                    >
+                        {currentHost.name}
+                    </div>
                     <button
-                        className="button w-full"
+                        className="button-red m-1"
                         onClick={() => {
                             setHost(null);
                             setValue(Constants.LOCALSTORAGE_HOST_KEY, null);
                         }}
                     >
-                        Change host
+                        x
                     </button>
-                </>
+                </div>
             ) : (
                 <>
                     <p className="text-xl">Choose a host</p>

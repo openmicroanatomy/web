@@ -1,0 +1,7 @@
+.sidebar--toggle {
+    @apply h-8 w-8 text-lg text-center border border-gray-200 rounded-sm;
+}
+
+.sidebar--toggle:hover {
+    @apply border-gray-400 bg-gray-100;
+}

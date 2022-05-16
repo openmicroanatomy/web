@@ -28,7 +28,7 @@ function Annotations({ annotations }: AnnotationsProps) {
     }, [selectedAnnotation]);
 
     return (
-        <div id="Annotations">
+        <div id="Annotations" className="py-2">
             {annotations && annotations?.length > 0 ? (
                 <>
                     {annotations.map((annotation) => (

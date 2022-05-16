@@ -11,7 +11,7 @@ const App = () => {
 
     return (
         <Router history={history}>
-            <div className="App mx-auto font-mono h-screen flex flex-col">
+            <div className="App mx-auto font-mono h-screen flex flex-col bg-slate-50">
                 <ToastContainer />
 
                 <DownloadQuPathReminder />

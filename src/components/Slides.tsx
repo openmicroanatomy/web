@@ -7,7 +7,7 @@ interface SlidesProps {
 
 function Slides({ images, onSlideChange }: SlidesProps) {
     return (
-        <div id="Slides">
+        <div id="Slides" className="py-2">
             {images && images.length > 0 ? (
                 <>
                     {images.map((slide) => (
@@ -16,13 +16,7 @@ function Slides({ images, onSlideChange }: SlidesProps) {
                             className="grid grid-cols-6 p-2 border-b border-t mb-2 cursor-pointer"
                             onClick={() => onSlideChange(slide.serverBuilder.uri)}
                         >
-                            <div className="col-span-1">
-                                {slide.thumbnail && (
-                                    <img src={`data:image/png;base64,${slide.thumbnail}`} width="64px" alt="" />
-                                )}
-                            </div>
-
-                            <div className="col-span-5">
+                            <div className="col-span-6">
                                 <p>{slide.imageName}</p>
                                 <p className="font-light text-xs">{slide.description}</p>
                             </div>

@@ -42,7 +42,7 @@ function OrganizationSelector({ onOrganizationChange }: OrganizationSelectorProp
 
     return (
         <div id="OrganizationSelector">
-            <p className="text-xl">Organization</p>
+            <p className="text-xl italic">Organization</p>
 
             {organizations.length > 0 && (
                 <select

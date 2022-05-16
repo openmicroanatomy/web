@@ -1,6 +1,7 @@
 import { fetchWorkspaces } from "lib/api";
 import { useEffect, useState } from "react";
 import { Subject, Workspace } from "types";
+import "styles/Scrollbar.css";
 
 interface ProjectSelectorProps {
     organizationId: string;
@@ -42,16 +43,14 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
     }
 
     return (
-        <div id="ProjectSelector">
-            <p className="text-xl">Subjects</p>
-
+        <div id="ProjectSelector" className="overflow-y-auto scrollbar">
             {subjects.map((subject) => (
                 <span key={subject.id}>
-                    <p className="text-lg underline">{subject.name}</p>
+                    <p className="text-xl italic">{subject.name}</p>
                     <ul className="list-disc list-inside">
                         {subject.projects
                             .sort((a, b) => {
-                                return a.name.localeCompare(b.name);
+                                return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
                             })
                             .map((project) => (
                                 <li key={project.id}>

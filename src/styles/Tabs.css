@@ -1,5 +1,5 @@
 .react-tabs__tab-list {
-    @apply flex;
+    @apply flex border-b bg-white;
 }
 
 .react-tabs__tab {

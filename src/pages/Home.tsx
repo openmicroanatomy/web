@@ -55,13 +55,17 @@ const Home = () => {
             {projectId ? (
                 <ProjectView projectId={projectId} onProjectChange={onProjectChange} />
             ) : (
-                <div className="App-header mx-auto w-72 space-y-12 mt-4">
-                    <header className="App-header mx-auto w-72 space-y-12 mt-4">
+                <div className="mx-auto my-12 w-96 space-y-12 p-4 border rounded shadow-md bg-white overflow-y-hidden flex flex-col">
+                    <header className="mx-auto w-72 mt-4">
                         <h1 className="text-3xl">QuPath Edu Cloud</h1>
                     </header>
+
                     <HostSelector />
+
                     {currentHost && (
                         <>
+                            <hr className="space-y-2" />
+
                             <OrganizationSelector onOrganizationChange={onOrganizationChange} />
                             {organization && (
                                 <ProjectSelector organizationId={organization} onProjectChange={onProjectChange} />
