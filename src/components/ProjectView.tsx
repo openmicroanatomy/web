@@ -4,6 +4,7 @@ import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
 import "styles/Tabs.css";
 import "styles/Scrollbar.css";
+import "styles/Sidebar.css";
 import { ProjectData } from "types";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
@@ -20,6 +21,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState("");
     const [sidebarVisible, setSidebarVisible] = useState(true);
+    const [tabIndex, setTabIndex] = useState(0);
 
     const onSlideChange = (newSlide: string) => {
         if (projectData) {
@@ -35,6 +37,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                 }
             }
 
+            setTabIndex(1);
             setSlide(new URL(newSlide).pathname.substr(1));
         }
     };
@@ -61,17 +64,18 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                 <>
                     {sidebarVisible ? (
                         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
-                            <div className="px-2 italic">
+                            <div className="p-2">
                                 <a className="cursor-pointer" onClick={() => onProjectChange("")}>
-                                    return to projects
+                                    Return to projects
                                 </a>
 
-                                <a className="float-right cursor-pointer" onClick={() => setSidebarVisible((o) => !o)}>
-                                    &laquo; hide
+                                <a className="float-right cursor-pointer sidebar--toggle" onClick={() => setSidebarVisible((o) => !o)}>
+                                    &laquo;
                                 </a>
                             </div>
 
                             <Tabs>
+                                { /* Make tab header fixed to top */ }
                                 <TabList>
                                     <Tab>Slides</Tab>
                                     <Tab>Annotations</Tab>
@@ -87,7 +91,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                         </div>
                     ) : (
                         <a
-                            className="cursor-pointer border rounded-sm p-1"
+                            className="cursor-pointer sidebar--toggle"
                             onClick={() => setSidebarVisible((o) => !o)}
                         >
                             &raquo;
@@ -95,7 +99,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                     )}
 
                     <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                        <Tabs className="h-full">
+                        <Tabs className="h-full" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
                             <TabList>
                                 <Tab>Project Information</Tab>
                                 <Tab>Viewer</Tab>
