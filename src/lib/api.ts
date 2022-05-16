@@ -13,6 +13,10 @@ async function request(path: string, init: RequestInit = {}) {
         throw new Error("Choose a host");
     }
 
+    if (host.host.endsWith("/")) {
+        path = path.substring(1);
+    }
+
     let response: Response;
 
     try {
