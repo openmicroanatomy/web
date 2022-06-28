@@ -69,9 +69,16 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                                     Return to projects
                                 </a>
 
-                                <a className="float-right cursor-pointer sidebar--toggle" onClick={() => setSidebarVisible((o) => !o)}>
-                                    &laquo;
-                                </a>
+                                <div className="float-right flex flex-row-reverse">
+                                    <a className="rounded--button" onClick={() => setSidebarVisible((o) => !o)}>
+                                        &laquo;
+                                    </a>
+
+                                    <a className="rounded--button mx-1 flex">
+                                        { /* TODO: Implement embed popup dialog */}
+                                        <img className="w-4 h-4" src="img/embed.png" alt="Embed" />
+                                    </a>                                    
+                                </div>
                             </div>
 
                             <Tabs>
@@ -91,7 +98,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                         </div>
                     ) : (
                         <a
-                            className="cursor-pointer sidebar--toggle"
+                            className="rounded--button"
                             onClick={() => setSidebarVisible((o) => !o)}
                         >
                             &raquo;
