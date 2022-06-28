@@ -9,3 +9,11 @@
 .react-tabs__tab--selected {
     @apply border-blue-500 font-bold;
 }
+
+.react-tabs__tab-panel {
+    @apply hidden;
+}
+
+.react-tabs__tab-panel--selected {
+    @apply block;
+}

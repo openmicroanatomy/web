@@ -112,7 +112,8 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                                 <Tab>Viewer</Tab>
                             </TabList>
 
-                            <TabPanel>
+                            { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
+                            <TabPanel style={{height: "calc(100% - 44px)"}}>
                                 <ProjectInformation data={projectData} />
                             </TabPanel>
 
