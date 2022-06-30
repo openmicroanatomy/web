@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AnnotationPopup from "./AnnotationPopup";
 import { useRecoilValue } from "recoil";
 import { viewerState } from "lib/atoms";
-import { centroid } from "lib/helpers";
+import { area, centroid } from "lib/helpers";
 
 interface AnnotationsProps {
     annotations?: Annotation[];
@@ -24,6 +24,11 @@ function Annotations({ annotations }: AnnotationsProps) {
 
             const centre = centroid(selectedAnnotation.geometry, screenWidth, screenHeight);
             viewport?.panTo(centre);
+
+            const annotationArea = area(selectedAnnotation.geometry);
+            const slideArea = (viewport?.getContainerSize().x ?? 1) * (viewport?.getContainerSize().y ?? 1);
+
+            viewport?.zoomTo(viewport?.imageToViewportZoom(slideArea / annotationArea));
         }
     }, [selectedAnnotation]);
 
@@ -33,7 +38,6 @@ function Annotations({ annotations }: AnnotationsProps) {
                 <>
                     {annotations.map((annotation) => (
                         <div
-                            key={annotation.properties.name}
                             className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer"
                         >
                             <div className="col-span-4" onClick={() => setSelectedAnnotation(annotation)}>

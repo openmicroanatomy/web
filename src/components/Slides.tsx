@@ -17,7 +17,7 @@ function Slides({ images, onSlideChange }: SlidesProps) {
                             onClick={() => onSlideChange(slide.serverBuilder.uri)}
                         >
                             <div className="col-span-6">
-                                <p>{slide.imageName}</p>
+                                <p className="font-bold">{slide.imageName}</p>
                                 <p className="font-light text-xs">{slide.description}</p>
                             </div>
                         </div>

@@ -1,0 +1,8 @@
+:root {
+    --stroke-thickness: 0.001;
+}
+
+line,
+polygon {
+    stroke-width: var(--stroke-thickness);
+}

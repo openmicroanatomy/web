@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSetRecoilState } from "recoil";
 import { Annotation, LineString, Polygon } from "types";
+import "styles/Viewer.css";
 
 interface ViewerProps {
     slideId?: string | null;
@@ -144,7 +145,6 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                     .select(overlay.node())
                     .append("line")
                     .style("stroke", "#f00")
-                    .style("stroke-width", 0.001)
                     .attr("x1", scaleX(coordinates[0][0]))
                     .attr("y1", scaleY(coordinates[0][1]))
                     .attr("x2", scaleX(coordinates[1][0]))
@@ -156,7 +156,6 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                     .select(overlay.node())
                     .append("polygon")
                     .style("stroke", "#f00")
-                    .style("stroke-width", 0.001)
                     .style("fill", "transparent")
                     .attr("points", function () {
                         return coordinates[0]
@@ -177,6 +176,15 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                 // This requires some further investigation into why this happens.
                 return (y / slideHeight) * (slideHeight / slideWidth);
             }
+
+            // 0.001 is the default size for stroke thickness as defined in Viewer.css
+            const ScalingFactor = 0.001 / viewer.viewport.getMinZoom();
+
+            viewer.addHandler('zoom', function (viewer) {
+                // Thickness = ScalingFactor * Inverse Zoom
+                const thickness = ScalingFactor * (1 / (viewer.zoom ?? 1));
+                document.documentElement.style.setProperty(`--stroke-thickness`, String(thickness));
+            })
 
             overlay.resize();
             setViewport(viewer.viewport);

@@ -41,6 +41,19 @@ export const validateEduAnswer = (input?: string | null | undefined): ValidatedE
     return { data: null, type: AnnotationAnswerTypes.UNDEFINED };
 };
 
+export const area = (annotation: Geometry) => {
+    if (annotation.type == "LineString") {
+        // TODO: Implement
+        return 0;
+    } else if (annotation.type == "Polygon") {
+        return calculate_area((annotation.coordinates as Polygon)[0]);
+    } else {
+        console.warn("No area for", annotation);
+        return 0;
+    }
+}
+
+
 export const centroid = (annotation: Geometry, slideWidth: number, slideHeight: number) => {
     // See Viewer.tsx#scaleY regarding the reason for y-factor
     const yFactor = slideHeight / slideWidth;
@@ -93,3 +106,18 @@ function get_polygon_centroid(pts: number[][][]) {
     f = twicearea * 3;
     return { x: x / f, y: y / f };
 }
+
+// Based on: https://stackoverflow.com/questions/62323834/calculate-polygon-area-javascript
+function calculate_area(coords: number[][]) {
+    let area = 0;
+  
+    for (let i = 0; i < coords.length; i++) {
+      const [x1, y1] = coords[i];
+      const [x2, y2] = coords[(i + 1) % coords.length];
+  
+      area += x1 * y2 - x2 * y1
+    }
+  
+    console.log(Math.abs(area) / 2);
+    return Math.abs(area);
+  }
