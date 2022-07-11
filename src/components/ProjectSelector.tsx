@@ -43,7 +43,7 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
     }
 
     return (
-        <div id="ProjectSelector" className="overflow-y-auto scrollbar">
+        <div id="ProjectSelector">
             {subjects.map((subject) => (
                 <span key={subject.id}>
                     <p className="text-xl italic">{subject.name}</p>
