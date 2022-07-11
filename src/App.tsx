@@ -1,4 +1,5 @@
 import DownloadQuPathReminder from "components/DownloadQuPathReminder";
+import EmbeddedProject from "components/EmbeddedProject";
 import EmbeddedSingleSlide from "components/EmbeddedSingleSlide";
 import { createBrowserHistory } from "history";
 import Home from "pages/Home";
@@ -19,6 +20,10 @@ const App = () => {
                 <Switch>
                     <Route path="/embed/:host/:project/:slide">
                         <EmbeddedSingleSlide />
+                    </Route>
+
+                    <Route path="/embed/:host/:project">
+                        <EmbeddedProject />
                     </Route>
 
                     <Route path="/">
