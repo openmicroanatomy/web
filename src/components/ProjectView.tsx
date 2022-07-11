@@ -1,15 +1,18 @@
 import { fetchProjectData } from "lib/api";
+import { hostState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
-import "styles/Tabs.css";
+import { getRecoil } from "recoil-nexus";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
-import { ProjectData } from "types";
+import "styles/Tabs.css";
+import { Host, ProjectData } from "types";
 import Annotations from "./Annotations";
+import PopupLarge from "./PopupLarge";
+import ProjectInformation from "./ProjectInformation";
 import Slides from "./Slides";
 import Viewer from "./Viewer";
-import ProjectInformation from "./ProjectInformation";
 
 interface ProjectViewProps {
     projectId: string;
@@ -22,6 +25,28 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
     const [slide, setSlide] = useState("");
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [tabIndex, setTabIndex] = useState(0);
+    const host = getRecoil(hostState);
+
+    const EmbedFrameTemplate = (data: string) => { // TODO: remove trailing tabs
+        return `<iframe
+            class="embedded-qupath-slide"
+            src="https://edu.qupath.yli-hallila.fi/#!/` + data + `"
+            width="1200px"
+            height="600px"
+            loading="lazy"
+            allow="fullscreen"
+            style="border: 1px solid #ccc"></iframe>`
+    }
+
+    const HostToReadable = (host: Host | null) => {
+        if (host && host.host) {
+            return host.host
+                .replace("https://", "")
+                .replace("http://", "");
+        }
+
+        return "";
+    }
 
     const onSlideChange = (newSlide: string) => {
         if (projectData) {
@@ -69,15 +94,28 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                                     Return to projects
                                 </a>
 
-                                <div className="float-right flex flex-row-reverse">
+                                <div className="float-right flex flex-row-reverse gap-1">
                                     <a className="rounded--button" onClick={() => setSidebarVisible((o) => !o)}>
                                         &laquo;
                                     </a>
 
-                                    <a className="rounded--button mx-1 flex">
-                                        { /* TODO: Implement embed popup dialog */}
-                                        <img className="w-4 h-4" src="img/embed.png" alt="Embed" />
-                                    </a>                                    
+                                    <PopupLarge 
+                                        activator={
+                                            <a className="rounded--button">
+                                                &lt;&gt;
+                                            </a>   
+                                        }
+                                    >
+                                        <h2 className="font-bold italic">Embed current project</h2>
+                                        <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + projectId) }</pre>
+
+                                        <h2 className="font-bold italic">Embed current slide</h2>
+                                        { slide ? 
+                                            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + projectId + "/" + slide) }</pre>
+                                        :
+                                            <p>No slide currently opened</p>    
+                                        }
+                                    </PopupLarge>                                 
                                 </div>
                             </div>
 
