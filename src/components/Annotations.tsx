@@ -1,10 +1,11 @@
-import "reactjs-popup/dist/index.css";
-import { Annotation } from "types";
-import { useEffect, useState } from "react";
-import AnnotationPopup from "./AnnotationPopup";
-import { useRecoilValue } from "recoil";
-import { viewerState } from "lib/atoms";
+import { overlayState, viewportState } from "lib/atoms";
 import { area, centroid } from "lib/helpers";
+import { useEffect, useState } from "react";
+import "reactjs-popup/dist/index.css";
+import { useRecoilValue } from "recoil";
+import { Annotation } from "types";
+import AnnotationPopup from "./AnnotationPopup";
+import { sha1 } from "object-hash";
 
 interface AnnotationsProps {
     annotations?: Annotation[];
@@ -12,7 +13,8 @@ interface AnnotationsProps {
 
 function Annotations({ annotations }: AnnotationsProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
-    const viewport = useRecoilValue(viewerState);
+    const viewport = useRecoilValue(viewportState);
+    const overlay = useRecoilValue(overlayState);
 
     useEffect(() => {
         if (selectedAnnotation) {
@@ -29,8 +31,36 @@ function Annotations({ annotations }: AnnotationsProps) {
             const slideArea = (viewport?.getContainerSize().x ?? 1) * (viewport?.getContainerSize().y ?? 1);
 
             viewport?.zoomTo(viewport?.imageToViewportZoom(slideArea / annotationArea));
+
+            highlightCurrentAnnotation(selectedAnnotation);
         }
     }, [selectedAnnotation]);
+
+    const highlightCurrentAnnotation = (annotation: Annotation) => {
+        const SelectedAnnotationHash = sha1(annotation.geometry.coordinates[0]);
+
+        // First remove any highlight by removing the `selected--annotation` class from every annotation
+        window.d3
+            .select(overlay.node())
+            .selectAll(".annotation")
+            .classed("selected--annotation", false)
+
+        // Now add the `selected--annotation` class to our selected annotation
+        window.d3
+            .select(overlay.node())
+            .selectAll(".annotation")
+            .filter(function(d) { 
+                // Check that we have valid data
+                if (Array.isArray(d)) {
+                    const CurrentAnnotationHash = sha1(d);
+
+                    return SelectedAnnotationHash == CurrentAnnotationHash;
+                } 
+
+                return false 
+            })
+            .classed("selected--annotation", true);
+    };
 
     return (
         <div id="Annotations" className="py-2">

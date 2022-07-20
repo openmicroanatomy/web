@@ -101,9 +101,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
 
                                     <PopupLarge 
                                         activator={
-                                            <a className="rounded--button">
-                                                &lt;&gt;
-                                            </a>   
+                                            <a className="rounded--button">&lt;&gt;</a>   
                                         }
                                     >
                                         <h2 className="font-bold italic">Embed current project</h2>

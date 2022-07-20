@@ -1,11 +1,12 @@
 import { fetchSlide } from "lib/api";
-import { viewerState } from "lib/atoms";
+import { overlayState, viewportState } from "lib/atoms";
 import OpenSeadragon from "openseadragon";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSetRecoilState } from "recoil";
-import { Annotation, LineString, Polygon } from "types";
 import "styles/Viewer.css";
+import { Annotation, LineString, Polygon } from "types";
+import { sha1 } from "object-hash";
 
 interface ViewerProps {
     slideId?: string | null;
@@ -13,7 +14,8 @@ interface ViewerProps {
 }
 
 function Viewer({ slideId, annotations }: ViewerProps) {
-    const setViewport = useSetRecoilState(viewerState);
+    const setViewport = useSetRecoilState(viewportState);
+    const setOverlay = useSetRecoilState(overlayState);
     const [viewer, setViewer] = useState<OpenSeadragon.Viewer | null>(null);
     const [error, setError] = useState<Error | null>(null);
 
@@ -128,6 +130,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             // @ts-ignore
             const overlay = viewer.svgOverlay();
 
+            // Clear any annotations from a previous slide
             window.d3.select(overlay.node()).selectAll("*").remove();
 
             Array.from(annotations).forEach((annotation) => {
@@ -144,6 +147,9 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                 window.d3
                     .select(overlay.node())
                     .append("line")
+                    .attr("id", sha1(coordinates))
+                    .attr("class", "annotation")
+                    .data(coordinates)
                     .style("stroke", "#f00")
                     .attr("x1", scaleX(coordinates[0][0]))
                     .attr("y1", scaleY(coordinates[0][1]))
@@ -155,6 +161,9 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                 window.d3
                     .select(overlay.node())
                     .append("polygon")
+                    .attr("id", sha1(coordinates))
+                    .attr("class", "annotation")
+                    .data(coordinates)
                     .style("stroke", "#f00")
                     .style("fill", "transparent")
                     .attr("points", function () {
@@ -188,6 +197,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
             overlay.resize();
             setViewport(viewer.viewport);
+            setOverlay(overlay);
         };
 
         apiHelper().catch((e) => {

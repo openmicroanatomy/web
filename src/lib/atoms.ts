@@ -7,8 +7,15 @@ export const hostState = atom({
     default: null as Host | null,
 });
 
-export const viewerState = atom({
-    key: "viewerState",
+export const viewportState = atom({
+    key: "viewportState",
     default: null as OpenSeadragon.Viewport | null,
+    dangerouslyAllowMutability: true,
+});
+
+export const overlayState = atom({
+    key: "overlayState",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    default: null as any,
     dangerouslyAllowMutability: true,
 });
