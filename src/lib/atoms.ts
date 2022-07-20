@@ -1,10 +1,15 @@
 import OpenSeadragon from "openseadragon";
 import { atom } from "recoil";
-import { Host } from "types";
+import { Annotation, Host } from "types";
 
 export const hostState = atom({
     key: "hostState",
     default: null as Host | null,
+});
+
+export const selectedAnnotationState = atom({
+    key: "selectedAnnotationState",
+    default: null as Annotation | null,
 });
 
 export const viewportState = atom({

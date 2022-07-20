@@ -1,5 +1,5 @@
 import { fetchSlide } from "lib/api";
-import { overlayState, viewportState } from "lib/atoms";
+import { overlayState, selectedAnnotationState, viewportState } from "lib/atoms";
 import OpenSeadragon from "openseadragon";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -14,6 +14,7 @@ interface ViewerProps {
 }
 
 function Viewer({ slideId, annotations }: ViewerProps) {
+    const setSelectedAnnotation = useSetRecoilState(selectedAnnotationState);
     const setViewport = useSetRecoilState(viewportState);
     const setOverlay = useSetRecoilState(overlayState);
     const [viewer, setViewer] = useState<OpenSeadragon.Viewer | null>(null);
@@ -135,15 +136,17 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
             Array.from(annotations).forEach((annotation) => {
                 if (annotation.geometry.type === "LineString") {
-                    drawLine(annotation.geometry.coordinates as LineString);
+                    drawLine(annotation);
                 } else if (annotation.geometry.type === "Polygon") {
-                    drawPolygon(annotation.geometry.coordinates as Polygon);
+                    drawPolygon(annotation);
                 } else {
                     console.log(`${annotation.geometry.type} geometry type not implemented.`);
                 }
             });
 
-            function drawLine(coordinates: LineString) {
+            function drawLine(annotation: Annotation) {
+                const coordinates = annotation.geometry.coordinates as LineString;
+
                 window.d3
                     .select(overlay.node())
                     .append("line")
@@ -154,10 +157,13 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                     .attr("x1", scaleX(coordinates[0][0]))
                     .attr("y1", scaleY(coordinates[0][1]))
                     .attr("x2", scaleX(coordinates[1][0]))
-                    .attr("y2", scaleY(coordinates[1][1]));
+                    .attr("y2", scaleY(coordinates[1][1]))
+                    .on("click", () => { setSelectedAnnotation(annotation) });
             }
 
-            function drawPolygon(coordinates: Polygon) {
+            function drawPolygon(annotation: Annotation) {
+                const coordinates = annotation.geometry.coordinates as Polygon;
+                
                 window.d3
                     .select(overlay.node())
                     .append("polygon")
@@ -172,7 +178,8 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                                 return [scaleX(point[0]), scaleY(point[1])].join(",");
                             })
                             .join(" ");
-                    });
+                    })
+                    .on("click", () => { setSelectedAnnotation(annotation) });
             }
 
             function scaleX(x: number) {

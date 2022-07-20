@@ -53,7 +53,6 @@ export const area = (annotation: Geometry) => {
     }
 }
 
-
 export const centroid = (annotation: Geometry, slideWidth: number, slideHeight: number) => {
     // See Viewer.tsx#scaleY regarding the reason for y-factor
     const yFactor = slideHeight / slideWidth;
@@ -76,6 +75,18 @@ export const centroid = (annotation: Geometry, slideWidth: number, slideHeight: 
         return new OpenSeadragon.Point(0, 0);
     }
 };
+
+/**
+ * Clamps a number between two numbers.
+ * 
+ * @param num Number to clamp.
+ * @param min Smallest possible number.
+ * @param max Highest possible number.
+ * @returns Number between min and max.
+ */
+export const clamp = (num: number, min: number, max: number) => {
+    return Math.min(Math.max(num, min), max);
+}
 
 // Based on https://stackoverflow.com/questions/9692448/how-can-you-find-the-centroid-of-a-concave-irregular-polygon-in-javascript
 function get_polygon_centroid(pts: number[][][]) {
@@ -119,4 +130,4 @@ function calculate_area(coords: number[][]) {
     }
   
     return Math.abs(area);
-  }
+}

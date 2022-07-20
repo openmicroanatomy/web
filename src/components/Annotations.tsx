@@ -1,8 +1,8 @@
-import { overlayState, viewportState } from "lib/atoms";
-import { area, centroid } from "lib/helpers";
-import { useEffect, useState } from "react";
+import { overlayState, selectedAnnotationState, viewportState } from "lib/atoms";
+import { area, centroid, clamp } from "lib/helpers";
+import { useEffect } from "react";
 import "reactjs-popup/dist/index.css";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Annotation } from "types";
 import AnnotationPopup from "./AnnotationPopup";
 import { sha1 } from "object-hash";
@@ -12,31 +12,48 @@ interface AnnotationsProps {
 }
 
 function Annotations({ annotations }: AnnotationsProps) {
-    const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation>();
+    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const viewport = useRecoilValue(viewportState);
     const overlay = useRecoilValue(overlayState);
 
+    // TODO: Move this to a seperate helper class which runs always. 
+    //       If the user does not have the "Annotations" tab active, these effects
+    //       do not run until the user re-opens the annotations tab thus making
+    //       it impossible to focus on annotations by clicking them.
     useEffect(() => {
         if (selectedAnnotation) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const screenWidth = (viewport as any)._contentSize.x;
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const screenHeight = (viewport as any)._contentSize.y;
-
-            const centre = centroid(selectedAnnotation.geometry, screenWidth, screenHeight);
-            viewport?.panTo(centre);
-
-            const annotationArea = area(selectedAnnotation.geometry);
-            const slideArea = (viewport?.getContainerSize().x ?? 1) * (viewport?.getContainerSize().y ?? 1);
-
-            viewport?.zoomTo(viewport?.imageToViewportZoom(slideArea / annotationArea));
-
-            highlightCurrentAnnotation(selectedAnnotation);
+            PanToCurrentAnnotation(selectedAnnotation);
+            ZoomToCurrentAnnotation(selectedAnnotation);
+            HighlightCurrentAnnotation(selectedAnnotation);
         }
     }, [selectedAnnotation]);
 
-    const highlightCurrentAnnotation = (annotation: Annotation) => {
+    const PanToCurrentAnnotation = (annotation: Annotation) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const screenWidth = (viewport as any)._contentSize.x;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const screenHeight = (viewport as any)._contentSize.y;
+
+        const centre = centroid(annotation.geometry, screenWidth, screenHeight);
+        viewport?.panTo(centre);
+    }
+
+    // TODO: This doesn't work on very large or small annotations, but clamping the zoom partially fixes this.
+    const ZoomToCurrentAnnotation = (annotation: Annotation) => {
+        if (!viewport) return;
+
+        const annotationArea = area(annotation.geometry);
+        const slideArea = viewport.getContainerSize().x * viewport.getContainerSize().y;
+
+        const MaxZoom = viewport.getMaxZoom();
+        const MinZoom = viewport.getMinZoom();
+        const NewZoom = viewport.imageToViewportZoom(slideArea / annotationArea);
+
+        viewport.zoomTo(clamp(NewZoom, MinZoom, MaxZoom));
+    }
+
+    const HighlightCurrentAnnotation = (annotation: Annotation) => {
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates[0]);
 
         // First remove any highlight by removing the `selected--annotation` class from every annotation
@@ -71,7 +88,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                             className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer"
                             key={sha1(annotation)}
                         >
-                            <div className="col-span-4" onClick={() => setSelectedAnnotation(annotation)}>
+                            <div className={`col-span-4 ${selectedAnnotation == annotation && "font-bold"}`} onClick={() => setSelectedAnnotation(annotation)}>
                                 {annotation.properties.name || "Unnamed annotation"}
                             </div>
                         </div>
