@@ -1,9 +1,10 @@
 import { fetchSlide } from "lib/api";
 import { overlayState, selectedAnnotationState, viewportState } from "lib/atoms";
+import { area, centroid, clamp } from "lib/helpers";
 import OpenSeadragon from "openseadragon";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import "styles/Viewer.css";
 import { Annotation, LineString, Polygon } from "types";
 import { sha1 } from "object-hash";
@@ -14,11 +15,71 @@ interface ViewerProps {
 }
 
 function Viewer({ slideId, annotations }: ViewerProps) {
-    const setSelectedAnnotation = useSetRecoilState(selectedAnnotationState);
-    const setViewport = useSetRecoilState(viewportState);
-    const setOverlay = useSetRecoilState(overlayState);
+    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
+    const [viewport, setViewport] = useState<OpenSeadragon.Viewport>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [overlay, setOverlay] = useState<any>();
     const [viewer, setViewer] = useState<OpenSeadragon.Viewer | null>(null);
     const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+        if (selectedAnnotation) {
+            PanToAnnotation(selectedAnnotation);
+            ZoomToAnnotation(selectedAnnotation);
+            HighlightAnnotation(selectedAnnotation);
+        }
+    }, [selectedAnnotation]);
+
+    const PanToAnnotation = (annotation: Annotation) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const screenWidth = (viewport as any)._contentSize.x;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const screenHeight = (viewport as any)._contentSize.y;
+
+        const centre = centroid(annotation.geometry, screenWidth, screenHeight);
+        viewport?.panTo(centre);
+    }
+
+    // TODO: This doesn't work on very large or small annotations, but clamping the zoom partially fixes this.
+    const ZoomToAnnotation = (annotation: Annotation) => {
+        if (!viewport) return;
+
+        const annotationArea = area(annotation.geometry);
+        const slideArea = viewport.getContainerSize().x * viewport.getContainerSize().y;
+
+        const MaxZoom = viewport.getMaxZoom();
+        const MinZoom = viewport.getMinZoom();
+        const NewZoom = viewport.imageToViewportZoom(slideArea / annotationArea);
+
+        viewport.zoomTo(clamp(NewZoom, MinZoom, MaxZoom));
+    }
+
+    const HighlightAnnotation = (annotation: Annotation) => {
+        const SelectedAnnotationHash = sha1(annotation.geometry.coordinates[0]);
+
+        // First remove any highlight by removing the `selected--annotation` class from every annotation
+        window.d3
+            .select(overlay.node())
+            .selectAll(".annotation")
+            .classed("selected--annotation", false)
+
+        // Now add the `selected--annotation` class to our selected annotation
+        window.d3
+            .select(overlay.node())
+            .selectAll(".annotation")
+            .filter(function(d) { 
+                // Check that we have valid data
+                if (Array.isArray(d)) {
+                    const CurrentAnnotationHash = sha1(d);
+
+                    return SelectedAnnotationHash == CurrentAnnotationHash;
+                } 
+
+                return false 
+            })
+            .classed("selected--annotation", true);
+    };
 
     useEffect(() => {
         const viewer = window.OpenSeadragon({

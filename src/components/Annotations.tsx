@@ -1,8 +1,6 @@
-import { overlayState, selectedAnnotationState, viewportState } from "lib/atoms";
-import { area, centroid, clamp } from "lib/helpers";
-import { useEffect } from "react";
+import { selectedAnnotationState } from "lib/atoms";
 import "reactjs-popup/dist/index.css";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { Annotation } from "types";
 import AnnotationPopup from "./AnnotationPopup";
 import { sha1 } from "object-hash";
@@ -13,71 +11,6 @@ interface AnnotationsProps {
 
 function Annotations({ annotations }: AnnotationsProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
-    const viewport = useRecoilValue(viewportState);
-    const overlay = useRecoilValue(overlayState);
-
-    // TODO: Move this to a seperate helper class which runs always. 
-    //       If the user does not have the "Annotations" tab active, these effects
-    //       do not run until the user re-opens the annotations tab thus making
-    //       it impossible to focus on annotations by clicking them.
-    useEffect(() => {
-        if (selectedAnnotation) {
-            PanToCurrentAnnotation(selectedAnnotation);
-            ZoomToCurrentAnnotation(selectedAnnotation);
-            HighlightCurrentAnnotation(selectedAnnotation);
-        }
-    }, [selectedAnnotation]);
-
-    const PanToCurrentAnnotation = (annotation: Annotation) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const screenWidth = (viewport as any)._contentSize.x;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const screenHeight = (viewport as any)._contentSize.y;
-
-        const centre = centroid(annotation.geometry, screenWidth, screenHeight);
-        viewport?.panTo(centre);
-    }
-
-    // TODO: This doesn't work on very large or small annotations, but clamping the zoom partially fixes this.
-    const ZoomToCurrentAnnotation = (annotation: Annotation) => {
-        if (!viewport) return;
-
-        const annotationArea = area(annotation.geometry);
-        const slideArea = viewport.getContainerSize().x * viewport.getContainerSize().y;
-
-        const MaxZoom = viewport.getMaxZoom();
-        const MinZoom = viewport.getMinZoom();
-        const NewZoom = viewport.imageToViewportZoom(slideArea / annotationArea);
-
-        viewport.zoomTo(clamp(NewZoom, MinZoom, MaxZoom));
-    }
-
-    const HighlightCurrentAnnotation = (annotation: Annotation) => {
-        const SelectedAnnotationHash = sha1(annotation.geometry.coordinates[0]);
-
-        // First remove any highlight by removing the `selected--annotation` class from every annotation
-        window.d3
-            .select(overlay.node())
-            .selectAll(".annotation")
-            .classed("selected--annotation", false)
-
-        // Now add the `selected--annotation` class to our selected annotation
-        window.d3
-            .select(overlay.node())
-            .selectAll(".annotation")
-            .filter(function(d) { 
-                // Check that we have valid data
-                if (Array.isArray(d)) {
-                    const CurrentAnnotationHash = sha1(d);
-
-                    return SelectedAnnotationHash == CurrentAnnotationHash;
-                } 
-
-                return false 
-            })
-            .classed("selected--annotation", true);
-    };
 
     return (
         <div id="Annotations" className="py-2">
