@@ -1,10 +1,10 @@
 import { fetchSlide } from "lib/api";
-import { overlayState, selectedAnnotationState, viewportState } from "lib/atoms";
+import { selectedAnnotationState } from "lib/atoms";
 import { area, centroid, clamp } from "lib/helpers";
 import OpenSeadragon from "openseadragon";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import "styles/Viewer.css";
 import { Annotation, LineString, Polygon } from "types";
 import { sha1 } from "object-hash";
@@ -17,8 +17,7 @@ interface ViewerProps {
 function Viewer({ slideId, annotations }: ViewerProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const [viewport, setViewport] = useState<OpenSeadragon.Viewport>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [overlay, setOverlay] = useState<any>();
+    const [overlay, setOverlay] = useState<OpenSeadragon.SvgOverlay>();
     const [viewer, setViewer] = useState<OpenSeadragon.Viewer | null>(null);
     const [error, setError] = useState<Error | null>(null);
 
@@ -56,6 +55,8 @@ function Viewer({ slideId, annotations }: ViewerProps) {
     }
 
     const HighlightAnnotation = (annotation: Annotation) => {
+        if (!overlay) return;
+
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates[0]);
 
         // First remove any highlight by removing the `selected--annotation` class from every annotation
@@ -190,7 +191,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const overlay = viewer.svgOverlay();
+            const overlay = viewer.svgOverlay() as SvgOverlay;
 
             // Clear any annotations from a previous slide
             window.d3.select(overlay.node()).selectAll("*").remove();
