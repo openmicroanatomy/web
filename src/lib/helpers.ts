@@ -118,6 +118,5 @@ function calculate_area(coords: number[][]) {
       area += x1 * y2 - x2 * y1
     }
   
-    console.log(Math.abs(area) / 2);
     return Math.abs(area);
   }

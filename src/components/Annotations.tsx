@@ -69,6 +69,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                     {annotations.map((annotation) => (
                         <div
                             className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer"
+                            key={sha1(annotation)}
                         >
                             <div className="col-span-4" onClick={() => setSelectedAnnotation(annotation)}>
                                 {annotation.properties.name || "Unnamed annotation"}

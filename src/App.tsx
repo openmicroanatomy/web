@@ -3,7 +3,7 @@ import EmbeddedProject from "components/EmbeddedProject";
 import EmbeddedSingleSlide from "components/EmbeddedSingleSlide";
 import { createBrowserHistory } from "history";
 import Home from "pages/Home";
-import { HashRouter, Route, Router, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "tailwindcss/tailwind.css";

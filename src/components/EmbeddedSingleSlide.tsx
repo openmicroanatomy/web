@@ -6,7 +6,7 @@ import Viewer from "./Viewer";
 import { useSetRecoilState } from "recoil";
 import { fetchProjectData } from "lib/api";
 import { toast } from "react-toastify";
-import { Annotation, Image, ProjectData } from "types";
+import { ProjectData } from "types";
 
 interface EmbeddedSingleSlideSlugs {
     host: string;
