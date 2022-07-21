@@ -17,9 +17,10 @@ import Viewer from "./Viewer";
 interface ProjectViewProps {
     projectId: string;
     onProjectChange: (newProject: string) => void;
+    embedded?: boolean;
 }
 
-function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
+function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectViewProps) {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState("");
@@ -30,7 +31,7 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
     const EmbedFrameTemplate = (data: string) => { // TODO: remove trailing tabs
         return `<iframe
             class="embedded-qupath-slide"
-            src="https://edu.qupath.yli-hallila.fi/#!/` + data + `"
+            src="https://edu.qupath.yli-hallila.fi/#!/embed/` + data + `"
             width="1200px"
             height="600px"
             loading="lazy"
@@ -89,12 +90,14 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                 <>
                     {sidebarVisible ? (
                         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
-                            <div className="p-2">
-                                <a className="cursor-pointer" onClick={() => onProjectChange("")}>
-                                    Return to projects
-                                </a>
+                            <div className="flex justify-between p-2">
+                                { !embedded && 
+                                    <a className="cursor-pointer" onClick={() => onProjectChange("")}>
+                                        Return to projects
+                                    </a>
+                                }
 
-                                <div className="float-right flex flex-row-reverse gap-1">
+                                <div className="flex justify-end gap-1">
                                     <a className="rounded--button" onClick={() => setSidebarVisible((o) => !o)}>
                                         &laquo;
                                     </a>
@@ -105,11 +108,11 @@ function ProjectView({ projectId, onProjectChange }: ProjectViewProps) {
                                         }
                                     >
                                         <h2 className="font-bold italic">Embed current project</h2>
-                                        <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + projectId) }</pre>
+                                        <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId) }</pre>
 
                                         <h2 className="font-bold italic">Embed current slide</h2>
                                         { slide ? 
-                                            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + projectId + "/" + slide) }</pre>
+                                            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId + "/" + slide) }</pre>
                                         :
                                             <p>No slide currently opened</p>    
                                         }

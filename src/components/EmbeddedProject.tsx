@@ -16,7 +16,7 @@ function EmbeddedProject() {
     setHost({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" });
 
     return (
-        <ProjectView projectId={slugs.project} onProjectChange={() => null} />
+        <ProjectView projectId={slugs.project} onProjectChange={() => null} embedded />
     );
 }
 
