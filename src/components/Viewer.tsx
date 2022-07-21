@@ -15,7 +15,6 @@ interface ViewerProps {
 function Viewer({ slideId, annotations }: ViewerProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const [viewer, setViewer] = useState<EduViewer>();
-    const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         if (selectedAnnotation && viewer) {
@@ -54,17 +53,12 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                     viewer?.DrawAnnotations(annotations);
                 }
             }).catch((error) => {
-                setError(error);
                 toast.error(error.message);
                 console.error(error);
             });
     }, [slideId, viewer]);
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.
-
-    if (error) {
-        return <p>Unexpected error with Viewer</p>;
-    }
 
     return <div id="Viewer" className="h-full w-full bg-black" />;
 }
