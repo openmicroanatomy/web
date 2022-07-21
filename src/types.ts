@@ -124,8 +124,9 @@ export interface EduAnswer {
 
 export interface Geometry {
     type: string;
-    coordinates: Polygon | LineString;
+    coordinates: MultiPolygon | Polygon | LineString;
 }
 
 export type Polygon = number[][][];
+export type MultiPolygon = number[][][][];
 export type LineString = number[][];

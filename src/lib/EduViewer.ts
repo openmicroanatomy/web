@@ -1,5 +1,5 @@
 import { SvgOverlay } from "openseadragon";
-import { Annotation, LineString, Polygon } from "types";
+import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
 import { centroid } from "./helpers";
 import { SetterOrUpdater } from "recoil";
@@ -196,6 +196,8 @@ export default class EduViewer {
                 this.DrawLine(annotation);
             } else if (annotation.geometry.type === "Polygon") {
                 this.DrawPolygon(annotation);
+            } else if (annotation.geometry.type === "MultiPolygon") {
+                this.DrawMultiPolygon(annotation);
             } else {
                 console.log(`${annotation.geometry.type} geometry type not implemented.`);
             }
@@ -215,12 +217,16 @@ export default class EduViewer {
             .attr("y1", this.ScaleY(coordinates[0][1]))
             .attr("x2", this.ScaleX(coordinates[1][0]))
             .attr("y2", this.ScaleY(coordinates[1][1]))
-            .on("click", () => { this?.SetSelectedAnnotation(annotation) });
+            .on("dblclick", () => { this?.SetSelectedAnnotation(annotation) });
     }
 
     private DrawPolygon(annotation: Annotation) {
         const coordinates = annotation.geometry.coordinates as Polygon;
-                
+
+        const points = coordinates[0].map((point: number[]) => {
+            return [this.ScaleX(point[0]), this.ScaleY(point[1])].join(",");
+        }).join(" ");
+        
         window.d3
             .select(this.Overlay.node())
             .append("polygon")
@@ -228,14 +234,31 @@ export default class EduViewer {
             .attr("class", "annotation")
             .style("stroke", "#f00")
             .style("fill", "transparent")
-            .attr("points", () => {
-                return coordinates[0]
-                    .map((point: number[]) => {
-                        return [this.ScaleX(point[0]), this.ScaleY(point[1])].join(",");
-                    })
-                    .join(" ");
-            })
-            .on("click", () => { this?.SetSelectedAnnotation(annotation) });
+            .attr("points", points)
+            .on("dblclick", () => { this?.SetSelectedAnnotation(annotation) });
+    }
+
+    /**
+     * A MultiPolygon contains multiple Polygons inside its coordinates array.
+     */
+     private DrawMultiPolygon(annotation: Annotation) {
+        const coordinates = annotation.geometry.coordinates as MultiPolygon;
+        
+        const points = coordinates.map(polygon => {
+            return polygon[0].map((point: number[]) => {
+                return [this.ScaleX(point[0]), this.ScaleY(point[1])].join(",");
+            }).join(" ");
+        }).join(" ");
+
+        window.d3
+            .select(this.Overlay.node())
+            .append("polygon")
+            .attr("data-hash", sha1(coordinates))
+            .attr("class", "annotation")
+            .style("stroke", "#f00")
+            .style("fill", "transparent")
+            .attr("points", points)
+            .on("dblclick", () => { this?.SetSelectedAnnotation(annotation) });
     }
 
     private ScaleX(x: number) {
