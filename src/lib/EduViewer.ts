@@ -158,7 +158,7 @@ export default class EduViewer {
     }
 
     HighlightAnnotation(annotation: Annotation) {
-        const SelectedAnnotationHash = sha1(annotation.geometry.coordinates[0]);
+        const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // First remove any highlight by removing the `selected--annotation` class from every annotation
         window.d3
@@ -170,15 +170,10 @@ export default class EduViewer {
         window.d3
             .select(this.Overlay.node())
             .selectAll(".annotation")
-            .filter(function(d) { 
-                // Check that we have valid data
-                if (Array.isArray(d)) {
-                    const CurrentAnnotationHash = sha1(d);
+            .filter(function(data, index, nodes) {
+                const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
 
-                    return SelectedAnnotationHash == CurrentAnnotationHash;
-                } 
-
-                return false 
+                return SelectedAnnotationHash == CurrentAnnotationHash;
             })
             .classed("selected--annotation", true);
     }
@@ -201,9 +196,8 @@ export default class EduViewer {
         window.d3
             .select(this.Overlay.node())
             .append("line")
-            .attr("id", sha1(coordinates))
+            .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
-            .data(coordinates)
             .style("stroke", "#f00")
             .attr("x1", this.ScaleX(coordinates[0][0]))
             .attr("y1", this.ScaleY(coordinates[0][1]))
@@ -218,9 +212,8 @@ export default class EduViewer {
         window.d3
             .select(this.Overlay.node())
             .append("polygon")
-            .attr("id", sha1(coordinates))
+            .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
-            .data(coordinates)
             .style("stroke", "#f00")
             .style("fill", "transparent")
             .attr("points", () => {
