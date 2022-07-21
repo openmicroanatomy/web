@@ -43,8 +43,16 @@ export const validateEduAnswer = (input?: string | null | undefined): ValidatedE
 
 export const area = (annotation: Geometry) => {
     if (annotation.type == "LineString") {
-        // TODO: Implement
-        return 0;
+        // Estimate area as an circle with the diameter as the line length
+        const coordinates = annotation.coordinates as LineString;
+
+        const x1 = coordinates[0][0];
+        const y1 = coordinates[0][1];
+        const x2 = coordinates[1][0];
+        const y2 = coordinates[1][1];
+
+        const radius = Math.hypot(x2 - x1, y2 - y1) / 2;
+        return Math.PI * Math.pow(radius, 2);
     } else if (annotation.type == "Polygon") {
         return calculate_area((annotation.coordinates as Polygon)[0]);
     } else {
