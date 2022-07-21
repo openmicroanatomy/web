@@ -18,7 +18,6 @@ function Viewer({ slideId, annotations }: ViewerProps) {
 
     useEffect(() => {
         if (selectedAnnotation && viewer) {
-            viewer.PanToAnnotation(selectedAnnotation);
             viewer.ZoomToAnnotation(selectedAnnotation);
             viewer.HighlightAnnotation(selectedAnnotation);
         }
