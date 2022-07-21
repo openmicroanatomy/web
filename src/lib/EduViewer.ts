@@ -1,7 +1,7 @@
 import { SvgOverlay } from "openseadragon";
 import { Annotation, LineString, Polygon } from "types";
 import { sha1 } from "object-hash";
-import { area, centroid, clamp } from "./helpers";
+import { centroid } from "./helpers";
 import { SetterOrUpdater } from "recoil";
 
 export default class EduViewer {
@@ -147,14 +147,26 @@ export default class EduViewer {
     }
     
     ZoomToAnnotation(annotation: Annotation) {
-        // TODO: This doesn't work on very large or small annotations, but clamping the zoom partially fixes this.
-        const annotationArea = area(annotation.geometry);
-        const slideArea = this.Viewer.viewport.getContainerSize().x * this.Viewer.viewport.getContainerSize().y;
+        const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
-        const MaxZoom = this.Viewer.viewport.getMaxZoom();
-        const MinZoom = this.Viewer.viewport.getMinZoom();
-        const NewZoom = this.Viewer.viewport.imageToViewportZoom(slideArea / annotationArea);
-        this.Viewer.viewport.zoomTo(clamp(NewZoom, MinZoom, MaxZoom));
+        // Find the SVG element for the current Annotation and use its BoundingBox to zoom into. 
+        const node = window.d3
+            .select(this.Overlay.node())
+            .selectAll(".annotation")
+            .filter(function(data, index, nodes) {
+                const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
+
+                return SelectedAnnotationHash == CurrentAnnotationHash;
+            })
+            .node() as SVGGraphicsElement;
+
+        if (!node) return;
+
+        const boundingbox = node.getBBox();
+
+        // TODO: Make the bounds slightly larger, so that the whole annotation is visible when focusing
+        const bounds = new OpenSeadragon.Rect(boundingbox.x, boundingbox.y, boundingbox.width, boundingbox.height);
+        this.Viewer.viewport.fitBoundsWithConstraints(bounds);
     }
 
     HighlightAnnotation(annotation: Annotation) {
