@@ -16,13 +16,13 @@ function Annotations({ annotations }: AnnotationsProps) {
         <div id="Annotations" className="py-2">
             {annotations && annotations?.length > 0 ? (
                 <>
-                    {annotations.map((annotation) => (
+                    {annotations.map((annotation, index) => (
                         <div
                             className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer"
                             key={sha1(annotation)}
                         >
                             <div className={`col-span-4 ${selectedAnnotation == annotation && "font-bold"}`} onClick={() => setSelectedAnnotation(annotation)}>
-                                {annotation.properties.name || "Unnamed annotation"}
+                                {`${index + 1}. ${annotation.properties.name || "Unnamed annotation"}`}
                             </div>
                         </div>
                     ))}
