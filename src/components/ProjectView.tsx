@@ -90,39 +90,40 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                 <>
                     {sidebarVisible ? (
                         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
-                            <div className="flex justify-between p-2">
-                                { !embedded && 
-                                    <a className="cursor-pointer" onClick={() => onProjectChange("")}>
-                                        Return to projects
-                                    </a>
-                                }
+                            <div className="sticky top-0">
+                                <div className="flex justify-between sticky top-0 p-2 bg-white">
+                                    { !embedded && 
+                                        <a className="cursor-pointer" onClick={() => onProjectChange("")}>
+                                            Return to projects
+                                        </a>
+                                    }
 
-                                <div className="flex justify-end gap-1">
-                                    <a className="rounded--button" onClick={() => setSidebarVisible((o) => !o)}>
-                                        &laquo;
-                                    </a>
+                                    <div className="flex justify-end gap-1">
+                                        <a className="rounded--button" onClick={() => setSidebarVisible((o) => !o)}>
+                                            &laquo;
+                                        </a>
 
-                                    <PopupLarge 
-                                        activator={
-                                            <a className="rounded--button">&lt;&gt;</a>   
-                                        }
-                                    >
-                                        <h2 className="font-bold italic">Embed current project</h2>
-                                        <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId) }</pre>
+                                        <PopupLarge 
+                                            activator={
+                                                <a className="rounded--button">&lt;&gt;</a>   
+                                            }
+                                        >
+                                            <h2 className="font-bold italic">Embed current project</h2>
+                                            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId) }</pre>
 
-                                        <h2 className="font-bold italic">Embed current slide</h2>
-                                        { slide ? 
-                                            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId + "/" + slide) }</pre>
-                                        :
-                                            <p>No slide currently opened</p>    
-                                        }
-                                    </PopupLarge>                                 
+                                            <h2 className="font-bold italic">Embed current slide</h2>
+                                            { slide ? 
+                                                <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId + "/" + slide) }</pre>
+                                            :
+                                                <p>No slide currently opened</p>    
+                                            }
+                                        </PopupLarge>                                 
+                                    </div>
                                 </div>
                             </div>
 
                             <Tabs>
-                                { /* Make tab header fixed to top */ }
-                                <TabList>
+                                <TabList className="flex sticky top-12 border-b bg-white">
                                     <Tab>Slides</Tab>
                                     <Tab>Annotations</Tab>
                                 </TabList>
@@ -130,6 +131,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                                 <TabPanel>
                                     <Slides images={projectData.images} onSlideChange={onSlideChange} />
                                 </TabPanel>
+
                                 <TabPanel>
                                     <Annotations annotations={annotations} />
                                 </TabPanel>
