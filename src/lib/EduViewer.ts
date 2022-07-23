@@ -164,8 +164,11 @@ export default class EduViewer {
 
         const boundingbox = node.getBBox();
 
-        // TODO: Make the bounds slightly larger, so that the whole annotation is visible when focusing
-        const bounds = new OpenSeadragon.Rect(boundingbox.x, boundingbox.y, boundingbox.width, boundingbox.height);
+        // Expand bounding box by 1% so that the entire annotation is always visible
+        const p1 = new OpenSeadragon.Point(boundingbox.x,                     boundingbox.y).times(0.99);
+        const p2 = new OpenSeadragon.Point(boundingbox.x + boundingbox.width, boundingbox.y + boundingbox.height).times(1.01);
+
+        const bounds = new OpenSeadragon.Rect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
         this.Viewer.viewport.fitBoundsWithConstraints(bounds);
     }
 
