@@ -1,17 +1,16 @@
 import { fetchProjectData } from "lib/api";
-import { hostState } from "lib/atoms";
+import { sidebarVisibleState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
-import { getRecoil } from "recoil-nexus";
+import { useRecoilValue } from "recoil";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
-import { Host, ProjectData } from "types";
-import Annotations from "./Annotations";
-import PopupLarge from "./PopupLarge";
+import { ProjectData } from "types";
+import ToggleSidebar from "./project/ToggleSidebar";
 import ProjectInformation from "./ProjectInformation";
-import Slides from "./Slides";
+import ProjectViewSidebar from "./ProjectViewSidebar";
 import Viewer from "./Viewer";
 
 interface ProjectViewProps {
@@ -23,31 +22,9 @@ interface ProjectViewProps {
 function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectViewProps) {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [annotations, setAnnotations] = useState([]);
-    const [slide, setSlide] = useState("");
-    const [sidebarVisible, setSidebarVisible] = useState(true);
+    const [slideId, setSlideId] = useState("");
     const [tabIndex, setTabIndex] = useState(0);
-    const host = getRecoil(hostState);
-
-    const EmbedFrameTemplate = (data: string) => { // TODO: remove trailing tabs
-        return `<iframe
-            class="embedded-qupath-slide"
-            src="https://edu.qupath.yli-hallila.fi/#!/embed/` + data + `"
-            width="1200px"
-            height="600px"
-            loading="lazy"
-            allow="fullscreen"
-            style="border: 1px solid #ccc"></iframe>`
-    }
-
-    const HostToReadable = (host: Host | null) => {
-        if (host && host.host) {
-            return host.host
-                .replace("https://", "")
-                .replace("http://", "");
-        }
-
-        return "";
-    }
+    const sidebarVisible = useRecoilValue(sidebarVisibleState);
 
     const onSlideChange = (newSlide: string) => {
         if (projectData) {
@@ -64,7 +41,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
             }
 
             setTabIndex(1);
-            setSlide(new URL(newSlide).pathname.substr(1));
+            setSlideId(new URL(newSlide).pathname.substr(1));
         }
     };
 
@@ -89,61 +66,17 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
             {projectData && (
                 <>
                     {sidebarVisible ? (
-                        <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
-                            <div className="sticky top-0">
-                                <div className="flex justify-between sticky top-0 p-2 bg-white">
-                                    { !embedded && 
-                                        <a className="cursor-pointer" onClick={() => onProjectChange("")}>
-                                            Return to projects
-                                        </a>
-                                    }
-
-                                    <div className="flex justify-end gap-1">
-                                        <a className="rounded--button" onClick={() => setSidebarVisible((o) => !o)}>
-                                            &laquo;
-                                        </a>
-
-                                        <PopupLarge 
-                                            activator={
-                                                <a className="rounded--button">&lt;&gt;</a>   
-                                            }
-                                        >
-                                            <h2 className="font-bold italic">Embed current project</h2>
-                                            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId) }</pre>
-
-                                            <h2 className="font-bold italic">Embed current slide</h2>
-                                            { slide ? 
-                                                <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId + "/" + slide) }</pre>
-                                            :
-                                                <p>No slide currently opened</p>    
-                                            }
-                                        </PopupLarge>                                 
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Tabs>
-                                <TabList className="flex sticky top-12 border-b bg-white">
-                                    <Tab>Slides</Tab>
-                                    <Tab>Annotations</Tab>
-                                </TabList>
-
-                                <TabPanel>
-                                    <Slides images={projectData.images} onSlideChange={onSlideChange} />
-                                </TabPanel>
-
-                                <TabPanel>
-                                    <Annotations annotations={annotations} />
-                                </TabPanel>
-                            </Tabs>
-                        </div>
+                        <ProjectViewSidebar 
+                            slideId={slideId}
+                            projectId={projectId}
+                            projectData={projectData}
+                            embedded={embedded}
+                            annotations={annotations}
+                            onProjectChange={onProjectChange}
+                            onSlideChange={onSlideChange}
+                        />
                     ) : (
-                        <a
-                            className="rounded--button"
-                            onClick={() => setSidebarVisible((o) => !o)}
-                        >
-                            &raquo;
-                        </a>
+                        <ToggleSidebar />
                     )}
 
                     <div className="flex-grow border rounded-sm shadow-lg bg-white">
@@ -160,7 +93,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
                             { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
                             <TabPanel style={{height: "calc(100% - 44px)"}}>
-                                <Viewer slideId={slide} annotations={annotations} />
+                                <Viewer slideId={slideId} annotations={annotations} />
                             </TabPanel>
                         </Tabs>
 

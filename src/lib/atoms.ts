@@ -24,3 +24,8 @@ export const overlayState = atom({
     default: null as any,
     dangerouslyAllowMutability: true,
 });
+
+export const sidebarVisibleState = atom({
+    key: "sidebarVisibleState",
+    default: true as boolean
+})
