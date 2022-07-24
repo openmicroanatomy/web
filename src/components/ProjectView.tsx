@@ -46,19 +46,19 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
     };
 
     useEffect(() => {
-        const apiHelper = async () => {
-            try {
-                const result = await fetchProjectData(projectId);
-                setProjectData(result);
-            } catch (e) {
+        fetchProjectData(projectId)
+            .then(data => {
+                setProjectData(data);
+            }).catch(e => {
                 setProjectData(null);
+
                 if (e instanceof Error) {
                     toast.error(e.message);
+                } else {
+                    toast.error("Error while loading project.");
+                    console.error(e);
                 }
-            }
-        };
-
-        apiHelper();
+            });
     }, [projectId]);
 
     return (
