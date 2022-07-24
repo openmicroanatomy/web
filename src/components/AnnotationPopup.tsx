@@ -1,6 +1,5 @@
 import { AnnotationAnswerTypes, validateEduAnswer } from "lib/helpers";
 import Popup from "reactjs-popup";
-import "reactjs-popup/dist/index.css";
 import { Annotation } from "types";
 import AnnotationQuiz from "./AnnotationQuiz";
 import { PopupActions } from "reactjs-popup/dist/types";
@@ -36,15 +35,13 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
             position="right center"
             modal
             arrowStyle={{ color: "#ddd" }}
-            contentStyle={{ width: 300, backgroundColor: "#ddd" }}
+            contentStyle={{ width: 400 }}
             disabled={answer.type == AnnotationAnswerTypes.UNDEFINED}
         >
             {(close: PopupActions["close"]) => (
-                <div className="flex justify-center flex-col">
+                <div className="flex justify-center flex-col rounded-sm shadow-md bg-gray-200">
                     <div className="text-right">
-                        <a onClick={close} className="button-close-dialog">
-                            &times;
-                        </a>
+                        <a onClick={close} className="cursor-pointer text-center font-bold text-lg absolute right-4">&times;</a>
                     </div>
 
                     <div className="p-4">
@@ -59,8 +56,9 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
                             <>
                                 {answer.type == AnnotationAnswerTypes.TEXT ? (
                                     <>
+                                        <p className="font-bold">{annotation.properties.name}</p>
                                         <p>{answer.data}</p>
-                                        <p>{description}</p>
+                                        <p className="italic">{description}</p>
                                     </>
                                 ) : (
                                     <p className="pt-4 blur-3xl">{description}</p>

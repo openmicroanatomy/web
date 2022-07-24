@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PopupActions } from "reactjs-popup/dist/types";
 import { EduAnswer } from "types";
 
@@ -11,71 +11,65 @@ interface QuizProps {
 
 function AnnotationQuiz({ eduAnswers, close, annotationName, description }: QuizProps) {
     const [currentChoice, setCurrentChoice] = useState<string | null>(null);
-    const [correctAnswer, setCorrectAnswer] = useState<boolean | null>(null);
+    const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState<boolean | null>(null);
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
 
     const choices = eduAnswers.map((answer) => answer.choice);
     const answers = eduAnswers.map((answer) => {
-        if (answer.isAnswer) {
+        if (answer.isAnswer) { // .isAnswer is actually .isCorrectAnsewr
             return answer.choice;
         }
     });
 
-    const onSubmitAnswer = () => {
-        if (!currentChoice) {
-            setCorrectAnswer(null);
-            return;
-        }
-
-        if (answers.includes(currentChoice)) {
-            setCorrectAnswer(true);
-        } else {
-            setCorrectAnswer(false);
-        }
-    };
+    useEffect(() => {
+        setIsCorrectAnswer(answers.includes(currentChoice ?? undefined));
+    }, [currentChoice]);
 
     return (
-        <div className="mt-8">
-            {correctAnswer === null ? (
+        <div>
+            {hasSubmittedAnswer ? (
+                <div>
+                    {isCorrectAnswer ? (
+                        <p className="font-bold">Correct answer!</p>
+                    ) : (
+                        <>
+                            <p className="font-bold">Wrong answer!</p>
+                            <p className="italic">Right answers: {answers}</p>
+                        </>
+                    )}
+
+                    <p>{description}</p>
+
+                    <button className="button mt-4" onClick={close}>
+                        Close
+                    </button>
+                </div>
+            ) : (
                 <>
-                    <p>{annotationName}</p>
+                    <p className="font-bold">{annotationName}</p>
                     <form>
                         <select
-                            className="form-select w-full mb-4"
+                            className="form-select w-full shadow-sm rounded-sm border border-blue-500"
                             name="Answer"
                             onChange={(e) => setCurrentChoice(e.target.value)}
                         >
-                            <option></option>
+                            <option>Select ...</option>
                             {choices.map((option, i) => (
                                 <option key={i}>{option}</option>
                             ))}
                         </select>
                     </form>
 
-                    <button className="button3d mr-4" onClick={() => onSubmitAnswer()} disabled={!currentChoice}>
-                        OK
-                    </button>
+                    <div className="flex gap-2 mt-4">
+                        <button className="button" onClick={() => setHasSubmittedAnswer(true)} disabled={!currentChoice}>
+                            OK
+                        </button>
 
-                    <button className="button3d mr-4" onClick={close}>
-                        Cancel
-                    </button>
+                        <button className="button button-red" onClick={close}>
+                            Cancel
+                        </button>
+                    </div>
                 </>
-            ) : (
-                <div className="mt-4">
-                    {correctAnswer ? (
-                        <p>Correct answer!</p>
-                    ) : (
-                        <>
-                            <p>Wrong answer!</p>
-                            <p>Right answers: {answers}</p>
-                        </>
-                    )}
-
-                    <p>{description}</p>
-
-                    <button className="button3d mr-4 mt-4" onClick={close}>
-                        Close
-                    </button>
-                </div>
             )}
         </div>
     );

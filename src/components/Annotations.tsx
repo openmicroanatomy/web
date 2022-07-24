@@ -1,5 +1,4 @@
 import { selectedAnnotationState } from "lib/atoms";
-import "reactjs-popup/dist/index.css";
 import { useRecoilState } from "recoil";
 import { Annotation } from "types";
 import AnnotationPopup from "./AnnotationPopup";
