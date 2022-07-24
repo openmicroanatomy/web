@@ -1,7 +1,7 @@
 import { ProjectData } from "types";
 
 interface ProjectInformationProps {
-    data: ProjectData
+    data: ProjectData | null
 }
 
 function ProjectInformation({ data }: ProjectInformationProps) {

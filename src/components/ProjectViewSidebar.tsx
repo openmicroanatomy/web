@@ -8,7 +8,7 @@ import Slides from "./Slides";
 interface ProjectViewSidebarProps {
     slideId: string;
     projectId: string;
-    projectData: ProjectData;
+    projectData: ProjectData | null;
     embedded: boolean;
     annotations: Annotation[];
     onProjectChange: (project: string) => void;
@@ -41,7 +41,7 @@ function ProjectViewSidebar({ slideId, projectId, projectData, embedded, annotat
                 </TabList>
 
                 <TabPanel>
-                    <Slides images={projectData.images} onSlideChange={onSlideChange} />
+                    <Slides images={projectData?.images} onSlideChange={onSlideChange} />
                 </TabPanel>
 
                 <TabPanel>

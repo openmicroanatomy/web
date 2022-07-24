@@ -63,43 +63,39 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
     return (
         <main className="flex flex-grow p-2 gap-2 overflow-hidden">
-            {projectData && (
-                <>
-                    {sidebarVisible ? (
-                        <ProjectViewSidebar 
-                            slideId={slideId}
-                            projectId={projectId}
-                            projectData={projectData}
-                            embedded={embedded}
-                            annotations={annotations}
-                            onProjectChange={onProjectChange}
-                            onSlideChange={onSlideChange}
-                        />
-                    ) : (
-                        <ToggleSidebar />
-                    )}
-
-                    <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                        <Tabs className="h-full" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
-                            <TabList>
-                                <Tab>Project Information</Tab>
-                                <Tab>Viewer</Tab>
-                            </TabList>
-
-                            { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
-                            <TabPanel style={{height: "calc(100% - 44px)"}}>
-                                <ProjectInformation data={projectData} />
-                            </TabPanel>
-
-                            { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
-                            <TabPanel style={{height: "calc(100% - 44px)"}}>
-                                <Viewer slideId={slideId} annotations={annotations} />
-                            </TabPanel>
-                        </Tabs>
-
-                    </div>
-                </>
+            {sidebarVisible ? (
+                <ProjectViewSidebar 
+                    slideId={slideId}
+                    projectId={projectId}
+                    projectData={projectData}
+                    embedded={embedded}
+                    annotations={annotations}
+                    onProjectChange={onProjectChange}
+                    onSlideChange={onSlideChange}
+                />
+            ) : (
+                <ToggleSidebar />
             )}
+
+            <div className="flex-grow border rounded-sm shadow-lg bg-white">
+                { /* Wihout forceRenderTabPanel the tabs will reset when focusing and unfocusing tabs */ }
+                <Tabs className="h-full" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)} forceRenderTabPanel>
+                    <TabList>
+                        <Tab>Project Information</Tab>
+                        <Tab>Viewer</Tab>
+                    </TabList>
+
+                    { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
+                    <TabPanel style={{height: "calc(100% - 44px)"}}>
+                        <ProjectInformation data={projectData} />
+                    </TabPanel>
+
+                    { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
+                    <TabPanel style={{height: "calc(100% - 44px)"}}>
+                        <Viewer slideId={slideId} annotations={annotations} />
+                    </TabPanel>
+                </Tabs>
+            </div>
         </main>
     );
 }
