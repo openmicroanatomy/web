@@ -10,7 +10,7 @@ import { getRecoil } from "recoil-nexus";
 async function request(path: string, init: RequestInit = {}) {
     const host = getRecoil(hostState);
     if (!host) {
-        throw new Error("Choose a host");
+        throw new Error("No host selected");
     }
 
     if (host.host.endsWith("/")) {
