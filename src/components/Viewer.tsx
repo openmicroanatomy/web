@@ -32,6 +32,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
             navigatorSizeRatio: 0.15,
             navigatorAutoFade: false,
             showNavigationControl: false,
+            zoomPerScroll: 1.4,
             gestureSettingsMouse: {
                 clickToZoom: false,
                 dblClickToZoom: true,
