@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import "styles/Viewer.css";
-import { Annotation } from "types";
+import { Annotation, Image } from "types";
 
 interface ViewerProps {
-    slideId?: string | null;
+    slide?: Image | null;
     annotations?: Annotation[];
 }
 
-function Viewer({ slideId, annotations }: ViewerProps) {
+function Viewer({ slide, annotations }: ViewerProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const [viewer, setViewer] = useState<EduViewer>();
 
@@ -41,7 +41,9 @@ function Viewer({ slideId, annotations }: ViewerProps) {
     }, [])
 
     useEffect(() => {
-        if (!slideId) return;
+        if (!slide) return;
+
+        const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
 
         fetchSlide(slideId)
             .then((data) => {
@@ -56,7 +58,7 @@ function Viewer({ slideId, annotations }: ViewerProps) {
                 toast.error(error.message);
                 console.error(error);
             });
-    }, [slideId, viewer]);
+    }, [slide, viewer]);
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.
 

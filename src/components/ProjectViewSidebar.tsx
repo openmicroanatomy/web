@@ -1,21 +1,21 @@
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { Annotation, ProjectData } from "types";
+import { Annotation, Image, ProjectData } from "types";
 import Annotations from "./Annotations";
 import EmbedProjectPopup from "./project/EmbedProjectPopup";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Slides from "./Slides";
 
 interface ProjectViewSidebarProps {
-    slideId: string;
+    slide: Image | null;
     projectId: string;
     projectData: ProjectData | null;
     embedded: boolean;
     annotations: Annotation[];
     onProjectChange: (project: string) => void;
-    onSlideChange: (slide: string) => void;
+    onSlideChange: (newSlide: Image) => void;
 }
 
-function ProjectViewSidebar({ slideId, projectId, projectData, embedded, annotations, onProjectChange, onSlideChange }: ProjectViewSidebarProps) {
+function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotations, onProjectChange, onSlideChange }: ProjectViewSidebarProps) {
     return (
         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
             <div className="sticky top-0">
@@ -29,7 +29,7 @@ function ProjectViewSidebar({ slideId, projectId, projectData, embedded, annotat
                     <div className="flex justify-end gap-1">
                         <ToggleSidebar />
 
-                        <EmbedProjectPopup slideId={slideId} projectId={projectId} />                                
+                        <EmbedProjectPopup slide={slide} projectId={projectId} />                                
                     </div>
                 </div>
             </div>

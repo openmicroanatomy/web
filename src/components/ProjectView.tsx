@@ -7,7 +7,7 @@ import { useRecoilValue } from "recoil";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
-import { ProjectData } from "types";
+import { ProjectData, Image } from "types";
 import ToggleSidebar from "./project/ToggleSidebar";
 import ProjectInformation from "./ProjectInformation";
 import ProjectViewSidebar from "./ProjectViewSidebar";
@@ -22,26 +22,22 @@ interface ProjectViewProps {
 function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectViewProps) {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [annotations, setAnnotations] = useState([]);
-    const [slideId, setSlideId] = useState("");
+    const [slide, setSlide] = useState<Image | null>(null);
     const [tabIndex, setTabIndex] = useState(0);
     const sidebarVisible = useRecoilValue(sidebarVisibleState);
 
-    const onSlideChange = (newSlide: string) => {
+    const onSlideChange = (newSlide: Image) => {
         if (projectData) {
-            for (const image of Array.from(projectData.images)) {
-                if (image.serverBuilder.uri === newSlide) {
-                    if (image.annotations == null) {
-                        setAnnotations([]);
-                    } else {
-                        setAnnotations(JSON.parse(image.annotations));
-                    }
+            for (const slide of Array.from(projectData.images)) {
+                if (slide.entryID === newSlide.entryID) {
+                    setAnnotations(JSON.parse(slide.annotations || "[]"));
 
                     break;
                 }
             }
 
             setTabIndex(1);
-            setSlideId(new URL(newSlide).pathname.substr(1));
+            setSlide(newSlide);
         }
     };
 
@@ -65,7 +61,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
         <main className="flex flex-grow p-2 gap-2 overflow-hidden">
             {sidebarVisible ? (
                 <ProjectViewSidebar 
-                    slideId={slideId}
+                    slide={slide}
                     projectId={projectId}
                     projectData={projectData}
                     embedded={embedded}
@@ -92,7 +88,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
                     { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
                     <TabPanel style={{height: "calc(100% - 44px)"}}>
-                        <Viewer slideId={slideId} annotations={annotations} />
+                        <Viewer slide={slide} annotations={annotations} />
                     </TabPanel>
                 </Tabs>
             </div>

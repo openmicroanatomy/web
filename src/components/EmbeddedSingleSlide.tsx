@@ -6,7 +6,7 @@ import Viewer from "./Viewer";
 import { useSetRecoilState } from "recoil";
 import { fetchProjectData } from "lib/api";
 import { toast } from "react-toastify";
-import { ProjectData } from "types";
+import { ProjectData, Image } from "types";
 
 interface EmbeddedSingleSlideSlugs {
     host: string;
@@ -16,6 +16,7 @@ interface EmbeddedSingleSlideSlugs {
 
 function EmbeddedSingleSlide() {
     const [annotations, setAnnotations] = useState([]);
+    const [slide, setSlide] = useState<Image | null>(null);
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [enabled, setEnabled] = useState(false);
 
@@ -34,13 +35,10 @@ function EmbeddedSingleSlide() {
                         return;
                     }
                     
-                    for (const image of data.images) {
-                        if (image.serverBuilder.uri.indexOf(slugs.slide) > -1) {
-                            if (image.annotations) {
-                                setAnnotations(JSON.parse(image.annotations));
-                            } else {
-                                setAnnotations([]);
-                            }
+                    for (const slide of data.images) {
+                        if (slide.serverBuilder.uri.indexOf(slugs.slide) > -1) {
+                            setSlide(slide);
+                            setAnnotations(JSON.parse(slide.annotations || "[]"));
 
                             break;
                         }
@@ -82,7 +80,7 @@ function EmbeddedSingleSlide() {
                     )}
 
                     <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                        <Viewer slideId={slugs.slide} annotations={annotations} />
+                        <Viewer slide={slide} annotations={annotations} />
                     </div>
                 </>
             ) : ( 

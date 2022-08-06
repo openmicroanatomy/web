@@ -2,7 +2,7 @@ import { Image } from "types";
 
 interface SlidesProps {
     images?: Image[];
-    onSlideChange: (newSlide: string) => void;
+    onSlideChange: (newSlide: Image) => void;
 }
 
 function Slides({ images, onSlideChange }: SlidesProps) {
@@ -14,7 +14,7 @@ function Slides({ images, onSlideChange }: SlidesProps) {
                         <div
                             key={slide.entryID}
                             className="grid grid-cols-6 p-2 border-b border-t mb-2 cursor-pointer"
-                            onClick={() => onSlideChange(slide.serverBuilder.uri)}
+                            onClick={() => onSlideChange(slide)}
                         >
                             <div className="col-span-6">
                                 <p className="font-bold">{`${index + 1}. ${slide.imageName}`}</p>
