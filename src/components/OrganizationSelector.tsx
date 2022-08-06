@@ -1,67 +1,53 @@
 import { fetchOrganizations } from "lib/api";
 import { hostState } from "lib/atoms";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { Organization } from "types";
+import Select from 'react-select'
 
 interface OrganizationSelectorProps {
-    onOrganizationChange: (newProject: string) => void;
+    organization: Organization | null;
+    onOrganizationChange: (organization: Organization | null) => void;
 }
 
-function OrganizationSelector({ onOrganizationChange }: OrganizationSelectorProps) {
+function OrganizationSelector({ organization, onOrganizationChange }: OrganizationSelectorProps) {
     const host = useRecoilValue(hostState);
-    const [organizations, setOrganizations] = useState([]);
+    const [organizations, setOrganizations] = useState<Organization[]>([]);
 
     useEffect(() => {
         if (!host) {
             return;
         }
 
-        const apiHelper = async () => {
-            try {
-                const result = await fetchOrganizations();
-                setOrganizations(result);
-            } catch (e) {
-                if (e instanceof Error) {
-                    toast.error(e.message);
-                }
-            }
-        };
-
-        apiHelper();
+        fetchOrganizations()
+            .then((organizations: Organization[]) => {
+                setOrganizations(organizations);
+            })
+            .catch(e => {
+                console.error(e);
+            });
     }, [host]);
 
     if (!host) {
-        return (
-            <div id="OrganizationSelector">
-                <p className="font-bold">No host selected</p>
-            </div>
-        );
+        return <p className="font-bold">No host selected</p>;
+    }
+
+    if (organizations.length == 0) {
+        return <p className="font-bold">No organizations available</p>;
     }
 
     return (
-        <div id="OrganizationSelector">
+        <div>
             <p className="text-xl italic">Organization</p>
 
-            {organizations.length > 0 && (
-                <select
-                    className="w-full"
-                    name="organization"
-                    onChange={(e) => onOrganizationChange(e.target.value)}
-                    defaultValue=""
-                >
-                    <option disabled value="">
-                        Select organization ...
-                    </option>
-
-                    {organizations.map((organization: Organization) => (
-                        <option value={organization.id} key={organization.id}>
-                            {organization.name}
-                        </option>
-                    ))}
-                </select>
-            )}
+            <Select 
+                placeholder="Select organization ..."
+                options={organizations}
+                getOptionLabel={org => org.name}
+                getOptionValue={org => org.id}
+                defaultValue={organization}
+                onChange={e => onOrganizationChange(e)}
+                menuPortalTarget={document.querySelector("body")}  />
         </div>
     );
 }

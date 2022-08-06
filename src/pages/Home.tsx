@@ -10,12 +10,13 @@ import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
+import { Organization } from "types";
 import validator from "validator";
 
 const Home = () => {
     const setHost = useSetRecoilState(hostState);
     const currentHost = useRecoilValue(hostState);
-    const [organization, setOrganization] = useState("");
+    const [organization, setOrganization] = useState<Organization | null>(null)
     const [projectId, setProjectId] = useState("");
     const query = useLocation().search;
 
@@ -42,7 +43,7 @@ const Home = () => {
         hostHelper();
     }, []);
 
-    const onOrganizationChange = (newOrganization: string) => {
+    const onOrganizationChange = (newOrganization: Organization | null) => {
         setOrganization(newOrganization);
     };
 
@@ -65,10 +66,11 @@ const Home = () => {
                     {currentHost && (
                         <>
                             <hr className="space-y-2" />
+                            
+                            <OrganizationSelector organization={organization} onOrganizationChange={onOrganizationChange} />
 
-                            <OrganizationSelector onOrganizationChange={onOrganizationChange} />
                             {organization && (
-                                <ProjectSelector organizationId={organization} onProjectChange={onProjectChange} />
+                                <ProjectSelector organizationId={organization?.id} onProjectChange={onProjectChange} />
                             )}
                         </>
                     )}
