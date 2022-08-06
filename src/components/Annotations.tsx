@@ -12,7 +12,7 @@ function Annotations({ annotations }: AnnotationsProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
     return (
-        <div id="Annotations" className="py-2">
+        <div id="Annotations" className="pt-2">
             {annotations && annotations?.length > 0 ? (
                 <>
                     {annotations.map((annotation, index) => (
@@ -26,7 +26,7 @@ function Annotations({ annotations }: AnnotationsProps) {
                         </div>
                     ))}
 
-                    <div className="border-b text-center bg-blue-500 text-white font-bold text-xl pt-2 pb-2">
+                    <div className="sticky bottom-0 border-b text-center bg-blue-500 text-white font-bold text-xl py-2">
                         {selectedAnnotation ? (
                             <AnnotationPopup annotation={selectedAnnotation} />
                         ) : (
