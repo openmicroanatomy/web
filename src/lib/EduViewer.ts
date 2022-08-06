@@ -88,11 +88,11 @@ export default class EduViewer {
                 const width  = this.TileWidth  - adjustX;
 
                 return this.ServerUri
-                           .replace("{tileX}", String(tileX))
-                           .replace("{tileY}", String(tileY))
-                           .replace("{level}", String(level))
-                           .replace("{tileWidth}", String(width))
-                           .replace("{tileHeight}", String(height));
+                           .replaceAll("{tileX}", String(tileX))
+                           .replaceAll("{tileY}", String(tileY))
+                           .replaceAll("{level}", String(level))
+                           .replaceAll("{tileWidth}", String(width))
+                           .replaceAll("{tileHeight}", String(height));
             },
         });
     }
@@ -244,7 +244,7 @@ export default class EduViewer {
     /**
      * A MultiPolygon contains multiple Polygons inside its coordinates array.
      */
-     private DrawMultiPolygon(annotation: Annotation) {
+    private DrawMultiPolygon(annotation: Annotation) {
         const coordinates = annotation.geometry.coordinates as MultiPolygon;
         
         const points = coordinates.map(polygon => {
