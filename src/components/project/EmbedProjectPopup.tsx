@@ -1,20 +1,20 @@
 import PopupLarge from "components/PopupLarge";
 import { hostState } from "lib/atoms";
 import { getRecoil } from "recoil-nexus";
-import { Host } from "types";
+import { Image } from "types";
 
 interface EmbedProjectPopupProps {
-    slideId: string;
+    slide: Image | null;
     projectId: string;
 }
 
-function EmbedProjectPopup({ slideId, projectId}: EmbedProjectPopupProps) {
+function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
     const host = getRecoil(hostState);
     
     const EmbedFrameTemplate = (data: string) => { // TODO: remove leading tabs
         return `<iframe
             class="embedded-qupath-slide"
-            src="https://edu.qupath.yli-hallila.fi/#!/embed/` + data + `"
+            src="https://edu.qupath.yli-hallila.fi/#!/embed/${data}
             width="1200px"
             height="600px"
             loading="lazy"
@@ -22,14 +22,28 @@ function EmbedProjectPopup({ slideId, projectId}: EmbedProjectPopupProps) {
             style="border: 1px solid #ccc"></iframe>`
     }
 
-    const HostToReadable = (host: Host | null) => {
-        if (host && host.host) {
-            return host.host
-                .replace("https://", "")
-                .replace("http://", "");
+    const ShareLink = (data: string) => {
+        return `https://edu.qupath.yli-hallila.fi/#!/embed/${data}`
+    }
+
+    const CreateUrl = (projectId: string, slide: Image | null = null) => {
+        if (!host) return "";
+
+        let url = host.host;
+
+        if (url.endsWith("/")) {
+            url = url.slice(0, -1);
         }
 
-        return "";
+        url = url.replace("https://", "")
+                 .replace("http://", "");
+
+        if (slide) {
+            const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
+            return `${url}/${projectId}/${slideId}`;
+        } else {
+            return `${url}/${projectId}`;
+        }
     }
 
     return (
@@ -38,15 +52,31 @@ function EmbedProjectPopup({ slideId, projectId}: EmbedProjectPopupProps) {
                 <a className="rounded--button">&lt;&gt;</a>   
             }
         >
-            <h2 className="font-bold italic">Embed current project</h2>
-            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId) }</pre>
+            <p className="font-bold">Share current project</p>
+            <a href={ShareLink(CreateUrl(projectId))} className="block border bg-slate-50 rounded p-4">
+                {ShareLink(CreateUrl(projectId))}
+            </a>
 
-            <h2 className="font-bold italic">Embed current slide</h2>
-
-            { slideId ? 
-                <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(HostToReadable(host) + "/" + projectId + "/" + slideId) }</pre>
+            <p className="font-bold">Share current slide</p>
+            { slide ? 
+                <a href={ShareLink(CreateUrl(projectId, slide))} className="block border bg-slate-50 rounded p-4">
+                    {ShareLink(CreateUrl(projectId, slide))}
+                </a>
             :
-                <p>No slide currently opened</p>    
+                <p className="italic">No slide currently opened</p>    
+            }
+
+            <p className="font-bold pt-4">Embed current project</p>
+            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(CreateUrl(projectId)) }</pre>
+
+            <p className="font-bold">Embed current slide</p>
+
+            { slide ? 
+                <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">
+                    { EmbedFrameTemplate(CreateUrl(projectId, slide)) }
+                </pre>
+            :
+                <p className="italic">No slide currently opened</p>    
             }
         </PopupLarge>  
     )
