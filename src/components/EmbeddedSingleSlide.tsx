@@ -1,12 +1,13 @@
-import { hostState } from "lib/atoms";
+import { hostState, sidebarVisibleState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Annotations from "./Annotations";
 import Viewer from "./Viewer";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { fetchProjectData } from "lib/api";
 import { toast } from "react-toastify";
 import { ProjectData, Image } from "types";
+import ToggleSidebar from "./project/ToggleSidebar";
+import Annotations from "./Annotations";
 
 interface EmbeddedSingleSlideSlugs {
     host: string;
@@ -17,7 +18,7 @@ interface EmbeddedSingleSlideSlugs {
 function EmbeddedSingleSlide() {
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState<Image | null>(null);
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    const sidebarVisible = useRecoilValue(sidebarVisibleState);
     const [enabled, setEnabled] = useState(false);
 
     const setHost = useSetRecoilState(hostState);
@@ -62,21 +63,14 @@ function EmbeddedSingleSlide() {
                 <>
                     {sidebarVisible ? (
                         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
-                            <div className="p-2">
-                                <a className="float-right cursor-pointer sidebar--toggle" onClick={() => setSidebarVisible((o) => !o)}>
-                                    &laquo;
-                                </a>
+                            <div className="flex justify-end p-2">
+                                <ToggleSidebar />
                             </div>
 
                             <Annotations annotations={annotations} />
                         </div>
                     ) : (
-                        <a
-                            className="cursor-pointer sidebar--toggle"
-                            onClick={() => setSidebarVisible((o) => !o)}
-                        >
-                            &raquo;
-                        </a>
+                        <ToggleSidebar />
                     )}
 
                     <div className="flex-grow border rounded-sm shadow-lg bg-white">
