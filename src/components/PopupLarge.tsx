@@ -28,7 +28,7 @@ const PopupLarge = ({ activator, children }: Props) => {
   return (
     <Popup trigger={activator} modal arrow={false} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
       <div
-        className="w-auto h-auto p-4"
+        className="w-auto h-auto p-4 rounded-sm shadow-md bg-gray-200"
       >
         {children}
       </div>
