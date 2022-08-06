@@ -8,14 +8,13 @@ import { getValue, setValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
 import { Organization } from "types";
 import validator from "validator";
 
 const Home = () => {
-    const setHost = useSetRecoilState(hostState);
-    const currentHost = useRecoilValue(hostState);
+    const [host, setHost] = useRecoilState(hostState);
     const [organization, setOrganization] = useState<Organization | null>(null)
     const [projectId, setProjectId] = useState("");
     const query = useLocation().search;
@@ -51,32 +50,26 @@ const Home = () => {
         setProjectId(newProjectId);
     };
 
+    if (projectId) {
+        return <ProjectView projectId={projectId} onProjectChange={onProjectChange} />
+    }
+
     return (
-        <>
-            {projectId ? (
-                <ProjectView projectId={projectId} onProjectChange={onProjectChange} />
-            ) : (
-                <div className="mx-auto my-12 w-96 space-y-12 p-4 border rounded shadow-md bg-white overflow-y-auto scrollbar flex flex-col">
-                    <header className="mx-auto w-72 mt-4">
-                        <h1 className="text-3xl">QuPath Edu Cloud</h1>
-                    </header>
+        <div className="mx-auto my-12 w-96 space-y-12 p-4 border rounded shadow-md bg-white overflow-y-auto scrollbar flex flex-col">
+            <header className="mx-auto w-72 mt-4">
+                <h1 className="text-3xl">QuPath Edu Cloud</h1>
+            </header>
 
-                    <HostSelector />
+            <HostSelector />
 
-                    {currentHost && (
-                        <>
-                            <hr className="space-y-2" />
-                            
-                            <OrganizationSelector organization={organization} onOrganizationChange={onOrganizationChange} />
+            {host && 
+                <OrganizationSelector organization={organization} onOrganizationChange={onOrganizationChange} />
+            }
 
-                            {organization && (
-                                <ProjectSelector organizationId={organization?.id} onProjectChange={onProjectChange} />
-                            )}
-                        </>
-                    )}
-                </div>
-            )}
-        </>
+            {(host && organization) && 
+                <ProjectSelector organizationId={organization?.id} onProjectChange={onProjectChange} />
+            }
+        </div>
     );
 };
 
