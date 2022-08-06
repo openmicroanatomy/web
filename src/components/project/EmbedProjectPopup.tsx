@@ -14,7 +14,7 @@ function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
     const EmbedFrameTemplate = (data: string) => { // TODO: remove leading tabs
         return `<iframe
             class="embedded-qupath-slide"
-            src="https://edu.qupath.yli-hallila.fi/#!/embed/${data}
+            src="https://edu.qupath.yli-hallila.fi/#!/embed/${data}"
             width="1200px"
             height="600px"
             loading="lazy"
