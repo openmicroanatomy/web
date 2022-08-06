@@ -24,6 +24,7 @@ function OrganizationSelector({ organization, onOrganizationChange }: Organizati
                 setOrganizations(organizations);
             })
             .catch(e => {
+                setOrganizations([]);
                 console.error(e);
             });
     }, [host]);
