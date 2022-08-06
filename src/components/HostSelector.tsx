@@ -37,7 +37,7 @@ function HostSelector() {
         if (url.length === 0) {
             setUrlError(false);
             setSelection(defaultHost);
-        } else if (validator.isURL(url)) {
+        } else if (validator.isURL(url, { require_tld: false })) {
             setUrlError(false);
             setSelection({ private: true, host: { id: "custom-host", name: "Custom host", host: url, img: "" } });
         } else {
