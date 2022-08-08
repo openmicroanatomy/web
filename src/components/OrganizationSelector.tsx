@@ -1,33 +1,16 @@
-import { fetchOrganizations } from "lib/api";
 import { hostState } from "lib/atoms";
-import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { Organization } from "types";
 import Select from 'react-select'
 
 interface OrganizationSelectorProps {
-    organization: Organization | null;
+    currentOrganization: Organization | null;
+    organizations: Organization[];
     onOrganizationChange: (organization: Organization | null) => void;
 }
 
-function OrganizationSelector({ organization, onOrganizationChange }: OrganizationSelectorProps) {
+function OrganizationSelector({ currentOrganization, organizations, onOrganizationChange }: OrganizationSelectorProps) {
     const host = useRecoilValue(hostState);
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
-
-    useEffect(() => {
-        if (!host) {
-            return;
-        }
-
-        fetchOrganizations()
-            .then((organizations: Organization[]) => {
-                setOrganizations(organizations);
-            })
-            .catch(e => {
-                setOrganizations([]);
-                console.error(e);
-            });
-    }, [host]);
 
     if (!host) {
         return <p className="font-bold">No host selected</p>;
@@ -46,7 +29,7 @@ function OrganizationSelector({ organization, onOrganizationChange }: Organizati
                 options={organizations}
                 getOptionLabel={org => org.name}
                 getOptionValue={org => org.id}
-                defaultValue={organization}
+                defaultValue={currentOrganization}
                 onChange={e => onOrganizationChange(e)}
                 menuPortalTarget={document.querySelector("body")}  />
         </div>

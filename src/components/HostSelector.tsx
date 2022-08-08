@@ -1,11 +1,11 @@
-import { fetchHosts, isValidHost } from "lib/api";
+import { isValidHost } from "lib/api";
 import { hostState } from "lib/atoms";
 import Constants from "lib/constants";
 import { setValue } from "lib/localStorage";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ThreeDots } from "react-loading-icons";
 import { toast } from "react-toastify";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import "styles/Buttons.css";
 import { Host } from "types";
 import validator from "validator";
@@ -15,13 +15,15 @@ interface Selection {
     host: Host | null;
 }
 
-function HostSelector() {
-    const [hosts, setHosts] = useState<Host[]>([]);
+interface HostSelectorProps {
+    hosts: Host[];
+}
+
+function HostSelector({ hosts }: HostSelectorProps) {
     const defaultHost = { private: false, host: null };
     const [selection, setSelection] = useState<Selection>(defaultHost);
     const [urlError, setUrlError] = useState(false);
-    const setHost = useSetRecoilState(hostState);
-    const currentHost = useRecoilValue(hostState);
+    const [host, setHost] = useRecoilState(hostState);
     const [waiting, setWaiting] = useState<boolean>(false);
 
     const onPublicHostChange = (hostId: string) => {
@@ -59,34 +61,18 @@ function HostSelector() {
         setWaiting(false);
     };
 
-    useEffect(() => {
-        const apiHelper = async () => {
-            try {
-                const result = await fetchHosts();
-                setHosts(result);
-            } catch (e) {
-                if (e instanceof Error) {
-                    toast.error(e.message);
-                }
-            }
-        };
-
-        apiHelper();
-    }, []);
-
     if (hosts.length === 0) {
-        return <p>Unexpected error with HostSelector</p>;
+        return <p className="font-bold">No hosts available</p>;
     }
 
     return (
         <div id="HostSelector">
-            {currentHost ? (
+            {host ? (
                 <div className="flex">
-                    <div
-                        className="button-like w-full m-1 text-center"
-                    >
-                        {currentHost.name}
+                    <div className="button-like w-full m-1 text-center">
+                        {host.name}
                     </div>
+
                     <button
                         className="button-red m-1"
                         onClick={() => {

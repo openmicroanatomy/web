@@ -10,17 +10,22 @@ import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
-import { Organization } from "types";
+import { Host, Organization } from "types";
 import validator from "validator";
+import { fetchHosts, fetchOrganizations } from "../lib/api";
 
 const Home = () => {
+    /* State shared to child components */
+    const [hosts, setHosts] = useState<Host[]>([]);
+    const [organizations, setOrganizations] = useState<Organization[]>([]);
+
     const [host, setHost] = useRecoilState(hostState);
     const [organization, setOrganization] = useState<Organization | null>(null)
     const [projectId, setProjectId] = useState("");
     const query = useLocation().search;
 
     useEffect(() => {
-        const hostHelper = async () => {
+        (async () => {
             // Read URL query first
             if (query) {
                 const queryUrl = new URLSearchParams(query).get("host");
@@ -37,10 +42,27 @@ const Home = () => {
             if (cachedHost) {
                 setHost(cachedHost);
             }
-        };
+        })();
 
-        hostHelper();
+        fetchHosts()
+            .then(hosts => setHosts(hosts))
+            .catch(e => {
+                console.error(e);
+            });
     }, []);
+
+    useEffect(() => {
+        if (!host) {
+            return;
+        }
+
+        fetchOrganizations()
+            .then(organizations => setOrganizations(organizations))
+            .catch(e => {
+                setOrganizations([]);
+                console.error(e);
+            });
+    }, [host]);
 
     const onOrganizationChange = (newOrganization: Organization | null) => {
         setOrganization(newOrganization);
@@ -60,14 +82,21 @@ const Home = () => {
                 <h1 className="text-3xl">QuPath Edu Cloud</h1>
             </header>
 
-            <HostSelector />
+            <HostSelector hosts={hosts} />
 
             {host && 
-                <OrganizationSelector organization={organization} onOrganizationChange={onOrganizationChange} />
+                <OrganizationSelector
+                    currentOrganization={organization}
+                    organizations={organizations}
+                    onOrganizationChange={onOrganizationChange}
+                />
             }
 
             {(host && organization) && 
-                <ProjectSelector organizationId={organization?.id} onProjectChange={onProjectChange} />
+                <ProjectSelector
+                    organizationId={organization?.id}
+                    onProjectChange={onProjectChange}
+                />
             }
         </div>
     );
