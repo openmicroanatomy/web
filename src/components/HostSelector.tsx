@@ -2,58 +2,53 @@ import { isValidHost } from "lib/api";
 import { hostState } from "lib/atoms";
 import Constants from "lib/constants";
 import { setValue } from "lib/localStorage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ThreeDots } from "react-loading-icons";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import "styles/Buttons.css";
 import { Host } from "types";
 import validator from "validator";
-
-interface Selection {
-    private: boolean;
-    host: Host | null;
-}
+import Select from "react-select";
 
 interface HostSelectorProps {
     hosts: Host[];
 }
 
 function HostSelector({ hosts }: HostSelectorProps) {
-    const defaultHost = { private: false, host: null };
-    const [selection, setSelection] = useState<Selection>(defaultHost);
-    const [urlError, setUrlError] = useState(false);
-    const [host, setHost] = useRecoilState(hostState);
+    const [selectedHost, setSelectedHost] = useState<Host | null>(null);
+    const [isValidUrl, setIsValidUrl] = useState(false);
+    const [isCustomHost, setIsCustomHost] = useState<boolean>(false);
     const [waiting, setWaiting] = useState<boolean>(false);
+    const [host, setHost] = useRecoilState(hostState);
+    const [input, setInput] = useState("");
 
-    const onPublicHostChange = (hostId: string) => {
-        const newHost = hosts.find((host: Host) => host.id === hostId);
-        if (newHost) {
-            setSelection({ private: false, host: newHost });
-        } else {
-            setSelection(defaultHost);
-        }
-    };
+    const onHostChange = async (url: string) => {
+        setInput(url);
 
-    const onPrivateHostChange = (url: string) => {
-        if (url.length === 0) {
-            setUrlError(false);
-            setSelection(defaultHost);
-        } else if (validator.isURL(url, { require_tld: false })) {
-            setUrlError(false);
-            setSelection({ private: true, host: { id: "custom-host", name: "Custom host", host: url, img: "" } });
+        const valid = url.length >= 0 && validator.isURL(url, { require_tld: false });
+        const host = hosts.find((host, index) => host.host == url && index != hosts.length - 1);
+
+        setIsValidUrl(!valid);
+
+        if (valid && host) {
+            setIsCustomHost(false);
+            setSelectedHost(host);
         } else {
-            setUrlError(true);
-            setSelection({ ...defaultHost, private: true });
+            setIsCustomHost(true);
+            getLastHost().host = url;
+            setSelectedHost(getLastHost());
         }
-    };
+    }
 
     const onSave = async () => {
         setWaiting(true);
-        const valid = selection.host ? await isValidHost(selection.host.host) : false;
+
+        const valid = selectedHost ? await isValidHost(selectedHost.host) : false;
+
         if (valid) {
-            setHost(selection.host);
-            setValue(Constants.LOCALSTORAGE_HOST_KEY, selection.host);
+            setHost(selectedHost);
+            setValue(Constants.LOCALSTORAGE_HOST_KEY, selectedHost);
         } else {
             toast.error("Please check your internet connection and that you're connecting to the a valid server.");
         }
@@ -61,71 +56,82 @@ function HostSelector({ hosts }: HostSelectorProps) {
         setWaiting(false);
     };
 
-    if (hosts.length === 0) {
-        return <p className="font-bold">No hosts available</p>;
+    useEffect(() => {
+        setIsCustomHost(hosts.length === 0);
+
+        // Add the fake "Custom host" organization to the list, which we can modify.
+        if (hosts.length >= 1 && getLastHost().id !== "custom-host") {
+            hosts.push(createCustomHost());
+        }
+    }, [hosts]);
+
+    const createCustomHost = () => {
+        return { id: "custom-host", name: "Custom host", "host": "", img: "" };
+    }
+
+    /**
+     * This *should* always point to the Custom host, as that should be the last element on the array.
+     */
+    const getLastHost = () => {
+        return hosts[hosts.length - 1];
+    }
+
+    if (host) {
+        return (
+            <div className="flex">
+                <div className="button-like w-full m-1 text-center">
+                    {host.name}
+                </div>
+
+                <button
+                    className="button-red m-1"
+                    onClick={() => {
+                        setHost(null);
+                        setValue(Constants.LOCALSTORAGE_HOST_KEY, null);
+                    }}
+                >
+                    &#10005;
+                </button>
+            </div>
+        );
     }
 
     return (
-        <div id="HostSelector">
-            {host ? (
-                <div className="flex">
-                    <div className="button-like w-full m-1 text-center">
-                        {host.name}
-                    </div>
-
-                    <button
-                        className="button-red m-1"
-                        onClick={() => {
-                            setHost(null);
-                            setValue(Constants.LOCALSTORAGE_HOST_KEY, null);
-                        }}
-                    >
-                        x
-                    </button>
-                </div>
-            ) : (
-                <>
-                    <p className="text-xl">Choose a host</p>
-                    <select
-                        className="w-full"
-                        disabled={selection.private}
-                        name="host"
-                        onChange={(e) => onPublicHostChange(e.target.value)}
-                        value={selection.private ? "" : selection.host ? selection.host.id : ""}
-                    >
-                        <option>Select a public host</option>
-
-                        {hosts.map((host: Host) => (
-                            <option value={host.id} key={host.id}>
-                                {host.name}
-                            </option>
-                        ))}
-                    </select>
-
-                    <p className="text-xl text-center font-bold my-4">OR</p>
-
-                    <form>
-                        <input
-                            type="text"
-                            placeholder="Enter private a host"
-                            onChange={(e) => onPrivateHostChange(e.target.value)}
-                            className="w-full"
-                        />
-                    </form>
-
-                    <p className={urlError ? "visible" : "invisible"}>Not a valid URL.</p>
-
-                    <button
-                        className="button w-full"
-                        type="button"
-                        disabled={waiting || !selection.host || (!selection.private && !selection.host && !urlError)}
-                        onClick={() => onSave()}
-                    >
-                        Save preferences
-                        {waiting && <ThreeDots className="m-auto" stroke="white" speed={2} />}
-                    </button>
-                </>
+        <div className="flex flex-col">
+            {hosts.length > 0 && (
+                <Select
+                    placeholder="Select host"
+                    value={selectedHost}
+                    options={hosts}
+                    getOptionLabel={host => host.name}
+                    getOptionValue={host => host.id}
+                    onChange={host => onHostChange(host?.host || "")}
+                    menuPortalTarget={document.querySelector("body")}
+                />
             )}
+
+            <form className={`${!isCustomHost && "hidden"}`}>
+                <input
+                    type="text"
+                    value={input}
+                    onChange={event => onHostChange(event.currentTarget.value)}
+                    className="w-full border border-gray-300 rounded-sm text-black p-1 my-2"
+                />
+            </form>
+
+            <p className={`${!isCustomHost && "hidden" } font-bold text-center ${isValidUrl ? "text-red-500" : "text-green-500"}`}>
+                {isValidUrl ? "Not a valid URL" : "Valid URL"}
+            </p>
+
+            <button
+                className="button w-full mt-4"
+                type="button"
+                disabled={waiting || !selectedHost || isValidUrl}
+                onClick={() => onSave()}
+            >
+                Save preferences
+                {waiting && <ThreeDots className="m-auto" stroke="white" speed={2} />}
+            </button>
         </div>
     );
 }
