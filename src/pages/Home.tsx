@@ -10,14 +10,15 @@ import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useRecoilState } from "recoil";
 import "tailwindcss/tailwind.css";
-import { Host, Organization } from "types";
+import { Host, Organization, Subject, Workspace } from "types";
 import validator from "validator";
-import { fetchHosts, fetchOrganizations } from "../lib/api";
+import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "../lib/api";
 
 const Home = () => {
     /* State shared to child components */
     const [hosts, setHosts] = useState<Host[]>([]);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
 
     const [host, setHost] = useRecoilState(hostState);
     const [organization, setOrganization] = useState<Organization | null>(null)
@@ -52,6 +53,11 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
+        setOrganization(null);
+        setProjectId("");
+        setSubjects([]);
+        setOrganizations([]);
+
         if (!host) {
             return;
         }
@@ -63,6 +69,25 @@ const Home = () => {
                 console.error(e);
             });
     }, [host]);
+
+    useEffect(() => {
+        if (!organization) {
+            setSubjects([]);
+            return;
+        }
+
+        fetchWorkspaces()
+            .then((workspaces: Workspace[]) => {
+                const workspace = workspaces.find(workspace => workspace.owner.id === organization.id);
+
+                if (workspace) {
+                    setSubjects(workspace.subjects.sort((a, b) => a.name.localeCompare(b.name)));
+                }
+            })
+            .catch(() => {
+                setSubjects([]);
+            });
+    }, [organization]);
 
     const onOrganizationChange = (newOrganization: Organization | null) => {
         setOrganization(newOrganization);
@@ -94,7 +119,7 @@ const Home = () => {
 
             {(host && organization) && 
                 <ProjectSelector
-                    organizationId={organization?.id}
+                    subjects={subjects}
                     onProjectChange={onProjectChange}
                 />
             }

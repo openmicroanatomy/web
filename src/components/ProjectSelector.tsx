@@ -1,39 +1,12 @@
-import { fetchWorkspaces } from "lib/api";
-import { useEffect, useState } from "react";
-import { Subject, Workspace } from "types";
+import { Subject } from "types";
 import "styles/Scrollbar.css";
 
 interface ProjectSelectorProps {
-    organizationId: string;
+    subjects: Subject[];
     onProjectChange: (newProject: string) => void;
 }
 
-function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorProps) {
-    const [subjects, setSubjects] = useState<Subject[]>([]);
-
-    useEffect(() => {
-        if (!organizationId) {
-            return;
-        }
-
-        setSubjects([]);
-
-        const apiHelper = async () => {
-            try {
-                const result = (await fetchWorkspaces()) as Workspace[];
-                const workspace = result.find((workspace) => workspace.owner.id === organizationId);
-
-                if (workspace) {
-                    setSubjects(workspace.subjects.sort((a, b) => a.name.localeCompare(b.name)));
-                }
-            } catch {
-                setSubjects([]);
-            }
-        };
-
-        apiHelper();
-    }, [organizationId]);
-
+function ProjectSelector({ subjects, onProjectChange }: ProjectSelectorProps) {
     if (subjects.length === 0) {
         return (
             <div id="ProjectSelector">
@@ -58,7 +31,8 @@ function ProjectSelector({ organizationId, onProjectChange }: ProjectSelectorPro
                                         {project.name}
                                     </a>
                                 </li>
-                            ))}
+                            ))
+                        }
                     </ul>
                 </span>
             ))}
