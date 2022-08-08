@@ -1,3 +1,10 @@
+export interface ServerConfiguration {
+    version: string;
+    guestLoginEnabled: boolean;
+    simpleLoginEnabled: boolean;
+    microsoftLoginEnabled: boolean;
+}
+
 export interface Host {
     id: string;
     name: string;

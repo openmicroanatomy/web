@@ -55,7 +55,7 @@ function HostSelector({ hosts }: HostSelectorProps) {
             setHost(selection.host);
             setValue(Constants.LOCALSTORAGE_HOST_KEY, selection.host);
         } else {
-            toast.error("Please check your internet connection and that you're connecting to the correct server.");
+            toast.error("Please check your internet connection and that you're connecting to the a valid server.");
         }
 
         setWaiting(false);

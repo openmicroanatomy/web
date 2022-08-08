@@ -1,5 +1,6 @@
 import { hostState } from "lib/atoms";
 import { getRecoil } from "recoil-nexus";
+import { ServerConfiguration } from "../types";
 
 /**
  * Helper to make GET requests to the API.
@@ -50,10 +51,10 @@ export const isValidHost = async (url: string) => {
     }
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(new URL("/api/v0/server", url).href);
+        const configuration = await response.json() as ServerConfiguration;
 
-        // TODO: enable response.ok check when backend supports it.
-        return response; // && response.ok;
+        return configuration.guestLoginEnabled;
     } catch {
         return false;
     }
