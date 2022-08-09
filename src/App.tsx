@@ -1,7 +1,5 @@
-import DownloadQuPathReminder from "components/DownloadQuPathReminder";
 import EmbeddedProject from "components/EmbeddedProject";
 import EmbeddedSingleSlide from "components/EmbeddedSingleSlide";
-import { createBrowserHistory } from "history";
 import Home from "pages/Home";
 import { HashRouter, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -10,7 +8,7 @@ import "tailwindcss/tailwind.css";
 
 const App = () => {
     // TODO: Switch to other router when equipped with an server, currently server via nginx 
-    const history = createBrowserHistory();
+    // const history = createBrowserHistory();
 
     return (
         <HashRouter hashType="hashbang"> { /* Switch to other router when equipped with an server, currently server via nginx */ }
@@ -27,8 +25,6 @@ const App = () => {
                     </Route>
 
                     <Route path="/">
-                        <DownloadQuPathReminder />
-
                         <Home />
                     </Route>
                 </Switch>

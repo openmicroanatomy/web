@@ -1,9 +1,9 @@
 .react-tabs__tab-list {
-    @apply flex border-b bg-white;
+    @apply flex pb-4 lg:pb-0 text-sm lg:text-base border-t-2 lg:border-t-0 border-b bg-white justify-around lg:justify-start;
 }
 
 .react-tabs__tab {
-    @apply mb-0 border-b-4 p-2 hover:border-blue-400 cursor-pointer;
+    @apply mb-0 lg:border-b-4 p-2 hover:border-blue-400 cursor-pointer;
 }
 
 .react-tabs__tab--selected {
@@ -11,7 +11,20 @@
 }
 
 .react-tabs__tab-panel {
-    @apply hidden;
+    @apply hidden m-2 border rounded-sm shadow-lg;
+}
+
+.react-tabs__tab-panel-viewer {
+    display: block;
+    position: absolute;
+    top: 9999px;
+    right: 9999px;
+}
+
+.react-tabs__tab-panel-viewer.react-tabs__tab-panel--selected {
+    position: initial;
+    top: 0;
+    right: 0;
 }
 
 .react-tabs__tab-panel--selected {
