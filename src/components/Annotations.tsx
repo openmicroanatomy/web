@@ -13,7 +13,7 @@ function Annotations({ annotations }: AnnotationsProps) {
 
     return (
         <div id="Annotations" className="pt-2">
-            {annotations && annotations?.length > 0 ? (
+            {annotations && annotations.length > 0 ? (
                 <>
                     {annotations.map((annotation, index) => (
                         <div
@@ -26,11 +26,11 @@ function Annotations({ annotations }: AnnotationsProps) {
                         </div>
                     ))}
 
-                    <div className="sticky bottom-0 border-b text-center bg-blue-500 text-white font-bold text-xl py-2">
+                    <div className="sticky bottom-0 border-b text-center bg-blue-500 text-white font-bold text-xl">
                         {selectedAnnotation ? (
                             <AnnotationPopup annotation={selectedAnnotation} />
                         ) : (
-                            <p>No annotation selected</p>
+                            <p className="py-2">No annotation selected</p>
                         )}
                     </div>
                 </>

@@ -126,6 +126,10 @@ interface AnnotationPropsMetaData {
 
 export interface EduAnswer {
     choice: string;
+
+    /**
+     * Poorly named, is actually `isCorrectAnswer`.
+     */
     isAnswer: boolean;
 }
 

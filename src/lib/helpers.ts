@@ -7,31 +7,27 @@ export enum AnnotationAnswerTypes {
     UNDEFINED,
 }
 
-export type ValidatedEduAnswer =
-    | {
-          data: EduAnswer[];
-          type: AnnotationAnswerTypes.QUIZ;
-      }
-    | {
-          data: string;
-          type: AnnotationAnswerTypes.TEXT;
-      }
-    | {
-          data: null;
-          type: AnnotationAnswerTypes.UNDEFINED;
-      };
+export type Answer = {
+    data: EduAnswer[];
+    type: AnnotationAnswerTypes.QUIZ;
+} | {
+    data: string;
+    type: AnnotationAnswerTypes.TEXT;
+} | {
+    data: null;
+    type: AnnotationAnswerTypes.UNDEFINED;
+};
 
 /*
- * Validates eduAnswer between json, string and null.
- * Used by: AnnotationPropsMetaData.EDU_ANSWER in types.ts
+ * Parses the answer data into objects easily understood by TypeScript.
  */
-export const validateEduAnswer = (input?: string | null | undefined): ValidatedEduAnswer => {
+export const parseAnswerData = (input?: string | null | undefined): Answer => {
     if (input) {
         try {
             const parsed = JSON.parse(input);
 
             if (parsed && typeof parsed === "object") {
-                return { data: parsed, type: AnnotationAnswerTypes.QUIZ };
+                return { data: parsed as EduAnswer[], type: AnnotationAnswerTypes.QUIZ };
             }
         } catch {
             return { data: input, type: AnnotationAnswerTypes.TEXT };

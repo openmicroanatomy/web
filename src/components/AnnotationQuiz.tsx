@@ -3,74 +3,69 @@ import { PopupActions } from "reactjs-popup/dist/types";
 import { EduAnswer } from "types";
 
 interface QuizProps {
-    eduAnswers: EduAnswer[];
-    annotationName: string;
+    choices: EduAnswer[];
+    name: string;
     close: PopupActions["close"];
     description: string | null | undefined;
 }
 
-function AnnotationQuiz({ eduAnswers, close, annotationName, description }: QuizProps) {
-    const [currentChoice, setCurrentChoice] = useState<string | null>(null);
-    const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState<boolean | null>(null);
+function AnnotationQuiz({ choices, close, name, description }: QuizProps) {
+    const [currentChoice, setCurrentChoice] = useState<string>("");
+    const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState<boolean>(false);
     const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
 
-    const choices = eduAnswers.map((answer) => answer.choice);
-    const answers = eduAnswers.map((answer) => {
-        if (answer.isAnswer) { // .isAnswer is actually .isCorrectAnsewr
-            return answer.choice;
-        }
-    });
+    const correctAnswers = choices
+        .filter(answer => answer.isAnswer)
+        .map(answer => answer.choice);
 
     useEffect(() => {
-        setIsCorrectAnswer(answers.includes(currentChoice ?? undefined));
+        setIsCorrectAnswer(correctAnswers.includes(currentChoice));
     }, [currentChoice]);
+
+    if (hasSubmittedAnswer) {
+        return (
+            <div>
+                <p className="font-bold">{isCorrectAnswer ? "Correct answer!" : "Wrong answer!"}</p>
+
+                {(!isCorrectAnswer || correctAnswers.length > 1) && (
+                    <p><span className="italic">All the right answers:</span> {correctAnswers}</p>
+                )}
+
+                <p>{description}</p>
+
+                <button className="button mt-4" onClick={close}>
+                    Close
+                </button>
+            </div>
+        )
+    }
 
     return (
         <div>
-            {hasSubmittedAnswer ? (
-                <div>
-                    {isCorrectAnswer ? (
-                        <p className="font-bold">Correct answer!</p>
-                    ) : (
-                        <>
-                            <p className="font-bold">Wrong answer!</p>
-                            <p className="italic">Right answers: {answers}</p>
-                        </>
-                    )}
+            <p className="font-bold">{name}</p>
 
-                    <p>{description}</p>
+            <form>
+                <select
+                    className="form-select w-full shadow-sm rounded-sm border border-blue-500"
+                    name="Answer"
+                    onChange={(e) => setCurrentChoice(e.target.value)}
+                >
+                    <option>Select ...</option>
+                    {choices.map((option, i) => (
+                        <option key={i}>{option.choice}</option>
+                    ))}
+                </select>
+            </form>
 
-                    <button className="button mt-4" onClick={close}>
-                        Close
-                    </button>
-                </div>
-            ) : (
-                <>
-                    <p className="font-bold">{annotationName}</p>
-                    <form>
-                        <select
-                            className="form-select w-full shadow-sm rounded-sm border border-blue-500"
-                            name="Answer"
-                            onChange={(e) => setCurrentChoice(e.target.value)}
-                        >
-                            <option>Select ...</option>
-                            {choices.map((option, i) => (
-                                <option key={i}>{option}</option>
-                            ))}
-                        </select>
-                    </form>
+            <div className="flex gap-2 mt-4">
+                <button className="button" onClick={() => setHasSubmittedAnswer(true)} disabled={!currentChoice}>
+                    OK
+                </button>
 
-                    <div className="flex gap-2 mt-4">
-                        <button className="button" onClick={() => setHasSubmittedAnswer(true)} disabled={!currentChoice}>
-                            OK
-                        </button>
-
-                        <button className="button button-red" onClick={close}>
-                            Cancel
-                        </button>
-                    </div>
-                </>
-            )}
+                <button className="button button-red" onClick={close}>
+                    Cancel
+                </button>
+            </div>
         </div>
     );
 }
