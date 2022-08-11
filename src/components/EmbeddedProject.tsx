@@ -1,7 +1,8 @@
 import { hostState } from "lib/atoms";
 import { useParams } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import ProjectView from "./ProjectView";
+import { useEffect } from "react";
 
 interface EmbeddedProjectSlugs {
     host: string;
@@ -9,11 +10,16 @@ interface EmbeddedProjectSlugs {
 }
 
 function EmbeddedProject() {
-    const setHost = useSetRecoilState(hostState);
+    const [host, setHost] = useRecoilState(hostState);
     const slugs = useParams<EmbeddedProjectSlugs>();
     
-    // TODO: This is illegal
-    setHost({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" });
+    useEffect(() => {
+        setHost({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" });
+    }, []);
+
+    if (!host) {
+        return <p className="font-bold">Error while loading project: host not available.</p>
+    }
 
     return (
         <ProjectView projectId={slugs.project} onProjectChange={() => null} embedded />
