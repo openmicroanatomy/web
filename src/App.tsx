@@ -27,8 +27,6 @@ const App = () => {
                     </Route>
 
                     <Route path="/">
-                        <DownloadQuPathReminder />
-
                         <Home />
                     </Route>
                 </Switch>
