@@ -91,7 +91,7 @@ const Home = () => {
     return (
         <div className="mx-auto my-12 w-96 space-y-12 p-4 border rounded shadow-md bg-white overflow-y-auto scrollbar flex flex-col">
             <header className="mx-auto w-72 mt-4">
-                <h1 className="text-3xl">QuPath Edu Cloud</h1>
+                <h1 className="text-3xl">OpenMicroanatomy</h1>
             </header>
 
             <HostSelector hosts={hosts} />
