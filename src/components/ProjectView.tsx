@@ -1,9 +1,9 @@
 import { fetchProjectData } from "lib/api";
-import { sidebarVisibleState } from "lib/atoms";
+import { selectedAnnotationState, sidebarVisibleState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
@@ -15,6 +15,8 @@ import Viewer from "./Viewer";
 import { useMediaQuery } from "react-responsive";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
+import { AnnotationDetail } from "./AnnotationDetail";
+import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
 
 interface ProjectViewProps {
     projectId: string;
@@ -28,6 +30,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
     const [slide, setSlide] = useState<Image | null>(null);
     const [tabIndex, setTabIndex] = useState(0);
     const sidebarVisible = useRecoilValue(sidebarVisibleState);
+    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
     // Same as Tailwind 'lg'
     const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
@@ -42,10 +45,17 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                 }
             }
 
+            setSelectedAnnotation(null);
             setTabIndex(isMobile ? 3 : 1);
             setSlide(newSlide);
         }
     };
+
+    useEffect(() => {
+        if (isMobile && slide && selectedAnnotation != null) {
+            setTabIndex(3);
+        }
+    }, [selectedAnnotation])
 
     useEffect(() => {
         fetchProjectData(projectId)
@@ -65,52 +75,58 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
     if (isMobile) {
         return (
-            <main className="h-full overflow-hidden">
-                <div className="h-full bg-white">
-                    { /* Without forceRenderTabPanel the tabs will reset when focusing and unfocusing tabs */ }
-                    <Tabs className="h-full flex flex-col-reverse" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)} forceRenderTabPanel>
-                        <TabList>
-                            <Tab>Slides</Tab>
-                            <Tab>Annotations</Tab>
-                            <Tab>Information</Tab>
-                            <Tab>Viewer</Tab>
-                        </TabList>
+            <Tabs className="h-full flex flex-col-reverse overflow-hidden" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
+                <TabList className="react-tabs__tab-list">
+                    <Tab>
+                        <CollectionIcon className="w-5 h-5 m-auto" />
+                        <p>Slides</p>
+                    </Tab>
 
-                        { /* TODO: Fix CSS. 55 px is the height of the tab header + padding */ }
-                        <TabPanel style={ { height: "calc(100% - 55px)"} } className="react-tabs__tab-panel overflow-y-scroll">
-                            <>
-                                <a className="p-1 cursor-pointer" onClick={() => onProjectChange("")}>
-                                    Return to projects
-                                </a>
+                    <Tab>
+                        <QuestionMarkCircleIcon className="w-5 h-5 m-auto" />
+                        <p>Information</p>
+                    </Tab>
 
-                                <Slides images={projectData?.images} onSlideChange={onSlideChange} />
-                            </>
-                        </TabPanel>
+                    <Tab>
+                        <AnnotationIcon className="w-5 h-5 m-auto" />
+                        <p>Annotations</p>
+                    </Tab>
+                    <Tab>
+                        <PhotographIcon className="w-5 h-5 m-auto" />
+                        <p>Viewer</p>
+                    </Tab>
+                </TabList>
 
-                        { /* TODO: Fix CSS. 55 px is the height of the tab header + padding */ }
-                        <TabPanel style={ { height: "calc(100% - 55px)"} } className="react-tabs__tab-panel overflow-y-scroll">
-                            <Annotations annotations={annotations} />
-                        </TabPanel>
+                <TabPanel className="react-tabs__tab-panel overflow-y-scroll flex-grow">
+                    <a className="sticky top-0 bg-white p-3 border-b-2 block cursor-pointer font-bold" onClick={() => onProjectChange("")}>
+                        <ArrowLeftIcon className="w-4 h-4 inline-block h:translate-x-2" /> Return to lessons
+                    </a>
 
-                        { /* TODO: Fix CSS. 55 px is the height of the tab header + padding */ }
-                        <TabPanel style={ { height: "calc(100% - 55px)"} } className="react-tabs__tab-panel">
-                            <ProjectInformation data={projectData} />
-                        </TabPanel>
+                    <Slides slides={projectData?.images} onSlideChange={onSlideChange} />
+                </TabPanel>
 
-                        { /* TODO: Fix CSS. 55 px is the height of the tab header + padding, 16 px is the padding for left and right */ }
-                        <TabPanel style={ { width: "calc(100% - 16px)", height: "calc(100% - 55px)"} } className="react-tabs__tab-panel react-tabs__tab-panel-viewer">
-                            <Viewer slide={slide} annotations={annotations} />
-                        </TabPanel>
-                    </Tabs>
-                </div>
-            </main>
+                <TabPanel className="react-tabs__tab-panel flex-grow">
+                    <ProjectInformation data={projectData} />
+                </TabPanel>
+
+                <TabPanel className="react-tabs__tab-panel flex-grow overflow-y-scroll">
+                    <Annotations annotations={annotations} />
+                </TabPanel>
+
+                { /* Without forceRender Viewer position will reset when changing tabs*/ }
+                <TabPanel className="flex flex-col react-tabs__tab-panel react-tabs__tab-panel-viewer flex-grow" forceRender>
+                    <Viewer slide={slide} annotations={annotations} />
+
+                    <AnnotationDetail />
+                </TabPanel>
+            </Tabs>
         );
     }
 
     return (
-        <main className="flex flex-grow p-2 gap-2 overflow-hidden">
+        <main className="flex h-full p-2 gap-2 overflow-hidden">
             {sidebarVisible ? (
-                <ProjectViewSidebar 
+                <ProjectViewSidebar
                     slide={slide}
                     projectId={projectId}
                     projectData={projectData}
@@ -124,20 +140,18 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
             )}
 
             <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                { /* Wihout forceRenderTabPanel the tabs will reset when focusing and unfocusing tabs */ }
-                <Tabs className="h-full" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)} forceRenderTabPanel>
+                <Tabs className="h-full flex flex-col" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
                     <TabList>
                         <Tab>Information</Tab>
                         <Tab>Viewer</Tab>
                     </TabList>
 
-                    { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
-                    <TabPanel style={{height: "calc(100% - 44px)"}}>
+                    <TabPanel className="react-tabs__tab-panel flex-grow">
                         <ProjectInformation data={projectData} />
                     </TabPanel>
 
-                    { /* TODO: Fix CSS. 44 px is the height of the tab header */ }
-                    <TabPanel style={{height: "calc(100% - 44px)"}}>
+                    { /* Without forceRender Viewer position will reset when changing tabs*/ }
+                    <TabPanel className="react-tabs__tab-panel flex-grow" forceRender>
                         <Viewer slide={slide} annotations={annotations} />
                     </TabPanel>
                 </Tabs>

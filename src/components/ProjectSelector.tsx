@@ -8,15 +8,11 @@ interface ProjectSelectorProps {
 
 function ProjectSelector({ subjects, onProjectChange }: ProjectSelectorProps) {
     if (subjects.length === 0) {
-        return (
-            <div id="ProjectSelector">
-                <p className="font-bold">No subjects</p>
-            </div>
-        );
+        return <p className="font-bold text-center">No subjects</p>;
     }
 
     return (
-        <div id="ProjectSelector">
+        <div>
             {subjects.map((subject) => (
                 <span key={subject.id}>
                     <p className="text-xl italic">{subject.name}</p>

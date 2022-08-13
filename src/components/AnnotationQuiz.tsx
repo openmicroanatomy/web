@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { PopupActions } from "reactjs-popup/dist/types";
 import { EduAnswer } from "types";
 
 interface QuizProps {
     choices: EduAnswer[];
     name: string;
-    close: PopupActions["close"];
     description: string | null | undefined;
 }
 
-function AnnotationQuiz({ choices, close, name, description }: QuizProps) {
+function AnnotationQuiz({ choices, name, description }: QuizProps) {
     const [currentChoice, setCurrentChoice] = useState<string>("");
     const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState<boolean>(false);
     const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
@@ -32,10 +30,6 @@ function AnnotationQuiz({ choices, close, name, description }: QuizProps) {
                 )}
 
                 <p>{description}</p>
-
-                <button className="button mt-4" onClick={close}>
-                    Close
-                </button>
             </div>
         )
     }
@@ -48,7 +42,7 @@ function AnnotationQuiz({ choices, close, name, description }: QuizProps) {
                 <select
                     className="form-select w-full shadow-sm rounded-sm border border-blue-500"
                     name="Answer"
-                    onChange={(e) => setCurrentChoice(e.target.value)}
+                    onChange={e => setCurrentChoice(e.target.value)}
                 >
                     <option>Select ...</option>
                     {choices.map((option, i) => (
@@ -60,10 +54,6 @@ function AnnotationQuiz({ choices, close, name, description }: QuizProps) {
             <div className="flex gap-2 mt-4">
                 <button className="button" onClick={() => setHasSubmittedAnswer(true)} disabled={!currentChoice}>
                     OK
-                </button>
-
-                <button className="button button-red" onClick={close}>
-                    Cancel
                 </button>
             </div>
         </div>

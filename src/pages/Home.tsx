@@ -6,9 +6,7 @@ import { hostState } from "lib/atoms";
 import Constants from "lib/constants";
 import { getValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
 import { useRecoilState } from "recoil";
-import "tailwindcss/tailwind.css";
 import { Host, Organization, Subject, Workspace } from "types";
 import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "lib/api";
 
@@ -89,7 +87,7 @@ const Home = () => {
     }
 
     return (
-        <div className="mx-auto my-4 lg:my-12 w-96 space-y-12 p-4 border rounded shadow-md bg-white overflow-y-auto scrollbar flex flex-col">
+        <div className="mx-auto lg:my-12 w-96 space-y-12 p-4 lg:border lg:rounded lg:shadow-md lg:bg-white overflow-y-auto scrollbar flex flex-col">
             <header className="mx-auto w-72 mt-4">
                 <h1 className="text-3xl">OpenMicroanatomy</h1>
             </header>

@@ -1,8 +1,7 @@
 import { AnnotationAnswerTypes, parseAnswerData } from "lib/helpers";
-import Popup from "reactjs-popup";
 import { Annotation } from "types";
 import AnnotationQuiz from "./AnnotationQuiz";
-import { PopupActions } from "reactjs-popup/dist/types";
+import PopupLarge from "./PopupLarge";
 
 interface AnnotationProps {
     annotation: Annotation;
@@ -25,37 +24,26 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
     })();
 
     return (
-        <Popup
-            trigger={<div className={`cursor-pointer py-2 ${disabled ? "bg-gray-500" : "bg-blue-500" }`}>{text}</div>}
-            position="right center"
-            modal
-            arrowStyle={{ color: "#ddd" }}
-            contentStyle={{ width: 400 }}
+        <PopupLarge
+            activator={
+                <p className="cursor-pointer">{text}</p>
+            }
             disabled={disabled}
         >
-            {(close: PopupActions["close"]) => (
-                <div className="flex justify-center flex-col rounded-sm shadow-md bg-gray-200 p-4">
-                    <div className="text-right">
-                        <a onClick={close} className="cursor-pointer text-center font-bold text-lg absolute right-2 top-0">&times;</a>
-                    </div>
-
-                    {answer.type == AnnotationAnswerTypes.QUIZ ? (
-                        <AnnotationQuiz
-                            choices={answer.data}
-                            name={annotation.properties.name}
-                            description={description}
-                            close={close}
-                        />
-                    ) : (
-                        <>
-                            <p className="font-bold">{annotation.properties.name}</p>
-                            <p>{answer.data}</p>
-                            <p className="italic">{description}</p>
-                        </>
-                    )}
-                </div>
+            {answer.type == AnnotationAnswerTypes.QUIZ ? (
+                <AnnotationQuiz
+                    choices={answer.data}
+                    name={annotation.properties.name}
+                    description={description}
+                />
+            ) : (
+                <>
+                    <p className="font-bold">{annotation.properties.name}</p>
+                    <p>{answer.data}</p>
+                    <p className="italic">{description}</p>
+                </>
             )}
-        </Popup>
+        </PopupLarge>
     );
 }
 

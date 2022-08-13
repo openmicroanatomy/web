@@ -4,7 +4,6 @@ import Home from "pages/Home";
 import { HashRouter, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "tailwindcss/tailwind.css";
 
 const App = () => {
     // TODO: Switch to other router when equipped with an server, currently server via nginx 
@@ -12,7 +11,7 @@ const App = () => {
 
     return (
         <HashRouter hashType="hashbang"> { /* Switch to other router when equipped with an server, currently server via nginx */ }
-            <div className="App mx-auto font-mono h-screen flex flex-col bg-slate-50">
+            <div className="App mx-auto font-mono h-full flex flex-col bg-slate-50">
                 <ToastContainer />
 
                 <Switch>

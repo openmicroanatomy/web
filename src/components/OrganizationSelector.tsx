@@ -13,26 +13,23 @@ function OrganizationSelector({ currentOrganization, organizations, onOrganizati
     const host = useRecoilValue(hostState);
 
     if (!host) {
-        return <p className="font-bold">No host selected</p>;
+        return <p className="font-bold text-center">No host selected</p>;
     }
 
     if (organizations.length == 0) {
-        return <p className="font-bold">No organizations available</p>;
+        return <p className="font-bold text-center">No organizations available</p>;
     }
 
     return (
-        <div>
-            <p className="text-xl italic">Organization</p>
-
-            <Select 
-                placeholder="Select organization ..."
-                options={organizations}
-                getOptionLabel={org => org.name}
-                getOptionValue={org => org.id}
-                defaultValue={currentOrganization}
-                onChange={e => onOrganizationChange(e)}
-                menuPortalTarget={document.querySelector("body")}  />
-        </div>
+        <Select
+            placeholder="Select organization ..."
+            options={organizations}
+            isSearchable={false}
+            getOptionLabel={org => org.name}
+            getOptionValue={org => org.id}
+            defaultValue={currentOrganization}
+            onChange={e => onOrganizationChange(e)}
+            menuPortalTarget={document.querySelector("body")}  />
     );
 }
 

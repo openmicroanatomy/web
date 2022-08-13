@@ -21,8 +21,8 @@ function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotatio
             <div className="sticky top-0">
                 <div className="flex justify-between sticky top-0 p-2 bg-white">
                     { !embedded && 
-                        <a className="cursor-pointer" onClick={() => onProjectChange("")}>
-                            Return to projects
+                        <a className="cursor-pointer font-bold" onClick={() => onProjectChange("")}>
+                            Return to lessons
                         </a>
                     }
 
@@ -41,7 +41,7 @@ function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotatio
                 </TabList>
 
                 <TabPanel>
-                    <Slides images={projectData?.images} onSlideChange={onSlideChange} />
+                    <Slides slides={projectData?.images} onSlideChange={onSlideChange} />
                 </TabPanel>
 
                 <TabPanel>

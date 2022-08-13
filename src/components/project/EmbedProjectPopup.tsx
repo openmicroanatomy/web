@@ -14,7 +14,7 @@ function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
     const EmbedFrameTemplate = (data: string) => { // TODO: remove leading tabs
         return `<iframe
             class="embedded-qupath-slide"
-            src="https://edu.qupath.yli-hallila.fi/#!/embed/${data}"
+            src="https://qupath.oulu.fi/#!/embed/${data}"
             width="1200px"
             height="600px"
             loading="lazy"
@@ -23,7 +23,7 @@ function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
     }
 
     const ShareLink = (data: string) => {
-        return `https://edu.qupath.yli-hallila.fi/#!/embed/${data}`
+        return `https://qupath.oulu.fi/#!/embed/${data}`
     }
 
     const CreateUrl = (projectId: string, slide: Image | null = null) => {

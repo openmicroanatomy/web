@@ -7,24 +7,27 @@
 }
 
 .react-tabs__tab--selected {
-    @apply border-blue-500 font-bold;
+    @apply border-blue-400 font-bold text-blue-600 lg:text-black;
 }
 
 .react-tabs__tab-panel {
-    @apply hidden m-2 border rounded-sm shadow-lg;
+    @apply hidden bg-white m-2 lg:m-0 border lg:border-0 rounded-sm lg:rounded-none shadow-lg lg:shadow-none;
 }
 
 .react-tabs__tab-panel-viewer {
+    @apply border-0;
+}
+
+/* Viewer tab requires special CSS, because EduViewer#ZoomToAnnotation requires
+   the Viewer to be rendered  at proper height & width, setting the height
+   and width isn't 100% accurate but is accurate enough that no-one notices. */
+.react-tabs__tab-panel-viewer:not(.react-tabs__tab-panel--selected) {
     display: block;
     position: absolute;
     top: 9999px;
     right: 9999px;
-}
-
-.react-tabs__tab-panel-viewer.react-tabs__tab-panel--selected {
-    position: initial;
-    top: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .react-tabs__tab-panel--selected {

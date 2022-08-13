@@ -1,12 +1,12 @@
-:root {
-    --stroke-thickness: 0.001;
+.annotation {
+    fill: transparent;
+    stroke: rgb(255, 0, 0);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
 }
 
-line,
-polygon {
-    stroke-width: var(--stroke-thickness);
-}
-
-.selected--annotation {
-    stroke: rgb(255, 255, 0) !important;
+.annotation.selected--annotation {
+    stroke: rgb(255, 255, 0);
 }

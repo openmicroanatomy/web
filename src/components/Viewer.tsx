@@ -18,7 +18,7 @@ function Viewer({ slide, annotations }: ViewerProps) {
 
     useEffect(() => {
         if (selectedAnnotation && viewer) {
-            viewer.ZoomToAnnotation(selectedAnnotation);
+            viewer.ZoomAndPanToAnnotation(selectedAnnotation);
             viewer.HighlightAnnotation(selectedAnnotation);
         }
     }, [selectedAnnotation]);
@@ -62,7 +62,7 @@ function Viewer({ slide, annotations }: ViewerProps) {
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.
 
-    return <div id="Viewer" className="h-full w-full bg-black" />;
+    return <div id="Viewer" className="h-full bg-black" />;
 }
 
 export default Viewer;

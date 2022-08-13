@@ -103,6 +103,7 @@ function HostSelector({ hosts }: HostSelectorProps) {
                     placeholder="Select host"
                     value={selectedHost}
                     options={hosts}
+                    isSearchable={false}
                     getOptionLabel={host => host.name}
                     getOptionValue={host => host.id}
                     onChange={host => onHostChange(host?.host || "")}
