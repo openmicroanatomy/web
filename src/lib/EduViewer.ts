@@ -49,8 +49,6 @@ export default class EduViewer {
         this.InitializeViewer();
         this.InitializeScalebar();
         this.InitializeOverlay();
-
-        this.RegisterOnZoomListener();
     }
 
     InitializeViewer() {
@@ -117,17 +115,6 @@ export default class EduViewer {
         this.Overlay = this.Viewer.svgOverlay() as SvgOverlay;
     }
 
-    RegisterOnZoomListener() {
-        // 0.001 is the default size for stroke thickness as defined in Viewer.css
-        const ScalingFactor = 0.001 / this.Viewer.viewport.getMinZoom();
-
-        this.Viewer.addHandler('zoom', function (viewer) {
-            // Thickness = ScalingFactor * Inverse Zoom
-            const thickness = ScalingFactor * (1 / (viewer.zoom ?? 1));
-            document.documentElement.style.setProperty(`--stroke-thickness`, String(thickness));
-        });
-    }
-    
     ClearAnnotations() {
         window.d3
             .select(this.Overlay.node())
@@ -135,18 +122,7 @@ export default class EduViewer {
             .remove();
     }
 
-    PanToAnnotation(annotation: Annotation) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const screenWidth = (this.Viewer.viewport as any)._contentSize.x;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const screenHeight = (this.Viewer.viewport as any)._contentSize.y;
-
-        const centre = centroid(annotation.geometry, screenWidth, screenHeight);
-        this.Viewer.viewport.panTo(centre);
-    }
-    
-    ZoomToAnnotation(annotation: Annotation) {
+    ZoomAndPanToAnnotation(annotation: Annotation) {
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // Find the SVG element for the current Annotation and use its BoundingBox to zoom into. 
