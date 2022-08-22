@@ -43,8 +43,8 @@ function EmbeddedSingleSlide() {
                 )
 
                 if (slide) {
-                    setSlide(slide);
                     setAnnotations(JSON.parse(slide.annotations || "[]"));
+                    setSlide(slide);
                 }
             }).catch(e => {
                 console.error(e);
