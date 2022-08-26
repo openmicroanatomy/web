@@ -1,7 +1,6 @@
 import { SvgOverlay } from "openseadragon";
 import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
-import { centroid } from "./helpers";
 import { SetterOrUpdater } from "recoil";
 
 export default class EduViewer {
@@ -144,7 +143,7 @@ export default class EduViewer {
         const p1 = new OpenSeadragon.Point(boundingbox.x,                     boundingbox.y).times(0.99);
         const p2 = new OpenSeadragon.Point(boundingbox.x + boundingbox.width, boundingbox.y + boundingbox.height).times(1.01);
 
-        const bounds = new OpenSeadragon.Rect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+        const bounds = new OpenSeadragon.Rect(this.ScaleX(p1.x), this.ScaleY(p1.y), this.ScaleX(p2.x - p1.x), this.ScaleY(p2.y - p1.y));
         this.Viewer.viewport.fitBoundsWithConstraints(bounds);
     }
 
@@ -191,11 +190,10 @@ export default class EduViewer {
             .append("line")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
-            .style("stroke", "#f00")
-            .attr("x1", this.ScaleX(coordinates[0][0]))
-            .attr("y1", this.ScaleY(coordinates[0][1]))
-            .attr("x2", this.ScaleX(coordinates[1][0]))
-            .attr("y2", this.ScaleY(coordinates[1][1]))
+            .attr("x1", coordinates[0][0])
+            .attr("y1", coordinates[0][1])
+            .attr("x2", coordinates[1][0])
+            .attr("y2", coordinates[1][1])
             .on("dblclick", () => { this?.SetSelectedAnnotation(annotation) });
     }
 
@@ -203,7 +201,7 @@ export default class EduViewer {
         const coordinates = annotation.geometry.coordinates as Polygon;
 
         const points = coordinates[0].map((point: number[]) => {
-            return [this.ScaleX(point[0]), this.ScaleY(point[1])].join(",");
+            return [point[0], point[1]].join(",");
         }).join(" ");
         
         window.d3
@@ -211,8 +209,6 @@ export default class EduViewer {
             .append("polygon")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
-            .style("stroke", "#f00")
-            .style("fill", "transparent")
             .attr("points", points)
             .on("dblclick", () => { this?.SetSelectedAnnotation(annotation) });
     }
@@ -225,7 +221,7 @@ export default class EduViewer {
         
         const points = coordinates.map(polygon => {
             return polygon[0].map((point: number[]) => {
-                return [this.ScaleX(point[0]), this.ScaleY(point[1])].join(",");
+                return [point[0], point[1]].join(",");
             }).join(" ");
         }).join(" ");
 
@@ -234,8 +230,6 @@ export default class EduViewer {
             .append("polygon")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
-            .style("stroke", "#f00")
-            .style("fill", "transparent")
             .attr("points", points)
             .on("dblclick", () => { this?.SetSelectedAnnotation(annotation) });
     }
