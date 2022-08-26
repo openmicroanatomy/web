@@ -5,7 +5,7 @@ import Viewer from "./Viewer";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { fetchProjectData } from "lib/api";
 import { toast } from "react-toastify";
-import { ProjectData, Image } from "types";
+import { ProjectData, Image, Annotation } from "types";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Annotations from "./Annotations";
 
@@ -43,7 +43,12 @@ function EmbeddedSingleSlide() {
                 )
 
                 if (slide) {
-                    setAnnotations(JSON.parse(slide.annotations || "[]"));
+                    const annotations = JSON.parse(slide.annotations || "[]");
+                    annotations.sort((a: Annotation, b: Annotation) => {
+                        return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
+                    });
+
+                    setAnnotations(annotations);
                     setSlide(slide);
                 }
             }).catch(e => {
