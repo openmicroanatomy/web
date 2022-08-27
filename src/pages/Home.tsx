@@ -9,11 +9,13 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { Host, Organization, Subject, Workspace } from "types";
 import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "lib/api";
+import { toast } from "react-toastify";
 
 const Home = () => {
     /* State shared to child components */
     const [hosts, setHosts] = useState<Host[]>([]);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
 
     const [host, setHost] = useRecoilState(hostState);
@@ -39,8 +41,8 @@ const Home = () => {
 
     useEffect(() => {
         setOrganization(null);
-        setProjectId("");
         setSubjects([]);
+        setWorkspaces([]);
         setOrganizations([]);
 
         if (!host) {
@@ -51,6 +53,15 @@ const Home = () => {
             .then(organizations => setOrganizations(organizations))
             .catch(e => {
                 setOrganizations([]);
+                toast.error("Error while loading organizations")
+                console.error(e);
+            });
+
+        fetchWorkspaces()
+            .then(workspaces => setWorkspaces(workspaces))
+            .catch(e => {
+                setWorkspaces([]);
+                toast.error("Error while loading workspaces");
                 console.error(e);
             });
     }, [host]);
@@ -61,17 +72,14 @@ const Home = () => {
             return;
         }
 
-        fetchWorkspaces()
-            .then((workspaces: Workspace[]) => {
-                const workspace = workspaces.find(workspace => workspace.owner.id === organization.id);
+        const workspace = workspaces.find(workspace => workspace.owner.id === organization.id);
 
-                if (workspace) {
-                    setSubjects(workspace.subjects.sort((a, b) => a.name.localeCompare(b.name)));
-                }
-            })
-            .catch(() => {
-                setSubjects([]);
-            });
+        if (workspace) {
+            const sorted = workspace.subjects.sort((a, b) => a.name.localeCompare(b.name));
+            setSubjects(sorted);
+        } else {
+            setSubjects([]);
+        }
     }, [organization]);
 
     const onOrganizationChange = (newOrganization: Organization | null) => {
