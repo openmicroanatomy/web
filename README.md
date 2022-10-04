@@ -1,7 +1,9 @@
-# QuPath Edu Cloud [![Sponsored by RARE](https://raw.githubusercontent.com/rareagency/assets/main/sponsored-by-rare.svg)](https://rare.fi/)
+# OpenMicroanatomy Web [![Sponsored by RARE](https://raw.githubusercontent.com/rareagency/assets/main/sponsored-by-rare.svg)](https://rare.fi/)
+
+OpenMicroanatomy Web is a lightweight browser based viewer for projects built using [OpenMicroanatomy Server](https://github.com/openmicroanatomy/server). See the documentation) for a more in-depth feature analysis.
 
 ## Instructions
 
--   Copy .env.example as .env and change `REACT_APP_SERVERS_URL`.
--   Install latest supported nodejs and npm (specified in [package.json](package.json))
--   Run `npm i` and `npm start`
+-   Install latest supported `nodejs` and `npm` _(specified in [package.json](package.json))_
+-   Run `npm install` and `npm start`
+-
