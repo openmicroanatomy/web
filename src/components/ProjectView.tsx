@@ -114,7 +114,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                 </TabPanel>
 
                 { /* Without forceRender Viewer position will reset when changing tabs*/ }
-                <TabPanel className="flex flex-col react-tabs__tab-panel react-tabs__tab-panel-viewer flex-grow" forceRender>
+                <TabPanel className="react-tabs__tab-panel react-tabs__tab-panel-viewer flex flex-col flex-grow" forceRender>
                     <Viewer slide={slide} annotations={annotations} />
 
                     <AnnotationDetail />

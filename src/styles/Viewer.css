@@ -10,3 +10,16 @@
 .annotation.selected--annotation {
     stroke: rgb(255, 255, 0);
 }
+
+/*  Fix for Safari -- for some reason .openseadragon-container does not inherit the parent height. Solution to this is
+    to set #Viewer to position: relative and .openseadragon-container to position: absolute
+
+    See https://stackoverflow.com/questions/33636796/chrome-safari-not-filling-100-height-of-flex-parent */
+
+#Viewer {
+    position: relative;
+}
+
+#Viewer .openseadragon-container {
+    position: absolute !important;
+}

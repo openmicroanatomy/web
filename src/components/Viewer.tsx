@@ -62,7 +62,7 @@ function Viewer({ slide, annotations }: ViewerProps) {
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.
 
-    return <div id="Viewer" className="h-full bg-black" />;
+    return <div id="Viewer" className="h-full flex-grow bg-black" />;
 }
 
 export default Viewer;
