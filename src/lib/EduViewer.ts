@@ -6,7 +6,7 @@ import { SetterOrUpdater } from "recoil";
 export default class EduViewer {
 
     private Viewer: OpenSeadragon.Viewer;
-    private Overlay!: OpenSeadragon.SvgOverlay;
+    private Overlay: OpenSeadragon.SvgOverlay | undefined;
 
     private Downsamples!: number[];
     private LevelCount!: number;
@@ -115,6 +115,8 @@ export default class EduViewer {
     }
 
     ClearAnnotations() {
+        if (!this.Overlay) return;
+
         window.d3
             .select(this.Overlay.node())
             .selectAll("*")
@@ -122,6 +124,8 @@ export default class EduViewer {
     }
 
     ZoomAndPanToAnnotation(annotation: Annotation) {
+        if (!this.Overlay) return;
+
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // Find the SVG element for the current Annotation and use its BoundingBox to zoom into. 
@@ -148,6 +152,8 @@ export default class EduViewer {
     }
 
     HighlightAnnotation(annotation: Annotation) {
+        if (!this.Overlay) return;
+
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // First remove any highlight by removing the `selected--annotation` class from every annotation
@@ -169,6 +175,8 @@ export default class EduViewer {
     }
 
     DrawAnnotations(annotations: Annotation[]) {
+        if (!this.Overlay) return;
+
         Array.from(annotations).forEach((annotation) => {
             if (annotation.geometry.type === "LineString") {
                 this.DrawLine(annotation);
@@ -183,6 +191,8 @@ export default class EduViewer {
     }
 
     private DrawLine(annotation: Annotation) {
+        if (!this.Overlay) return;
+
         const coordinates = annotation.geometry.coordinates as LineString;
 
         window.d3
@@ -198,6 +208,8 @@ export default class EduViewer {
     }
 
     private DrawPolygon(annotation: Annotation) {
+        if (!this.Overlay) return;
+
         const coordinates = annotation.geometry.coordinates as Polygon;
 
         const points = coordinates[0].map((point: number[]) => {
@@ -217,6 +229,8 @@ export default class EduViewer {
      * A MultiPolygon contains multiple Polygons inside its coordinates array.
      */
     private DrawMultiPolygon(annotation: Annotation) {
+        if (!this.Overlay) return;
+
         const coordinates = annotation.geometry.coordinates as MultiPolygon;
         
         const points = coordinates.map(polygon => {
