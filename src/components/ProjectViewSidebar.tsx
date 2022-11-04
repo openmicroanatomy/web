@@ -1,9 +1,12 @@
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { Annotation, Image, ProjectData } from "types";
+import { Annotation, Image, ProjectData, SlideTourEntry } from "types";
 import Annotations from "./Annotations";
 import EmbedProjectPopup from "./project/EmbedProjectPopup";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Slides from "./Slides";
+import SlideTour from "./SlideTour";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { slideTourActive } from "../lib/atoms";
 
 interface ProjectViewSidebarProps {
     slide: Image | null;
@@ -13,9 +16,12 @@ interface ProjectViewSidebarProps {
     annotations: Annotation[];
     onProjectChange: (project: string) => void;
     onSlideChange: (newSlide: Image) => void;
+    slideTourEntries: SlideTourEntry[];
 }
 
-function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotations, onProjectChange, onSlideChange }: ProjectViewSidebarProps) {
+function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotations, onProjectChange, onSlideChange, slideTourEntries }: ProjectViewSidebarProps) {
+    const isSlideTourActive = useRecoilValue(slideTourActive);
+
     return (
         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
             <div className="sticky top-0">
@@ -45,7 +51,9 @@ function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotatio
                 </TabPanel>
 
                 <TabPanel>
-                    <Annotations annotations={annotations} />
+                    <SlideTour entries={slideTourEntries} />
+
+                    { !isSlideTourActive && <Annotations annotations={annotations} /> }
                 </TabPanel>
             </Tabs>
         </div>

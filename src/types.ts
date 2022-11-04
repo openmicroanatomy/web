@@ -92,6 +92,7 @@ export interface Image {
     imageName: string;
     thumbnail: string;
     imageData: string; // Serialized Java fuckery
+    slideTour: string;
     annotations: string;
 }
 
@@ -122,6 +123,15 @@ interface AnnotationPropsMetaData {
     ANNOTATION_DESCRIPTION?: string | null;
     EDU_ANSWER?: string | null;
     Answer?: string | null;
+}
+
+export interface SlideTourEntry {
+    text: string;
+    x: number;
+    y: number;
+    magnification: number;
+    rotation: number;
+    annotations: Annotation[];
 }
 
 export interface EduAnswer {

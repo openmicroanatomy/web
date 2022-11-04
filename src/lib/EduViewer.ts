@@ -1,4 +1,4 @@
-import { SvgOverlay } from "openseadragon";
+import { Point, SvgOverlay } from "openseadragon";
 import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
 import { SetterOrUpdater } from "recoil";
@@ -188,6 +188,14 @@ export default class EduViewer {
                 console.log(`${annotation.geometry.type} geometry type not implemented.`);
             }
         });
+    }
+
+    PanTo(x: number, y: number) {
+        this.Viewer.viewport.panTo(new Point(this.ScaleX(x), this.ScaleY(y)), false);
+    }
+
+    ZoomTo(zoom: number) {
+        this.Viewer.viewport.zoomTo(zoom)
     }
 
     private DrawLine(annotation: Annotation) {
