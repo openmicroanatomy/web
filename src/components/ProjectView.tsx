@@ -40,10 +40,17 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
     const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
 
     // See: https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
-    const b64DecodeUnicode = (str: string) => {
+    const base64DecodeUnicode = (str: string) => {
         return decodeURIComponent(atob(str).split('').map(function(c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
+    }
+
+    /**
+     * @Deprecated to be removed in version 1.1
+     */
+    const legacyBase64Decode = (data: number[]) => {
+        return atob(data.map(byte => String.fromCharCode(byte)).join(''))
     }
 
     const onSlideChange = (newSlide: Image) => {
@@ -53,11 +60,17 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                     setAnnotations(JSON.parse(slide.annotations || "[]"));
                     setSlideTourActive(false);
 
-                    if (slide.slideTour && slide.slideTour.length > 0) {
-                        const entries = JSON.parse(b64DecodeUnicode(slide.slideTour)) as SlideTourEntry[];
-                        setSlideTourEntries(entries);
-                    } else {
-                        setSlideTourEntries([]);
+                    try {
+                        if (slide.slideTour && slide.slideTour.length > 0) {
+                            const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
+
+                            const entries = JSON.parse(data) as SlideTourEntry[];
+                            setSlideTourEntries(entries);
+                        } else {
+                            setSlideTourEntries([]);
+                        }
+                    } catch (e) {
+                        console.error("Error while loading slide tour", e)
                     }
 
                     break;
