@@ -1,6 +1,8 @@
 import { SlideTourEntry } from "../types";
 import { useRecoilState } from "recoil";
 import { slideTourActive, slideTourIndex } from "../lib/atoms";
+import { useMediaQuery } from "react-responsive";
+import { clamp } from "../lib/helpers";
 
 export type Props = {
 	entries: SlideTourEntry[];
@@ -10,7 +12,8 @@ export default function SlideTour({ entries }: Props) {
 	const [index, setIndex] = useRecoilState(slideTourIndex);
 	const [isSlideTourActive, setSlideTourActive] = useRecoilState(slideTourActive);
 
-	const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max);
+	// Same as Tailwind 'lg'
+	const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
 
 	const nextEntry = () => {
 		setIndex(index => clamp(index + 1, 0, entries.length - 1));
@@ -55,6 +58,21 @@ export default function SlideTour({ entries }: Props) {
 				Start slide tour
 			</div>
 		);
+	}
+
+	if (isMobile) {
+		return (
+			<div className="flex flex-row bg-blue-500 rounded-b-sm text-white text-sm max-h-[30%]">
+				<div onClick={endTour} className="self-start p-2 bg-red-500 aspect-square">x</div>
+
+				<div className="p-2 whitespace-pre-wrap overflow-auto">{ fixLegacyStringEncoding(entries[index]?.text) }</div>
+
+				<div className="flex flex-row self-end ml-auto gap-1">
+					<div onClick={previousEntry} className={`py-2 px-4 ${index == 0 ? 'bg-gray-300 text-gray-500' : ' bg-blue-600'}`}>&lt;</div>
+					<div onClick={nextEntry} className={`py-2 px-4 ${index == entries.length - 1 ? 'bg-gray-300 text-gray-500' : ' bg-blue-600'}`}>&gt;</div>
+				</div>
+			</div>
+		)
 	}
 
 	return (

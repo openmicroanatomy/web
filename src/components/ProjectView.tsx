@@ -17,6 +17,7 @@ import Annotations from "./Annotations";
 import Slides from "./Slides";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
+import SlideTour from "./SlideTour";
 
 interface ProjectViewProps {
     projectId: string;
@@ -142,14 +143,16 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow overflow-y-scroll">
-                    <Annotations annotations={annotations} />
+                    <SlideTour entries={slideTourEntries} />
+
+                    { !isSlideTourActive && <Annotations annotations={annotations} /> }
                 </TabPanel>
 
                 { /* Without forceRender Viewer position will reset when changing tabs*/ }
                 <TabPanel className="react-tabs__tab-panel react-tabs__tab-panel-viewer flex flex-col flex-grow" forceRender>
                     <Viewer slide={slide} annotations={annotations} entries={slideTourEntries} />
 
-                    <AnnotationDetail />
+                    { isSlideTourActive ? <SlideTour entries={slideTourEntries} /> : <AnnotationDetail /> }
                 </TabPanel>
             </Tabs>
         );
