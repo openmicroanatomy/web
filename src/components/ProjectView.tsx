@@ -1,5 +1,5 @@
 import { fetchProjectData } from "lib/api";
-import { selectedAnnotationState, sidebarVisibleState, slideTourActive } from "lib/atoms";
+import { selectedAnnotationState, sidebarVisibleState, slideTourState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
@@ -34,8 +34,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
     /* Slide Tours */
-    const [slideTourEntries, setSlideTourEntries] = useState<SlideTourEntry[]>([]);
-    const [isSlideTourActive, setSlideTourActive] = useRecoilState(slideTourActive);
+    const [slideTour, setSlideTour] = useRecoilState(slideTourState);
 
     // Same as Tailwind 'lg'
     const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
@@ -54,25 +53,33 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
         return atob(data.map(byte => String.fromCharCode(byte)).join(''))
     }
 
+    const loadSlideTour = (slide: Image) => {
+        let entries: SlideTourEntry[] = [];
+
+        try {
+            if (slide.slideTour && slide.slideTour.length > 0) {
+                const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
+
+                entries = JSON.parse(data) as SlideTourEntry[];
+            }
+        } catch (e) {
+            console.error("Error while loading slide tour", e)
+        }
+
+        setSlideTour({
+            active: false,
+            index: 0,
+            entries: entries
+        })
+    }
+
     const onSlideChange = (newSlide: Image) => {
         if (projectData) {
             for (const slide of Array.from(projectData.images)) {
                 if (slide.entryID === newSlide.entryID) {
                     setAnnotations(JSON.parse(slide.annotations || "[]"));
-                    setSlideTourActive(false);
 
-                    try {
-                        if (slide.slideTour && slide.slideTour.length > 0) {
-                            const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
-
-                            const entries = JSON.parse(data) as SlideTourEntry[];
-                            setSlideTourEntries(entries);
-                        } else {
-                            setSlideTourEntries([]);
-                        }
-                    } catch (e) {
-                        console.error("Error while loading slide tour", e)
-                    }
+                    loadSlideTour(slide);
 
                     break;
                 }
@@ -143,16 +150,16 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow overflow-y-scroll">
-                    <SlideTour entries={slideTourEntries} />
+                    <SlideTour />
 
-                    { !isSlideTourActive && <Annotations annotations={annotations} /> }
+                    { !slideTour.active && <Annotations annotations={annotations} /> }
                 </TabPanel>
 
                 { /* Without forceRender Viewer position will reset when changing tabs*/ }
                 <TabPanel className="react-tabs__tab-panel react-tabs__tab-panel-viewer flex flex-col flex-grow" forceRender>
-                    <Viewer slide={slide} annotations={annotations} entries={slideTourEntries} />
+                    <Viewer slide={slide} annotations={annotations} />
 
-                    { isSlideTourActive ? <SlideTour entries={slideTourEntries} /> : <AnnotationDetail /> }
+                    { slideTour.active ? <SlideTour /> : <AnnotationDetail /> }
                 </TabPanel>
             </Tabs>
         );
@@ -169,7 +176,6 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                     annotations={annotations}
                     onProjectChange={onProjectChange}
                     onSlideChange={onSlideChange}
-                    slideTourEntries={slideTourEntries}
                 />
             ) : (
                 <ToggleSidebar />
@@ -188,7 +194,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
                     { /* Without forceRender Viewer position will reset when changing tabs */ }
                     <TabPanel className="react-tabs__tab-panel flex-grow" forceRender>
-                        <Viewer slide={slide} annotations={annotations} entries={slideTourEntries} />
+                        <Viewer slide={slide} annotations={annotations} />
                     </TabPanel>
                 </Tabs>
             </div>

@@ -48,6 +48,8 @@ function EmbeddedSingleSlide() {
                         return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
                     });
 
+                    // TODO: Add support for slide tours
+
                     setAnnotations(annotations);
                     setSlide(slide);
                 }
@@ -72,7 +74,7 @@ function EmbeddedSingleSlide() {
             )}
 
             <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                <Viewer slide={slide} annotations={annotations} entries={[]} />
+                <Viewer slide={slide} annotations={annotations} />
             </div>
         </main>
     );

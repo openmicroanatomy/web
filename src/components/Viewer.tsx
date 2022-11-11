@@ -1,25 +1,23 @@
 import { fetchSlide } from "lib/api";
-import { selectedAnnotationState, slideTourActive, slideTourIndex } from "lib/atoms";
+import { selectedAnnotationState, slideTourState } from "lib/atoms";
 import EduViewer from "lib/EduViewer";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Viewer.css";
-import { Annotation, Image, SlideTourEntry } from "types";
+import { Annotation, Image } from "types";
 
 interface ViewerProps {
     slide?: Image | null;
     annotations?: Annotation[];
-    entries: SlideTourEntry[];
 }
 
-function Viewer({ slide, annotations, entries }: ViewerProps) {
+function Viewer({ slide, annotations }: ViewerProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const [viewer, setViewer] = useState<EduViewer>();
     const [cachedAnnotations, setCachedAnnotations] = useState<Annotation[]>([]);
 
-    const index = useRecoilValue(slideTourIndex);
-    const isSlideTourActive = useRecoilValue(slideTourActive);
+    const slideTour = useRecoilValue(slideTourState);
 
     useEffect(() => {
         if (selectedAnnotation && viewer) {
@@ -70,9 +68,9 @@ function Viewer({ slide, annotations, entries }: ViewerProps) {
      * Draw any annotations for this slide tour entry and pan & zoom to correct position.
      */
     function DrawCurrentSlideTourEntry() {
-        if (!entries || entries.length == 0) return;
+        if (slideTour.entries.length == 0) return;
 
-        const entry = entries[index];
+        const entry = slideTour.entries[slideTour.index];
         const annotations = entry.annotations;
 
         viewer?.PanTo(entry.x, entry.y);
@@ -85,16 +83,12 @@ function Viewer({ slide, annotations, entries }: ViewerProps) {
     useEffect(() => {
         viewer?.ClearAnnotations();
 
-        if (isSlideTourActive) {
+        if (slideTour.active) {
             DrawCurrentSlideTourEntry();
         } else {
             viewer?.DrawAnnotations(cachedAnnotations);
         }
-    }, [isSlideTourActive]);
-
-    useEffect(() => {
-        DrawCurrentSlideTourEntry();
-    }, [index]);
+    }, [slideTour]);
 
     return <div id="Viewer" className="h-full flex-grow bg-black" />;
 }

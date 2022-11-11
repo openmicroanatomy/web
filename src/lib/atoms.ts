@@ -1,7 +1,6 @@
 import OpenSeadragon from "openseadragon";
 import { atom } from "recoil";
-import { Annotation, Host } from "types";
-import { SlideTourState } from "./SlideTourReducer";
+import { Annotation, Host, SlideTourState } from "types";
 
 export const hostState = atom({
     key: "hostState",
@@ -33,15 +32,5 @@ export const sidebarVisibleState = atom({
 
 export const slideTourState = atom({
     key: "slideTourState",
-    default: { active: false, index: 0 } as SlideTourState
-})
-
-export const slideTourActive = atom({
-    key: "slideTourActive",
-    default: false as boolean
-})
-
-export const slideTourIndex = atom({
-    key: "slideTourIndex",
-    default: 0 as number
+    default: { active: false, index: 0, entries: [] } as SlideTourState
 })

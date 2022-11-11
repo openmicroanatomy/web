@@ -151,3 +151,9 @@ export interface Geometry {
 export type Polygon = number[][][];
 export type MultiPolygon = number[][][][];
 export type LineString = number[][];
+
+export type SlideTourState = {
+    active: boolean;
+    index: number;
+    entries: SlideTourEntry[]
+}
