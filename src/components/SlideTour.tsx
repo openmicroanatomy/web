@@ -29,6 +29,19 @@ export default function SlideTour({ entries }: Props) {
 		setSlideTourActive(false);
 	}
 
+	/**
+	 * Slide tours were previously saved with incorrect character encoding, causing issues with umlauts.
+	 * This function fixes any weird characters caused by incorrect encoding.
+	 * @Deprecated to be removed in version 1.1
+	 */
+	const fixLegacyStringEncoding = (str: string) => {
+		try {
+			return decodeURIComponent(escape(str));
+		} catch(e) {
+			return str;
+		}
+	}
+
 	if (entries.length == 0) {
 		return <></>;
 	}
@@ -52,7 +65,7 @@ export default function SlideTour({ entries }: Props) {
 				<div onClick={nextEntry} className={`flex-1 py-2 ${index == entries.length - 1 ? 'bg-gray-500' : ' bg-blue-500 cursor-pointer'}`}>Next</div>
 			</div>
 
-			<div className="p-2 whitespace-pre-wrap">{ entries[index]?.text }</div>
+			<div className="p-2 whitespace-pre-wrap">{ fixLegacyStringEncoding(entries[index]?.text) }</div>
 		</>
 	);
 }
