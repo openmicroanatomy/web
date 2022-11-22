@@ -15,21 +15,33 @@ function Annotations({ annotations }: AnnotationsProps) {
         return <p className="p-2 font-bold text-center">No annotations</p>;
     }
 
+    /**
+     * Check if given annotation is same as the currently selected annotation.
+     */
+    const isSelectedAnnotation = (annotation: Annotation) => {
+        return JSON.stringify(annotation) == JSON.stringify(selectedAnnotation);
+    }
+
     return (
-        <div className="pt-2">
-            {annotations.map((annotation, index) => (
-                <div
-                    className="grid grid-cols-4 p-2 border-b border-t mb-2 cursor-pointer"
-                    key={sha1(annotation)}
-                    onClick={() => setSelectedAnnotation(annotation)}
-                >
+        <div className="pt-2 bg-gray-50">
+            {annotations
+                .sort((a, b) => {
+                    return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
+                })
+                .map((annotation, index) => (
                     <div
-                        className={`cursor-pointer col-span-4 ${selectedAnnotation == annotation && "font-bold"}`}
+                        className={`bg-white p-2 mb-2 shadow-sm border-b border-t cursor-pointer border-l-4 ${isSelectedAnnotation(annotation) ? "border-l-blue-400" : "border-l-transparent" }`}
+                        key={sha1(annotation)}
+                        onClick={() => setSelectedAnnotation(annotation)}
                     >
-                        {`${index + 1}. ${annotation.properties.name || "Unnamed annotation"}`}
+                        <div
+                            className={`cursor-pointer ${isSelectedAnnotation(annotation) && "font-bold"}`}
+                        >
+                            {`${index + 1}. ${annotation.properties.name || "Unnamed annotation"}`}
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))
+            }
 
             <div className="hidden lg:block sticky bottom-0 border-b py-2 text-center bg-blue-500 text-white font-bold text-xl">
                 {selectedAnnotation ? (
