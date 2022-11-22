@@ -22,7 +22,7 @@ function ProjectViewSidebar({ slide, projectId, projectData, embedded, onProject
     const annotations = JSON.parse(slide?.annotations || "[]");
 
     return (
-        <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
+        <div className="flex flex-col w-1/4 border rounded-sm shadow-lg bg-white">
             <div className="sticky top-0">
                 <div className="flex justify-between sticky top-0 p-2 bg-white">
                     { !embedded && 
@@ -39,17 +39,17 @@ function ProjectViewSidebar({ slide, projectId, projectData, embedded, onProject
                 </div>
             </div>
 
-            <Tabs>
+            <Tabs className="react-tabs flex flex-col min-h-0">
                 <TabList className="flex sticky top-12 border-b bg-white">
                     <Tab>Slides</Tab>
                     <Tab>Annotations</Tab>
                 </TabList>
 
-                <TabPanel>
-                    <Slides slides={projectData?.images} onSlideChange={onSlideChange} />
+                <TabPanel className="react-tabs__tab-panel overflow-y-auto scrollbar" forceRender>
+                    <Slides slides={projectData?.images} />
                 </TabPanel>
 
-                <TabPanel>
+                <TabPanel className="react-tabs__tab-panel overflow-y-auto scrollbar" forceRender>
                     <SlideTour />
 
                     { !slideTour.active && <Annotations annotations={annotations} /> }
