@@ -3,6 +3,11 @@ import { useMediaQuery } from "react-responsive";
 import { clamp } from "../lib/helpers";
 import { slideTourState } from "../lib/atoms";
 
+/**
+ * Text to display when slide tour text is undefined. Should ideally match phrase used in QuPath.
+ */
+const TEXT_MISSING_PLACEHOLDER = "Description not set"
+
 export default function SlideTour() {
 	const [slideTour, setSlideTour] = useRecoilState(slideTourState);
 
@@ -53,7 +58,7 @@ export default function SlideTour() {
 	}
 
 	const getSlideTourText = () => {
-		return slideTour.entries[slideTour.index]?.text;
+		return slideTour.entries[slideTour.index]?.text || TEXT_MISSING_PLACEHOLDER;
 	}
 
 	const isFirstFrame = () => {
