@@ -1,5 +1,5 @@
 import { fetchProjectData } from "lib/api";
-import { selectedAnnotationState, sidebarVisibleState, slideTourState } from "lib/atoms";
+import { currentSlideState, selectedAnnotationState, sidebarVisibleState, slideTourState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ interface ProjectViewProps {
 function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectViewProps) {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [annotations, setAnnotations] = useState([]);
-    const [slide, setSlide] = useState<Image | null>(null);
+    const slide = useRecoilValue(currentSlideState);
     const [tabIndex, setTabIndex] = useState(0);
     const sidebarVisible = useRecoilValue(sidebarVisibleState);
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
@@ -73,23 +73,14 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
         })
     }
 
-    const onSlideChange = (newSlide: Image) => {
-        if (projectData) {
-            for (const slide of Array.from(projectData.images)) {
-                if (slide.entryID === newSlide.entryID) {
-                    setAnnotations(JSON.parse(slide.annotations || "[]"));
+    useEffect(() => {
+        if (!projectData || !slide) return;
 
-                    loadSlideTour(slide);
-
-                    break;
-                }
-            }
-
-            setSelectedAnnotation(null);
-            setTabIndex(isMobile ? 3 : 1);
-            setSlide(newSlide);
-        }
-    };
+        setSelectedAnnotation(null);
+        setAnnotations(JSON.parse(slide.annotations || "[]"));
+        loadSlideTour(slide);
+        setTabIndex(isMobile ? 3 : 1);
+    }, [slide]);
 
     useEffect(() => {
         if (isMobile && slide && selectedAnnotation != null) {
@@ -142,7 +133,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                         <ArrowLeftIcon className="w-4 h-4 inline-block h:translate-x-2" /> Return to lessons
                     </a>
 
-                    <Slides slides={projectData?.images} onSlideChange={onSlideChange} />
+                    <Slides slides={projectData?.images} />
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow">
@@ -157,7 +148,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
                 { /* Without forceRender Viewer position will reset when changing tabs*/ }
                 <TabPanel className="react-tabs__tab-panel react-tabs__tab-panel-viewer flex flex-col flex-grow" forceRender>
-                    <Viewer slide={slide} annotations={annotations} />
+                    <Viewer slide={slide} />
 
                     { slideTour.active ? <SlideTour /> : <AnnotationDetail /> }
                 </TabPanel>
@@ -173,9 +164,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                     projectId={projectId}
                     projectData={projectData}
                     embedded={embedded}
-                    annotations={annotations}
                     onProjectChange={onProjectChange}
-                    onSlideChange={onSlideChange}
                 />
             ) : (
                 <ToggleSidebar />
@@ -194,7 +183,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
 
                     { /* Without forceRender Viewer position will reset when changing tabs */ }
                     <TabPanel className="react-tabs__tab-panel flex-grow" forceRender>
-                        <Viewer slide={slide} annotations={annotations} />
+                        <Viewer slide={slide} />
                     </TabPanel>
                 </Tabs>
             </div>

@@ -1,11 +1,14 @@
 import { Image } from "types";
+import { useRecoilState } from "recoil";
+import { currentSlideState } from "../lib/atoms";
 
 interface SlidesProps {
     slides?: Image[];
-    onSlideChange: (newSlide: Image) => void;
 }
 
-function Slides({ slides, onSlideChange }: SlidesProps) {
+function Slides({ slides }: SlidesProps) {
+    const [slide, setSlide] = useRecoilState(currentSlideState);
+
     if (!slides || slides.length == 0) {
         return <p className="text-center font-bold p-2">No slides</p>;
     }

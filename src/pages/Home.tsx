@@ -2,11 +2,11 @@ import HostSelector from "components/HostSelector";
 import OrganizationSelector from "components/OrganizationSelector";
 import ProjectSelector from "components/ProjectSelector";
 import ProjectView from "components/ProjectView";
-import { hostState } from "lib/atoms";
+import { currentSlideState, hostState } from "lib/atoms";
 import Constants from "lib/constants";
 import { getValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { Host, Organization, Subject, Workspace } from "types";
 import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "lib/api";
 import { toast } from "react-toastify";
@@ -21,6 +21,8 @@ const Home = () => {
     const [host, setHost] = useRecoilState(hostState);
     const [organization, setOrganization] = useState<Organization | null>(null)
     const [projectId, setProjectId] = useState("");
+
+    const setSlide = useSetRecoilState(currentSlideState);
 
     useEffect(() => {
         (async () => {
@@ -88,6 +90,7 @@ const Home = () => {
 
     const onProjectChange = (newProjectId: string) => {
         setProjectId(newProjectId);
+        setSlide(null);
     };
 
     if (projectId) {

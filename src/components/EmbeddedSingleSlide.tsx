@@ -74,7 +74,7 @@ function EmbeddedSingleSlide() {
             )}
 
             <div className="flex-grow border rounded-sm shadow-lg bg-white">
-                <Viewer slide={slide} annotations={annotations} />
+                <Viewer slide={slide} />
             </div>
         </main>
     );

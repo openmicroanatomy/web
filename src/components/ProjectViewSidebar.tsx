@@ -13,13 +13,13 @@ interface ProjectViewSidebarProps {
     projectId: string;
     projectData: ProjectData | null;
     embedded: boolean;
-    annotations: Annotation[];
     onProjectChange: (project: string) => void;
-    onSlideChange: (newSlide: Image) => void;
 }
 
-function ProjectViewSidebar({ slide, projectId, projectData, embedded, annotations, onProjectChange, onSlideChange }: ProjectViewSidebarProps) {
+function ProjectViewSidebar({ slide, projectId, projectData, embedded, onProjectChange }: ProjectViewSidebarProps) {
     const slideTour = useRecoilValue(slideTourState);
+
+    const annotations = JSON.parse(slide?.annotations || "[]");
 
     return (
         <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">

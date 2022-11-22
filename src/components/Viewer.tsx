@@ -7,12 +7,11 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Viewer.css";
 import { Annotation, Image } from "types";
 
-interface ViewerProps {
+interface Props {
     slide?: Image | null;
-    annotations?: Annotation[];
 }
 
-function Viewer({ slide, annotations }: ViewerProps) {
+function Viewer({ slide }: Props) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const [viewer, setViewer] = useState<EduViewer>();
     const [cachedAnnotations, setCachedAnnotations] = useState<Annotation[]>([]);
@@ -50,6 +49,8 @@ function Viewer({ slide, annotations }: ViewerProps) {
 
         fetchSlide(slideId)
             .then((data) => {
+                const annotations = JSON.parse(slide.annotations || "[]");
+
                 viewer?.LoadSlide(data);
 
                 viewer?.ClearAnnotations();
