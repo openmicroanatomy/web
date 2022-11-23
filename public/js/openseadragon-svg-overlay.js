@@ -24,7 +24,7 @@
     };
 
     // ----------
-    var Overlay = function(viewer, debug = false) {
+    var Overlay = function(viewer) {
         var self = this;
 
         this._viewer = viewer;
@@ -37,7 +37,7 @@
         this._svg.style.height = '100%';
         this._svg.style.transformOrigin = "0 0";
 
-        if (debug) {
+        if (this._viewer.debugMode) {
             this._svg.style.background = 'rgba(0,255,0,0.25)'
         }
 
