@@ -94,6 +94,9 @@ export interface Image {
     imageData: string; // Serialized Java fuckery
     slideTour: string;
     annotations: string;
+    metadata: {
+        [key: string]: string
+    };
 }
 
 // Commented out unused props
