@@ -76,6 +76,7 @@ function Viewer({ slide }: Props) {
 
         viewer?.PanTo(entry.x, entry.y);
         viewer?.ZoomTo(entry.magnification);
+        viewer?.SetRotation(entry.rotation);
 
         viewer?.ClearAnnotations();
         viewer?.DrawAnnotations(annotations || []);
@@ -87,6 +88,7 @@ function Viewer({ slide }: Props) {
         if (slideTour.active) {
             DrawCurrentSlideTourEntry();
         } else {
+            viewer?.SetRotation(0);
             viewer?.DrawAnnotations(cachedAnnotations);
         }
     }, [slideTour]);

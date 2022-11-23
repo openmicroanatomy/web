@@ -35,6 +35,7 @@
         this._svg.style.top = 0;
         this._svg.style.width = '100%';
         this._svg.style.height = '100%';
+        this._svg.style.transformOrigin = "0 0";
 
         if (debug) {
             this._svg.style.background = 'rgba(0,255,0,0.25)'
@@ -74,16 +75,22 @@
 
         // ----------
         resize: function() {
+            // Used to calculate the actual viewport offset from the container it is inside i.e. the black area between the container and the viewer
             const point = this._viewer.viewport.pixelFromPoint(new $.Point(0, 0), true);
+
+            // Used to calculate the actual viewport size; requires 3 points to support rotated images.
             const p1 = this._viewer.viewport.imageToViewerElementCoordinates(new $.Point(0, 0));
             const p2 = this._viewer.viewport.imageToViewerElementCoordinates(new $.Point(this._viewer.world._contentSize.x, this._viewer.world._contentSize.y));
+            const p3 = this._viewer.viewport.imageToViewerElementCoordinates(new $.Point(this._viewer.world._contentSize.x, 0))
 
-            const width  = p2.x - p1.x;
-            const height = p2.y - p1.y;
+            const width  = Math.hypot(p3.x - p1.x, p3.y - p1.y);
+            const height = Math.hypot(p2.x - p3.x, p2.y - p3.y);
+
+            const rotation = this._viewer.viewport.getRotation();
 
             this._svg.style.width = `${width}px`;
             this._svg.style.height = `${height}px`;
-            this._svg.style.transform = `translateX(${point.x}px) translateY(${point.y}px)`;
+            this._svg.style.transform = `translateX(${point.x}px) translateY(${point.y}px) rotate(${rotation}deg)`;
         },
         // ----------
         onClick: function(node, handler) {

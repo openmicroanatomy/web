@@ -198,6 +198,14 @@ export default class EduViewer {
         this.Viewer.viewport.zoomTo(zoom)
     }
 
+    /**
+     * Set the viewer rotation in radians.
+     * @param radians the rotation in radians.
+     */
+    SetRotation(radians: number) {
+        this.Viewer.viewport.setRotation(radians * (180 / Math.PI));
+    }
+
     private DrawLine(annotation: Annotation) {
         if (!this.Overlay) return;
 
