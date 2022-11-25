@@ -50,7 +50,11 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
      * @Deprecated to be removed in version 1.1
      */
     const legacyBase64Decode = (data: number[]) => {
-        return atob(data.map(byte => String.fromCharCode(byte)).join(''))
+        try {
+            return atob(data.map(byte => String.fromCharCode(byte)).join(''));
+        } catch (e) {
+            return new TextDecoder("utf-8").decode(new Uint8Array(data));
+        }
     }
 
     const loadSlideTour = (slide: Image) => {
