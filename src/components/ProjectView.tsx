@@ -108,6 +108,13 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
             });
     }, [projectId]);
 
+    useEffect(() => {
+        // Switch to Viewer tab on Mobile when starting a Slide Tour
+        if (slideTour.active && isMobile) {
+            setTabIndex(3);
+        }
+    }, [slideTour]);
+
     if (isMobile) {
         return (
             <Tabs className="h-full flex flex-col-reverse overflow-hidden" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
