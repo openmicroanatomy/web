@@ -1,22 +1,22 @@
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { Annotation, Image, ProjectData } from "types";
+import { ProjectData } from "types";
 import Annotations from "./Annotations";
 import EmbedProjectPopup from "./project/EmbedProjectPopup";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Slides from "./Slides";
 import SlideTour from "./SlideTour";
 import { useRecoilValue } from "recoil";
-import { slideTourState } from "../lib/atoms";
+import { currentSlideState, slideTourState } from "../lib/atoms";
 
-interface ProjectViewSidebarProps {
-    slide: Image | null;
+interface Props {
     projectId: string;
     projectData: ProjectData | null;
     embedded: boolean;
     onProjectChange: (project: string) => void;
 }
 
-function ProjectViewSidebar({ slide, projectId, projectData, embedded, onProjectChange }: ProjectViewSidebarProps) {
+function ProjectViewSidebar({ projectId, projectData, embedded, onProjectChange }: Props) {
+    const slide = useRecoilValue(currentSlideState);
     const slideTour = useRecoilValue(slideTourState);
 
     const annotations = JSON.parse(slide?.annotations || "[]");

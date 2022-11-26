@@ -171,7 +171,6 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
         <main className="flex h-full p-2 gap-2 overflow-hidden">
             {sidebarVisible ? (
                 <ProjectViewSidebar
-                    slide={slide}
                     projectId={projectId}
                     projectData={projectData}
                     embedded={embedded}
