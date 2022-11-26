@@ -2,7 +2,7 @@ import HostSelector from "components/HostSelector";
 import OrganizationSelector from "components/OrganizationSelector";
 import ProjectSelector from "components/ProjectSelector";
 import ProjectView from "components/ProjectView";
-import { currentSlideState, hostState } from "lib/atoms";
+import { currentSlideState, hostState, slideTourState } from "lib/atoms";
 import Constants from "lib/constants";
 import { getValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ const Home = () => {
     const [projectId, setProjectId] = useState("");
 
     const setSlide = useSetRecoilState(currentSlideState);
+    const setSlideTour = useSetRecoilState(slideTourState);
 
     useEffect(() => {
         (async () => {
@@ -91,6 +92,7 @@ const Home = () => {
     const onProjectChange = (newProjectId: string) => {
         setProjectId(newProjectId);
         setSlide(null);
+        setSlideTour({ active: false, index: 0, entries: [] })
     };
 
     if (projectId) {
