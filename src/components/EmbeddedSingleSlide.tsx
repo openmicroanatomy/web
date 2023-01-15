@@ -45,6 +45,11 @@ function EmbeddedSingleSlide() {
                 if (slide) {
                     const annotations = JSON.parse(slide.annotations || "[]");
                     annotations.sort((a: Annotation, b: Annotation) => {
+                        // Check that both annotations have a name.
+                        if (!a.properties.name || !b.properties.name) {
+                            return 0;
+                        }
+
                         return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
                     });
 

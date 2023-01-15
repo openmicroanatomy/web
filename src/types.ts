@@ -113,7 +113,7 @@ export interface Annotation {
 
 interface AnnotationProps {
     object_type: string;
-    name: string;
+    name: string | undefined;
     color: number[];
     isLocked: boolean;
     metadata?: AnnotationPropsMetaData;

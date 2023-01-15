@@ -33,7 +33,7 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
             {answer.type == AnnotationAnswerTypes.QUIZ ? (
                 <AnnotationQuiz
                     choices={answer.data}
-                    name={annotation.properties.name}
+                    name={annotation.properties.name || "Unnamed annotation"}
                     description={description}
                 />
             ) : (
