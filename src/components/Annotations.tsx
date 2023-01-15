@@ -26,7 +26,12 @@ function Annotations({ annotations }: AnnotationsProps) {
         <div className="pt-2 bg-gray-50">
             {annotations
                 .sort((a, b) => {
-                    return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
+                    try {
+                        // Throws exception if annotation is missing name; UI defaults to "Unnamed annotation".
+                        return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
+                    } catch (e) {
+                        return 0;
+                    }
                 })
                 .map((annotation, index) => (
                     <div
