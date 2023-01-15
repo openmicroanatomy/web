@@ -25,16 +25,16 @@ async function request(path: string, init: RequestInit = {}) {
             ...init,
             mode: "cors",
         });
-    } catch {
-        throw new Error("Connection refused.");
+    } catch (e) {
+        throw new Error(`Connection refused. (${e})`);
     }
 
     if (!response) {
         throw new Error("Invalid response.");
     } else if (!response.ok) {
-        throw new Error("Request failed.");
+        throw new Error(`Request failed (status: ${response.status})`);
     } else if (!response.body) {
-        throw new Error("No data.");
+        throw new Error("Empty response.");
     }
 
     return response.json();
