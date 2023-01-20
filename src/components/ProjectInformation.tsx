@@ -8,7 +8,7 @@ function ProjectInformation({ data }: ProjectInformationProps) {
     const styles = `<link rel="stylesheet" href="ckeditor.css" />`;
 
     if (!data) {
-        return <p className="p-2 font-bold text-center">No project open</p>;
+        return <p className="p-2 font-bold text-center">Loading ...</p>;
     }
 
     return (

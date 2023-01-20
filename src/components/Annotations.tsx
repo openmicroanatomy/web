@@ -11,7 +11,11 @@ interface AnnotationsProps {
 function Annotations({ annotations }: AnnotationsProps) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
-    if (!annotations || annotations.length == 0) {
+    if (!annotations) {
+        return <p className="p-2 font-bold text-center">Loading ...</p>;
+    }
+
+    if (annotations.length == 0) {
         return <p className="p-2 font-bold text-center">No annotations</p>;
     }
 

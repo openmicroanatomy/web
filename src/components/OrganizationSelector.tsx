@@ -5,7 +5,7 @@ import Select from 'react-select'
 
 interface OrganizationSelectorProps {
     currentOrganization: Organization | null;
-    organizations: Organization[];
+    organizations?: Organization[];
     onOrganizationChange: (organization: Organization | null) => void;
 }
 
@@ -14,6 +14,10 @@ function OrganizationSelector({ currentOrganization, organizations, onOrganizati
 
     if (!host) {
         return <p className="font-bold text-center">No host selected</p>;
+    }
+
+    if (!organizations) {
+        return <p className="font-bold text-center">Loading ...</p>;
     }
 
     if (organizations.length == 0) {

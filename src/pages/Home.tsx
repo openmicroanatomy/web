@@ -14,8 +14,8 @@ import { toast } from "react-toastify";
 const Home = () => {
     /* State shared to child components */
     const [hosts, setHosts] = useState<Host[]>([]);
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
-    const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+    const [organizations, setOrganizations] = useState<Organization[]>();
+    const [workspaces, setWorkspaces] = useState<Workspace[]>();
 
     const [host, setHost] = useRecoilState(hostState);
     const [organization, setOrganization] = useState<Organization | null>(null)
@@ -43,28 +43,26 @@ const Home = () => {
 
     useEffect(() => {
         setOrganization(null);
-        setWorkspaces([]);
-        setOrganizations([]);
+        setWorkspaces(undefined);
+        setOrganizations(undefined);
 
         if (!host) {
             return;
         }
 
-        // TODO: Promsie.allSettled();
-        fetchOrganizations()
-            .then(organizations => setOrganizations(organizations))
-            .catch(e => {
-                setOrganizations([]);
-                toast.error("Error while loading organizations")
-                console.error(e);
-            });
+        const fetchData = async () => {
+            const [organizations, workspaces] = await Promise.all([fetchOrganizations(), fetchWorkspaces()]);
 
-        fetchWorkspaces()
-            .then(workspaces => setWorkspaces(workspaces))
+            setOrganizations(organizations);
+            setWorkspaces(workspaces);
+        }
+
+        fetchData()
             .catch(e => {
+                toast.error("Error while loading, please retry ...");
                 setWorkspaces([]);
-                toast.error("Error while loading workspaces");
-                console.error(e);
+                setOrganizations([]);
+                console.error(e)
             });
     }, [host]);
 

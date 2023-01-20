@@ -9,7 +9,11 @@ interface SlidesProps {
 function Slides({ slides }: SlidesProps) {
     const [slide, setSlide] = useRecoilState(currentSlideState);
 
-    if (!slides || slides.length == 0) {
+    if (!slides) {
+        return <p className="text-center font-bold p-2">Loading ...</p>;
+    }
+
+    if (slides.length == 0) {
         return <p className="text-center font-bold p-2">No slides</p>;
     }
 
