@@ -7,7 +7,7 @@ import Constants from "lib/constants";
 import { getValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { Host, Organization, Subject, Workspace } from "types";
+import { Host, Organization, Workspace } from "types";
 import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "lib/api";
 import { toast } from "react-toastify";
 
@@ -16,7 +16,6 @@ const Home = () => {
     const [hosts, setHosts] = useState<Host[]>([]);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-    const [subjects, setSubjects] = useState<Subject[]>([]);
 
     const [host, setHost] = useRecoilState(hostState);
     const [organization, setOrganization] = useState<Organization | null>(null)
@@ -44,7 +43,6 @@ const Home = () => {
 
     useEffect(() => {
         setOrganization(null);
-        setSubjects([]);
         setWorkspaces([]);
         setOrganizations([]);
 
@@ -52,6 +50,7 @@ const Home = () => {
             return;
         }
 
+        // TODO: Promsie.allSettled();
         fetchOrganizations()
             .then(organizations => setOrganizations(organizations))
             .catch(e => {
@@ -68,22 +67,6 @@ const Home = () => {
                 console.error(e);
             });
     }, [host]);
-
-    useEffect(() => {
-        if (!organization) {
-            setSubjects([]);
-            return;
-        }
-
-        const workspace = workspaces.find(workspace => workspace.owner.id === organization.id);
-
-        if (workspace) {
-            const sorted = workspace.subjects.sort((a, b) => a.name.localeCompare(b.name));
-            setSubjects(sorted);
-        } else {
-            setSubjects([]);
-        }
-    }, [organization]);
 
     const onOrganizationChange = (newOrganization: Organization | null) => {
         setOrganization(newOrganization);
@@ -117,7 +100,8 @@ const Home = () => {
 
             {(host && organization) && 
                 <ProjectSelector
-                    subjects={subjects}
+                    workspaces={workspaces}
+                    organization={organization}
                     onProjectChange={onProjectChange}
                 />
             }
