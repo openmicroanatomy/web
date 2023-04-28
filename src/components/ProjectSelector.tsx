@@ -19,9 +19,9 @@ function ProjectSelector({ workspaces, organization, onProjectChange }: ProjectS
     }
 
     return (
-        <div>
+        <>
             {workspaces.map((workspace) => (
-                <>
+                <div key={workspace.id}>
                     <p className="text-xl">{workspace.name}</p>
 
                     {workspace.subjects.map((subject) => (
@@ -43,9 +43,9 @@ function ProjectSelector({ workspaces, organization, onProjectChange }: ProjectS
                             </ul>
                         </div>
                     ))}
-                </>
+                </div>
             ))}
-        </div>
+        </>
     );
 }
 
