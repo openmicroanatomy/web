@@ -39,7 +39,6 @@
         "autoprefixer": "^10.4.4",
         "cssnano": "^6.0.0",
         "eslint-config-prettier": "^8.3.0",
-        "husky": "^7.0.4",
         "lint-staged": "^12.3.6",
         "postcss": "^8.4.12",
         "prettier": "^2.4.1",
@@ -55,8 +54,7 @@
     "scripts": {
         "start": "vite",
         "build": "tsc && vite build",
-        "prettier": "prettier --write .",
-        "prepare": "husky install"
+        "prettier": "prettier --write ."
     },
     "eslintConfig": {
         "extends": [
@@ -75,8 +73,5 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
-    },
-    "lint-staged": {
-        "*.{js,css,md}": "prettier --write"
     }
 }
