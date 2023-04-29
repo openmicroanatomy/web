@@ -29,7 +29,7 @@ function Viewer({ slide }: Props) {
         setViewer(new EduViewer(window.OpenSeadragon({
             id: "Viewer",
             defaultZoomLevel: 0,
-            //debugMode: process.env.NODE_ENV !== "production",
+            //debugMode: import.meta.env.PROD,
             showNavigator: true,
             navigatorSizeRatio: 0.15,
             navigatorAutoFade: false,
