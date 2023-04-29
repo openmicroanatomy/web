@@ -1,7 +1,8 @@
-import { Point, SvgOverlay } from "openseadragon";
 import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
 import { SetterOrUpdater } from "recoil";
+import * as d3 from "d3";
+import OpenSeadragon from "openseadragon";
 
 export default class EduViewer {
 
@@ -117,8 +118,7 @@ export default class EduViewer {
     ClearAnnotations() {
         if (!this.Overlay) return;
 
-        window.d3
-            .select(this.Overlay.node())
+        d3.select(this.Overlay.node())
             .selectAll("*")
             .remove();
     }
@@ -129,8 +129,7 @@ export default class EduViewer {
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // Find the SVG element for the current Annotation and use its BoundingBox to zoom into. 
-        const node = window.d3
-            .select(this.Overlay.node())
+        const node = d3.select(this.Overlay.node())
             .selectAll(".annotation")
             .filter(function(data, index, nodes) {
                 const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
@@ -157,14 +156,12 @@ export default class EduViewer {
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // First remove any highlight by removing the `selected--annotation` class from every annotation
-        window.d3
-            .select(this.Overlay.node())
+        d3.select(this.Overlay.node())
             .selectAll(".annotation")
             .classed("selected--annotation", false)
 
         // Now add the `selected--annotation` class to our selected annotation
-        window.d3
-            .select(this.Overlay.node())
+        d3.select(this.Overlay.node())
             .selectAll(".annotation")
             .filter(function(data, index, nodes) {
                 const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
@@ -191,7 +188,7 @@ export default class EduViewer {
     }
 
     PanTo(x: number, y: number) {
-        this.Viewer.viewport.panTo(new Point(this.ScaleX(x), this.ScaleY(y)), false);
+        this.Viewer.viewport.panTo(new OpenSeadragon.Point(this.ScaleX(x), this.ScaleY(y)), false);
     }
 
     ZoomTo(zoom: number) {
@@ -211,8 +208,7 @@ export default class EduViewer {
 
         const coordinates = annotation.geometry.coordinates as LineString;
 
-        window.d3
-            .select(this.Overlay.node())
+        d3.select(this.Overlay.node())
             .append("line")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
@@ -232,8 +228,7 @@ export default class EduViewer {
             return [point[0], point[1]].join(",");
         }).join(" ");
         
-        window.d3
-            .select(this.Overlay.node())
+        d3.select(this.Overlay.node())
             .append("polygon")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
@@ -255,8 +250,7 @@ export default class EduViewer {
             }).join(" ");
         }).join(" ");
 
-        window.d3
-            .select(this.Overlay.node())
+        d3.select(this.Overlay.node())
             .append("polygon")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")

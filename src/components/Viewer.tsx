@@ -6,6 +6,9 @@ import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Viewer.css";
 import { Annotation, Image } from "types";
+import "openseadragon/openseadragon-scalebar";
+import "openseadragon/openseadragon-svg-overlay";
+import OpenSeadragon from "openseadragon";
 
 interface Props {
     slide?: Image | null;
@@ -26,7 +29,7 @@ function Viewer({ slide }: Props) {
     }, [selectedAnnotation]);
 
     useEffect(() => {
-        setViewer(new EduViewer(window.OpenSeadragon({
+        setViewer(new EduViewer(OpenSeadragon({
             id: "Viewer",
             defaultZoomLevel: 0,
             //debugMode: import.meta.env.PROD,
