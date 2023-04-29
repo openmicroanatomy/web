@@ -92,6 +92,7 @@ const Home = () => {
                 <OrganizationSelector
                     currentOrganization={organization}
                     organizations={organizations}
+                    workspaces={workspaces}
                     onOrganizationChange={onOrganizationChange}
                 />
             }
