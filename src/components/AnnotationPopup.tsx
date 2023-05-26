@@ -2,12 +2,20 @@ import { AnnotationAnswerTypes, parseAnswerData } from "lib/helpers";
 import { Annotation } from "types";
 import AnnotationQuiz from "./AnnotationQuiz";
 import PopupLarge from "./PopupLarge";
+import React from "react";
 
-interface AnnotationProps {
+interface Props {
     annotation: Annotation;
+
+    /**
+     * Optional; Function to be used as the Renderer; defaults to a hyperlink.
+     * @param text to display.
+     * @param disabled true if this annotation has no action (i.e. click to show answer).
+     */
+    renderer?: (text: string, clickable: boolean) => React.JSX.Element;
 }
 
-function AnnotationPopup({ annotation }: AnnotationProps) {
+function AnnotationPopup({ annotation, renderer }: Props) {
     const answer = parseAnswerData(annotation.properties.metadata?.Answer);
     const description = annotation.properties.metadata?.ANNOTATION_DESCRIPTION;
     const disabled = answer.type === AnnotationAnswerTypes.UNDEFINED && !description;
@@ -25,9 +33,7 @@ function AnnotationPopup({ annotation }: AnnotationProps) {
 
     return (
         <PopupLarge
-            activator={
-                <p className="cursor-pointer">{text}</p>
-            }
+            activator={renderer ? renderer(text, disabled) : <p className="cursor-pointer">{text}</p>}
             disabled={disabled}
         >
             {answer.type == AnnotationAnswerTypes.QUIZ ? (

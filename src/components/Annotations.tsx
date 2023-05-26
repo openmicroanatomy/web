@@ -52,11 +52,20 @@ function Annotations({ annotations }: AnnotationsProps) {
                 ))
             }
 
-            <div className="hidden lg:block sticky bottom-0 border-b py-2 text-center bg-blue-500 text-white font-bold text-xl">
+            <div className="hidden lg:block sticky bottom-0 border-b text-center text-white font-bold text-lg">
                 {selectedAnnotation ? (
-                    <AnnotationPopup annotation={selectedAnnotation} />
+                    <AnnotationPopup
+                        annotation={selectedAnnotation}
+                        renderer={(text, disabled) => (
+                            <div className={`${disabled ? "bg-gray-500" : "cursor-pointer bg-blue-500"} py-2`}>
+                                {text}
+                            </div>
+                        )}
+                    />
                 ) : (
-                    <p>No annotation selected</p>
+                    <div className="bg-gray-500 py-2">
+                        <p>No annotation selected</p>
+                    </div>
                 )}
             </div>
         </div>
