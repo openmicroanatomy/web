@@ -81,9 +81,9 @@ const Home = () => {
     }
 
     return (
-        <div className="mx-auto lg:my-12 w-96 space-y-12 p-4 lg:border lg:rounded lg:shadow-md lg:bg-white overflow-y-auto scrollbar flex flex-col">
-            <header className="mx-auto w-72 mt-4">
-                <h1 className="text-3xl">OpenMicroanatomy</h1>
+        <div className="mx-auto lg:my-12 w-full max-w-sm space-y-12 p-4 lg:border lg:rounded lg:shadow-md lg:bg-white overflow-y-auto scrollbar flex flex-col">
+            <header className="mx-auto mt-4">
+                <h1 className="text-2xl sm:text-4xl">OpenMicroanatomy</h1>
             </header>
 
             <HostSelector hosts={hosts} />
