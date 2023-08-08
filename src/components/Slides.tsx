@@ -1,6 +1,6 @@
 import { Image } from "types";
-import { useRecoilState } from "recoil";
-import { currentSlideState } from "../lib/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { currentSlideState, displaySlideNumbersState } from "../lib/atoms";
 
 interface SlidesProps {
     slides?: Image[];
@@ -8,6 +8,7 @@ interface SlidesProps {
 
 function Slides({ slides }: SlidesProps) {
     const [slide, setSlide] = useRecoilState(currentSlideState);
+    const displaySlideNumbers = useRecoilValue(displaySlideNumbersState);
 
     if (!slides) {
         return <p className="text-center font-bold p-2">Loading ...</p>;
@@ -24,6 +25,14 @@ function Slides({ slides }: SlidesProps) {
         return that.entryID == slide?.entryID;
     }
 
+    function getDisplayName(name: string, index: number) {
+        if (displaySlideNumbers) {
+            return `${index + 1}. ${name}`;
+        }
+
+        return name;
+    }
+
     return (
         <div className="lg:py-2 bg-gray-50">
             {slides
@@ -36,7 +45,7 @@ function Slides({ slides }: SlidesProps) {
                         className={`bg-white p-2 mb-2 shadow-sm border-y cursor-pointer border-l-4 ${isCurrentSlide(slide) ? "border-l-blue-400" : "border-l-transparent" }`}
                         onClick={() => setSlide(slide)}
                     >
-                        <p className="font-bold">{`${index + 1}. ${slide.imageName}`}</p>
+                        <p className="font-bold">{getDisplayName(slide.imageName, index)}</p>
                         <p className="font-light text-xs">{slide.description}</p>
                     </div>
                 ))

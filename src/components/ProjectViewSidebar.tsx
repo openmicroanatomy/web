@@ -7,6 +7,7 @@ import Slides from "./Slides";
 import SlideTour from "./SlideTour";
 import { useRecoilValue } from "recoil";
 import { currentSlideState, slideTourState } from "../lib/atoms";
+import { ToggleDisplaySlideNumbers } from "./project/ToggleDisplaySlideNumbers";
 
 interface Props {
     projectId: string;
@@ -33,6 +34,8 @@ function ProjectViewSidebar({ projectId, projectData, embedded, onProjectChange 
 
                     <div className="flex justify-end gap-1">
                         <ToggleSidebar />
+
+                        <ToggleDisplaySlideNumbers />
 
                         <EmbedProjectPopup slide={slide} projectId={projectId} />                                
                     </div>

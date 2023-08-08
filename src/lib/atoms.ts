@@ -39,3 +39,8 @@ export const slideTourState = atom({
     key: "slideTourState",
     default: { active: false, index: 0, entries: [] } as SlideTourState
 })
+
+export const displaySlideNumbersState = atom({
+    key: "displaySlideNumbersState",
+    default: false
+})
