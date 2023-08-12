@@ -18,7 +18,7 @@ function EmbeddedProject() {
     }, []);
 
     if (!host) {
-        return <p className="font-bold">Error while loading project: host not available.</p>
+        return <p className="font-bold">Error while loading lesson: host not available.</p>
     }
 
     return (

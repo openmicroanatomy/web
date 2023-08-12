@@ -16,7 +16,7 @@ function ProjectInformation({ data }: ProjectInformationProps) {
             {data.projectInformation ? (
                 <iframe srcDoc={styles + data.projectInformation} className="w-full h-full"></iframe>
             ) : (
-                <p className="font-bold text-center">No additional information available for this project</p>
+                <p className="font-bold text-center">No additional information available for this lesson.</p>
             )}
         </div>
     );
