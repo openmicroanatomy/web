@@ -187,7 +187,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
                         <Tab>Viewer</Tab>
                     </TabList>
 
-                    <TabPanel className="react-tabs__tab-panel flex-grow">
+                    <TabPanel className="react-tabs__tab-panel flex-grow bg-gray-50">
                         <ProjectInformation data={projectData} />
                     </TabPanel>
 
