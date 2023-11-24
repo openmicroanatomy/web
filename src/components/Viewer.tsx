@@ -9,7 +9,7 @@ import { Annotation, Slide } from "types";
 import "openseadragon/openseadragon-scalebar";
 import "openseadragon/openseadragon-svg-overlay";
 
-interface Props {
+type Props = {
     slide: Slide | null;
 }
 
@@ -115,7 +115,7 @@ async function InitializeSlide(slide: Slide): Promise<SlideProperties> {
     }
 }
 
-function Viewer({ slide }: Props) {
+export default function Viewer({ slide }: Props) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
     const cachedAnnotations = useRef<Annotation[]>([])
@@ -186,5 +186,3 @@ function Viewer({ slide }: Props) {
 
     return <div id="Viewer" className="h-full flex-grow bg-black" />;
 }
-
-export default Viewer;

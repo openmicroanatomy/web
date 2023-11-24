@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { MultiChoiceOption } from "types";
 
-interface QuizProps {
+type Props = {
     choices: MultiChoiceOption[];
     name: string;
     description: string | null | undefined;
 }
 
-function AnnotationQuiz({ choices, name, description }: QuizProps) {
+export default function AnnotationQuiz({ choices, name, description }: Props) {
     const [currentChoice, setCurrentChoice] = useState<string>("");
     const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState<boolean>(false);
     const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
@@ -59,5 +59,3 @@ function AnnotationQuiz({ choices, name, description }: QuizProps) {
         </div>
     );
 }
-
-export default AnnotationQuiz;

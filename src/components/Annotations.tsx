@@ -4,11 +4,11 @@ import { Annotation } from "types";
 import AnnotationPopup from "./AnnotationPopup";
 import { sha1 } from "object-hash";
 
-interface AnnotationsProps {
+type Props = {
     annotations?: Annotation[];
 }
 
-function Annotations({ annotations }: AnnotationsProps) {
+export default function Annotations({ annotations }: Props) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
     if (!annotations) {
@@ -71,5 +71,3 @@ function Annotations({ annotations }: AnnotationsProps) {
         </div>
     );
 }
-
-export default Annotations;

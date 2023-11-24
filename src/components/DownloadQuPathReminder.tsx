@@ -1,4 +1,4 @@
-function DownloadQuPathReminder() {
+export default function DownloadQuPathReminder() {
     return (
         <div className="hidden md:flex bg-blue-500 p-2 shadow-md">
             <p className="text-white font-bold text-lg text-center my-0 mx-auto">
@@ -7,5 +7,3 @@ function DownloadQuPathReminder() {
         </div>
     )
 }
-
-export default DownloadQuPathReminder;

@@ -1,7 +1,7 @@
 import { sidebarVisibleState } from "lib/atoms";
 import { useRecoilState } from "recoil";
 
-function ToggleSidebar() {
+export default function ToggleSidebar() {
     const [sidebarVisible, setSidebarVisible] = useRecoilState(sidebarVisibleState);
 
     return (
@@ -14,5 +14,3 @@ function ToggleSidebar() {
         </a>
     )
 }
-
-export default ToggleSidebar;

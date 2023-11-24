@@ -4,14 +4,14 @@ import { EduOrganization, EduWorkspace } from "types";
 import Select from 'react-select'
 import { useMemo } from "react";
 
-interface OrganizationSelectorProps {
+type Props = {
     currentOrganization: EduOrganization | null;
     organizations?: EduOrganization[];
     workspaces?: EduWorkspace[];
     onOrganizationChange: (organization: EduOrganization | null) => void;
 }
 
-function OrganizationSelector({ currentOrganization, organizations, workspaces, onOrganizationChange }: OrganizationSelectorProps) {
+export default function OrganizationSelector({ currentOrganization, organizations, workspaces, onOrganizationChange }: Props) {
     const host = useRecoilValue(hostState);
 
     // Remove organizations with zero workspaces.
@@ -44,5 +44,3 @@ function OrganizationSelector({ currentOrganization, organizations, workspaces, 
             menuPortalTarget={document.querySelector("body")}  />
     );
 }
-
-export default OrganizationSelector;

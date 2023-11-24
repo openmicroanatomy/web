@@ -11,11 +11,11 @@ import { EduHost } from "types";
 import validator from "validator";
 import Select from "react-select";
 
-interface HostSelectorProps {
+type Props = {
     hosts: EduHost[];
 }
 
-function HostSelector({ hosts }: HostSelectorProps) {
+export default function HostSelector({ hosts }: Props) {
     const [selectedHost, setSelectedHost] = useState<EduHost | null>(null);
     const [isValidUrl, setIsValidUrl] = useState(false);
     const [isCustomHost, setIsCustomHost] = useState<boolean>(false);
@@ -136,5 +136,3 @@ function HostSelector({ hosts }: HostSelectorProps) {
         </div>
     );
 }
-
-export default HostSelector;

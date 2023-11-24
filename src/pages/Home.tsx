@@ -11,7 +11,7 @@ import { EduHost, EduOrganization, EduWorkspace } from "types";
 import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "lib/api";
 import { toast } from "react-toastify";
 
-const Home = () => {
+export default function Home() {
     /* State shared to child components */
     const [hosts, setHosts] = useState<EduHost[]>([]);
     const [organizations, setOrganizations] = useState<EduOrganization[]>();
@@ -107,5 +107,3 @@ const Home = () => {
         </div>
     );
 };
-
-export default Home;

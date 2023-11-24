@@ -9,19 +9,19 @@ import { Project, Slide, Annotation } from "types";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Annotations from "./Annotations";
 
-interface EmbeddedSingleSlideSlugs {
+type Slugs = {
     host: string;
     project: string;
     slide: string;
 }
 
-function EmbeddedSingleSlide() {
+export default function EmbeddedSingleSlide() {
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState<Slide | null>(null);
     const sidebarVisible = useRecoilValue(sidebarVisibleState);
 
     const [host, setHost] = useRecoilState(hostState);
-    const slugs = useParams<EmbeddedSingleSlideSlugs>();
+    const slugs = useParams<Slugs>();
     
     useEffect(() => {
         setHost({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" });
@@ -84,5 +84,3 @@ function EmbeddedSingleSlide() {
         </main>
     );
 }
-
-export default EmbeddedSingleSlide;

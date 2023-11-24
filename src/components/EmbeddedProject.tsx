@@ -4,14 +4,14 @@ import { useRecoilState } from "recoil";
 import ProjectView from "./ProjectView";
 import { useEffect } from "react";
 
-interface EmbeddedProjectSlugs {
+type Slugs = {
     host: string;
     project: string;
 }
 
-function EmbeddedProject() {
+export default function EmbeddedProject() {
     const [host, setHost] = useRecoilState(hostState);
-    const slugs = useParams<EmbeddedProjectSlugs>();
+    const slugs = useParams<Slugs>();
     
     useEffect(() => {
         setHost({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" });
@@ -25,5 +25,3 @@ function EmbeddedProject() {
         <ProjectView projectId={slugs.project} onProjectChange={() => null} embedded />
     );
 }
-
-export default EmbeddedProject;

@@ -19,13 +19,13 @@ import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
 import SlideTour from "./SlideTour";
 
-interface ProjectViewProps {
+type Props = {
     projectId: string;
     onProjectChange: (newProject: string) => void;
     embedded?: boolean;
 }
 
-function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectViewProps) {
+export default function ProjectView({ projectId, onProjectChange, embedded = false }: Props) {
     const [projectData, setProjectData] = useState<Project | null>(null);
     const [annotations, setAnnotations] = useState<Annotation[]>();
     const slide = useRecoilValue(currentSlideState);
@@ -200,5 +200,3 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
         </main>
     );
 }
-
-export default ProjectView;

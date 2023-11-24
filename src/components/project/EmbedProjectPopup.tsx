@@ -3,12 +3,12 @@ import { hostState } from "lib/atoms";
 import { getRecoil } from "recoil-nexus";
 import { Slide } from "types";
 
-interface EmbedProjectPopupProps {
+type Props = {
     slide: Slide | null;
     projectId: string;
 }
 
-function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
+export default function EmbedProjectPopup({ slide, projectId}: Props) {
     const host = getRecoil(hostState);
     
     const EmbedFrameTemplate = (data: string) => { // TODO: remove leading tabs
@@ -81,5 +81,3 @@ function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
         </PopupLarge>  
     )
 }
-
-export default EmbedProjectPopup;

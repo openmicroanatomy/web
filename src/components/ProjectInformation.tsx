@@ -1,10 +1,10 @@
 import { Project } from "types";
 
-interface ProjectInformationProps {
+type Props = {
     data: Project | null
 }
 
-function ProjectInformation({ data }: ProjectInformationProps) {
+export default function ProjectInformation({ data }: Props) {
     const styles = `<link rel="stylesheet" href="ckeditor.css" />`;
 
     if (!data) {
@@ -21,5 +21,3 @@ function ProjectInformation({ data }: ProjectInformationProps) {
         </div>
     );
 }
-
-export default ProjectInformation;

@@ -5,7 +5,7 @@ import { HashRouter, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const App = () => {
+export default function App() {
     // TODO: Switch to other router when equipped with an server, currently server via nginx 
     // const history = createBrowserHistory();
 
@@ -30,6 +30,4 @@ const App = () => {
             </div>
         </HashRouter>
     );
-};
-
-export default App;
+}

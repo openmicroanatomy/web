@@ -9,14 +9,14 @@ import { useRecoilValue } from "recoil";
 import { currentSlideState, slideTourState } from "../lib/atoms";
 import { ToggleDisplaySlideNumbers } from "./project/ToggleDisplaySlideNumbers";
 
-interface Props {
+type Props = {
     projectId: string;
     projectData: Project | null;
     embedded: boolean;
     onProjectChange: (project: string) => void;
 }
 
-function ProjectViewSidebar({ projectId, projectData, embedded, onProjectChange }: Props) {
+export default function ProjectViewSidebar({ projectId, projectData, embedded, onProjectChange }: Props) {
     const slide = useRecoilValue(currentSlideState);
     const slideTour = useRecoilValue(slideTourState);
 
@@ -61,5 +61,3 @@ function ProjectViewSidebar({ projectId, projectData, embedded, onProjectChange 
         </div>
     );
 }
-
-export default ProjectViewSidebar;

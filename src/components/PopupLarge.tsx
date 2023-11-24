@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react"
 import Popup from "reactjs-popup"
 
-interface Props {
+type Props = {
     activator?: JSX.Element | ((isOpen: boolean) => JSX.Element);
     children: ReactNode;
     disabled?: boolean;
@@ -10,22 +10,22 @@ interface Props {
 /**
  * Based on: https://github.com/Mangatsu/web/blob/main/components/PopupLarge.tsx
  */
-const PopupLarge = ({activator, children, disabled = false}: Props) => {
+export default function PopupLarge({ activator, children, disabled = false }: Props) {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        const html = document.getElementsByTagName("html")[0]
+        const html = document.getElementsByTagName("html")[0];
 
         if (isOpen) {
-            html.classList.add("lock-scroll")
+            html.classList.add("lock-scroll");
         } else {
-            html.classList.remove("lock-scroll")
+            html.classList.remove("lock-scroll");
         }
 
         return (): void => {
-            html.classList.remove("lock-scroll")
-        }
-    }, [isOpen])
+            html.classList.remove("lock-scroll");
+        };
+    }, [isOpen]);
 
     return (
         <Popup
@@ -40,7 +40,5 @@ const PopupLarge = ({activator, children, disabled = false}: Props) => {
                 {children}
             </div>
         </Popup>
-    )
+    );
 }
-
-export default PopupLarge

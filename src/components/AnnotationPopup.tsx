@@ -4,7 +4,7 @@ import AnnotationQuiz from "./AnnotationQuiz";
 import PopupLarge from "./PopupLarge";
 import React from "react";
 
-interface Props {
+type Props = {
     annotation: Annotation;
 
     /**
@@ -15,7 +15,7 @@ interface Props {
     renderer?: (text: string, clickable: boolean) => React.JSX.Element;
 }
 
-function AnnotationPopup({ annotation, renderer }: Props) {
+export default function AnnotationPopup({ annotation, renderer }: Props) {
     const answer = parseAnswerData(annotation.properties.metadata?.Answer);
     const description = annotation.properties.metadata?.ANNOTATION_DESCRIPTION;
     const disabled = answer.type === AnnotationAnswerTypes.UNDEFINED && !description;
@@ -52,5 +52,3 @@ function AnnotationPopup({ annotation, renderer }: Props) {
         </PopupLarge>
     );
 }
-
-export default AnnotationPopup;

@@ -2,11 +2,11 @@ import { Slide } from "types";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { currentSlideState, displaySlideNumbersState } from "../lib/atoms";
 
-interface SlidesProps {
+type Props = {
     slides?: Slide[];
 }
 
-function Slides({ slides }: SlidesProps) {
+export default function Slides({ slides }: Props) {
     const [slide, setSlide] = useRecoilState(currentSlideState);
     const displaySlideNumbers = useRecoilValue(displaySlideNumbersState);
 
@@ -53,5 +53,3 @@ function Slides({ slides }: SlidesProps) {
         </div>
     );
 }
-
-export default Slides;

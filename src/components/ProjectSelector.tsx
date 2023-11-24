@@ -1,13 +1,13 @@
 import { EduOrganization, EduWorkspace } from "types";
 import "styles/Scrollbar.css";
 
-interface ProjectSelectorProps {
+type Props = {
     workspaces?: EduWorkspace[];
     organization: EduOrganization;
     onProjectChange: (newProject: string) => void;
 }
 
-function ProjectSelector({ workspaces, organization, onProjectChange }: ProjectSelectorProps) {
+export default function ProjectSelector({ workspaces, organization, onProjectChange }: Props) {
     if (!workspaces) {
         return <p className="font-bold text-center">Loading ...</p>;
     }
@@ -48,5 +48,3 @@ function ProjectSelector({ workspaces, organization, onProjectChange }: ProjectS
         </>
     );
 }
-
-export default ProjectSelector;
