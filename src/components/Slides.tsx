@@ -1,9 +1,9 @@
-import { Image } from "types";
+import { Slide } from "types";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { currentSlideState, displaySlideNumbersState } from "../lib/atoms";
 
 interface SlidesProps {
-    slides?: Image[];
+    slides?: Slide[];
 }
 
 function Slides({ slides }: SlidesProps) {
@@ -21,7 +21,7 @@ function Slides({ slides }: SlidesProps) {
     /**
      * Check if given slide is the same as the currently open slide.
      */
-    const isCurrentSlide = (that: Image) => {
+    const isCurrentSlide = (that: Slide) => {
         return that.entryID == slide?.entryID;
     }
 

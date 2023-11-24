@@ -5,7 +5,7 @@ import Viewer from "./Viewer";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { fetchProjectData } from "lib/api";
 import { toast } from "react-toastify";
-import { ProjectData, Image, Annotation } from "types";
+import { Project, Slide, Annotation } from "types";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Annotations from "./Annotations";
 
@@ -17,7 +17,7 @@ interface EmbeddedSingleSlideSlugs {
 
 function EmbeddedSingleSlide() {
     const [annotations, setAnnotations] = useState([]);
-    const [slide, setSlide] = useState<Image | null>(null);
+    const [slide, setSlide] = useState<Slide | null>(null);
     const sidebarVisible = useRecoilValue(sidebarVisibleState);
 
     const [host, setHost] = useRecoilState(hostState);
@@ -33,7 +33,7 @@ function EmbeddedSingleSlide() {
         }
 
         fetchProjectData(slugs.project)
-            .then((data: ProjectData) => {
+            .then((data: Project) => {
                 if (data.images.length == 0) {
                     return;
                 }

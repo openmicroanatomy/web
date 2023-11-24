@@ -1,10 +1,10 @@
 import PopupLarge from "components/PopupLarge";
 import { hostState } from "lib/atoms";
 import { getRecoil } from "recoil-nexus";
-import { Image } from "types";
+import { Slide } from "types";
 
 interface EmbedProjectPopupProps {
-    slide: Image | null;
+    slide: Slide | null;
     projectId: string;
 }
 
@@ -26,7 +26,7 @@ function EmbedProjectPopup({ slide, projectId}: EmbedProjectPopupProps) {
         return `https://qupath.oulu.fi/#!/embed/${data}`
     }
 
-    const CreateUrl = (projectId: string, slide: Image | null = null) => {
+    const CreateUrl = (projectId: string, slide: Slide | null = null) => {
         if (!host) return "";
 
         let url = host.host;

@@ -7,16 +7,16 @@ import { ThreeDots } from "react-loading-icons";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import "styles/Buttons.css";
-import { Host } from "types";
+import { EduHost } from "types";
 import validator from "validator";
 import Select from "react-select";
 
 interface HostSelectorProps {
-    hosts: Host[];
+    hosts: EduHost[];
 }
 
 function HostSelector({ hosts }: HostSelectorProps) {
-    const [selectedHost, setSelectedHost] = useState<Host | null>(null);
+    const [selectedHost, setSelectedHost] = useState<EduHost | null>(null);
     const [isValidUrl, setIsValidUrl] = useState(false);
     const [isCustomHost, setIsCustomHost] = useState<boolean>(false);
     const [waiting, setWaiting] = useState<boolean>(false);

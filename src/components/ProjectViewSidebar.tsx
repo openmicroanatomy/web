@@ -1,5 +1,5 @@
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { ProjectData } from "types";
+import { Project } from "types";
 import Annotations from "./Annotations";
 import EmbedProjectPopup from "./project/EmbedProjectPopup";
 import ToggleSidebar from "./project/ToggleSidebar";
@@ -11,7 +11,7 @@ import { ToggleDisplaySlideNumbers } from "./project/ToggleDisplaySlideNumbers";
 
 interface Props {
     projectId: string;
-    projectData: ProjectData | null;
+    projectData: Project | null;
     embedded: boolean;
     onProjectChange: (project: string) => void;
 }

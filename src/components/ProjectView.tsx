@@ -7,7 +7,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
-import { ProjectData, Image, SlideTourEntry, Annotation } from "types";
+import { Project, Slide, SlideTourEntry, Annotation } from "types";
 import ToggleSidebar from "./project/ToggleSidebar";
 import ProjectInformation from "./ProjectInformation";
 import ProjectViewSidebar from "./ProjectViewSidebar";
@@ -26,7 +26,7 @@ interface ProjectViewProps {
 }
 
 function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectViewProps) {
-    const [projectData, setProjectData] = useState<ProjectData | null>(null);
+    const [projectData, setProjectData] = useState<Project | null>(null);
     const [annotations, setAnnotations] = useState<Annotation[]>();
     const slide = useRecoilValue(currentSlideState);
     const [tabIndex, setTabIndex] = useState(0);
@@ -57,7 +57,7 @@ function ProjectView({ projectId, onProjectChange, embedded = false }: ProjectVi
         }
     }
 
-    const loadSlideTour = (slide: Image) => {
+    const loadSlideTour = (slide: Slide) => {
         let entries: SlideTourEntry[] = [];
 
         try {

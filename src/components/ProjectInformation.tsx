@@ -1,7 +1,7 @@
-import { ProjectData } from "types";
+import { Project } from "types";
 
 interface ProjectInformationProps {
-    data: ProjectData | null
+    data: Project | null
 }
 
 function ProjectInformation({ data }: ProjectInformationProps) {

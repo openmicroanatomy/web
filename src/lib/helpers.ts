@@ -1,4 +1,4 @@
-import { EduAnswer } from "types";
+import { MultiChoiceOption } from "types";
 
 export enum AnnotationAnswerTypes {
     QUIZ,
@@ -7,7 +7,7 @@ export enum AnnotationAnswerTypes {
 }
 
 export type Answer = {
-    data: EduAnswer[];
+    data: MultiChoiceOption[];
     type: AnnotationAnswerTypes.QUIZ;
 } | {
     data: string;
@@ -26,7 +26,7 @@ export const parseAnswerData = (input?: string | null | undefined): Answer => {
             const parsed = JSON.parse(input);
 
             if (parsed && typeof parsed === "object") {
-                return { data: parsed as EduAnswer[], type: AnnotationAnswerTypes.QUIZ };
+                return { data: parsed as MultiChoiceOption[], type: AnnotationAnswerTypes.QUIZ };
             }
         } catch {
             return { data: input, type: AnnotationAnswerTypes.TEXT };

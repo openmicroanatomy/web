@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { EduAnswer } from "types";
+import { MultiChoiceOption } from "types";
 
 interface QuizProps {
-    choices: EduAnswer[];
+    choices: MultiChoiceOption[];
     name: string;
     description: string | null | undefined;
 }

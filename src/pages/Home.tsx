@@ -7,18 +7,18 @@ import Constants from "lib/constants";
 import { getValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { Host, Organization, Workspace } from "types";
+import { EduHost, EduOrganization, EduWorkspace } from "types";
 import { fetchHosts, fetchOrganizations, fetchWorkspaces } from "lib/api";
 import { toast } from "react-toastify";
 
 const Home = () => {
     /* State shared to child components */
-    const [hosts, setHosts] = useState<Host[]>([]);
-    const [organizations, setOrganizations] = useState<Organization[]>();
-    const [workspaces, setWorkspaces] = useState<Workspace[]>();
+    const [hosts, setHosts] = useState<EduHost[]>([]);
+    const [organizations, setOrganizations] = useState<EduOrganization[]>();
+    const [workspaces, setWorkspaces] = useState<EduWorkspace[]>();
 
     const [host, setHost] = useRecoilState(hostState);
-    const [organization, setOrganization] = useState<Organization | null>(null)
+    const [organization, setOrganization] = useState<EduOrganization | null>(null)
     const [projectId, setProjectId] = useState("");
 
     const setSlide = useSetRecoilState(currentSlideState);
@@ -66,7 +66,7 @@ const Home = () => {
             });
     }, [host]);
 
-    const onOrganizationChange = (newOrganization: Organization | null) => {
+    const onOrganizationChange = (newOrganization: EduOrganization | null) => {
         setOrganization(newOrganization);
     };
 

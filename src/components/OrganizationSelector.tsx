@@ -1,14 +1,14 @@
 import { hostState } from "lib/atoms";
 import { useRecoilValue } from "recoil";
-import { Organization, Workspace } from "types";
+import { EduOrganization, EduWorkspace } from "types";
 import Select from 'react-select'
 import { useMemo } from "react";
 
 interface OrganizationSelectorProps {
-    currentOrganization: Organization | null;
-    organizations?: Organization[];
-    workspaces?: Workspace[];
-    onOrganizationChange: (organization: Organization | null) => void;
+    currentOrganization: EduOrganization | null;
+    organizations?: EduOrganization[];
+    workspaces?: EduWorkspace[];
+    onOrganizationChange: (organization: EduOrganization | null) => void;
 }
 
 function OrganizationSelector({ currentOrganization, organizations, workspaces, onOrganizationChange }: OrganizationSelectorProps) {

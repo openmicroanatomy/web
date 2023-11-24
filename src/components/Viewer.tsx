@@ -5,16 +5,16 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Viewer.css";
-import { Annotation, Image } from "types";
+import { Annotation, Slide } from "types";
 import "openseadragon/openseadragon-scalebar";
 import "openseadragon/openseadragon-svg-overlay";
 import OpenSeadragon from "openseadragon";
 
 interface Props {
-    slide?: Image | null;
+    slide?: Slide | null;
 }
 
-async function InitializeOMEROSlide(slide: Image): Promise<SlideProperties> {
+async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
     const slideId = slide.serverBuilder.uri.split("?show=image-")[1];
     const data = await fetchSlideProperties(slideId, SlideRepository.OMERO);
 
@@ -52,7 +52,7 @@ async function InitializeOMEROSlide(slide: Image): Promise<SlideProperties> {
     } satisfies SlideProperties;
 }
 
-async function InitializeOpenMicroanatomySlide(slide: Image): Promise<SlideProperties> {
+async function InitializeOpenMicroanatomySlide(slide: Slide): Promise<SlideProperties> {
     const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
     const data = await fetchSlideProperties(slideId, SlideRepository.OpenMicroanatomy);
 
@@ -106,7 +106,7 @@ async function InitializeOpenMicroanatomySlide(slide: Image): Promise<SlidePrope
     } satisfies SlideProperties;
 }
 
-async function InitializeSlide(slide: Image): Promise<SlideProperties> {
+async function InitializeSlide(slide: Slide): Promise<SlideProperties> {
     if (slide.serverBuilder.providerClassName.includes("OmeroWebImageServerBuilder")) {
         return InitializeOMEROSlide(slide);
     } else if (slide.serverBuilder.providerClassName.includes("EduServerBuilder")) {

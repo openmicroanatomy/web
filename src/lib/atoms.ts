@@ -1,10 +1,10 @@
 import OpenSeadragon from "openseadragon";
 import { atom } from "recoil";
-import { Annotation, Host, Image, SlideTourState } from "types";
+import { Annotation, EduHost, Slide, SlideTourState } from "types";
 
 export const hostState = atom({
     key: "hostState",
-    default: null as Host | null,
+    default: null as EduHost | null,
 });
 
 export const selectedAnnotationState = atom({
@@ -27,7 +27,7 @@ export const overlayState = atom({
 
 export const currentSlideState = atom({
     key: "currentSlide",
-    default: null as Image | null
+    default: null as Slide | null
 })
 
 export const sidebarVisibleState = atom({

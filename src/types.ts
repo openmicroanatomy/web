@@ -1,24 +1,28 @@
-export interface ServerConfiguration {
+/*
+ * Types prefixed with <code>Edu</code> are types returned by the OpenMicroanatomy Server.
+ * See "Schemas" at the bottom of https://demo.edu.qupath.yli-hallila.fi/swagger
+ */
+
+export type EduServerConfiguration = {
     version: string;
     guestLoginEnabled: boolean;
     simpleLoginEnabled: boolean;
     microsoftLoginEnabled: boolean;
 }
 
-export interface Host {
+export type EduHost = {
     id: string;
     name: string;
     host: string;
     img: string;
 }
 
-export interface Organization {
+export type EduOwner = {
     id: string;
     name: string;
-    logoUrl: string;
 }
 
-enum Roles {
+enum EduRoles {
     ANYONE,
     ADMIN,
     MODERATOR,
@@ -26,78 +30,74 @@ enum Roles {
     MANAGE_SLIDES,
 }
 
-export interface User {
-    id: string;
-    name: string;
+export type EduUser = EduOwner & {
     email: string;
-    organization: Organization;
-    roles: Roles;
+    organization: EduOrganization;
+    roles: EduRoles[];
 }
 
-export interface Owner {
-    id: string;
-    name: string;
+export type EduOrganization = EduOwner & {
+    logoUrl: string;
 }
 
-export interface Slide {
+export type EduSlide = {
     id: string;
     name: string;
-    owner: Owner;
+    owner: EduOwner;
     parameters: unknown;
 }
 
-export interface Project {
+export type EduProject = {
     id: string;
     name: string;
     description: string;
-    subject: Subject;
+    subject: EduSubject;
     createdAt: number;
     modifiedAt: number;
     hidden: boolean;
     owner: string;
 }
 
-export interface ProjectData {
+export type EduSubject = {
+    id: string;
+    name: string;
+    workspace: EduWorkspace;
+    projects: EduProject[];
+}
+
+export type EduWorkspace = {
+    id: string;
+    name: string;
+    owner: EduOwner;
+    subjects: EduSubject[];
+    write: EduOwner[];
+    read: EduOwner[];
+}
+
+/* QuPath Edu Types */
+
+export type Project = {
     id: string;
     version: string;
     createTimestamp: number;
     modifyTimestamp: number;
-    images: Image[];
+    images: Slide[];
     projectInformation: string;
 }
 
-export interface Subject {
-    id: string;
-    name: string;
-    workspace: Workspace;
-    projects: Project[];
-}
-
-export interface Workspace {
-    id: string;
-    name: string;
-    owner: Owner;
-    subjects: Subject[];
-    write?: Owner[];
-    read?: Owner[];
-    // writePermissions?: Owner[];
-    // readPermissions?: Owner[];
-}
-
-export interface Image {
+export type Slide = {
     serverBuilder: ServerBuilder;
     entryID: number;
     randomizedName: string;
     description: string;
     imageName: string;
     thumbnail: string;
-    imageData: string; // Serialized Java fuckery
+    imageData: string;
     slideTour: string;
     annotations: string;
 }
 
-// Commented out unused props
-export interface ServerBuilder {
+export type ServerBuilder = {
     uri: string;
     builderType: string;
     providerClassName: string;
@@ -105,28 +105,27 @@ export interface ServerBuilder {
     metadata: unknown;
 }
 
-// Annotation
-export interface Annotation {
+export type Annotation = {
     type: string;
     geometry: Geometry;
-    properties: AnnotationProps;
+    properties: AnnotationProperties;
 }
 
-interface AnnotationProps {
+type AnnotationProperties = {
     object_type: string;
     name: string | undefined;
     color: number[];
     isLocked: boolean;
-    metadata?: AnnotationPropsMetaData;
+    metadata?: AnnotationMetadata;
 }
 
-interface AnnotationPropsMetaData {
+type AnnotationMetadata = {
     ANNOTATION_DESCRIPTION?: string | null;
     EDU_ANSWER?: string | null;
     Answer?: string | null;
 }
 
-export interface SlideTourEntry {
+export type SlideTourEntry = {
     text: string;
     x: number;
     y: number;
@@ -135,7 +134,13 @@ export interface SlideTourEntry {
     annotations: Annotation[];
 }
 
-export interface EduAnswer {
+export type SlideTourState = {
+    active: boolean;
+    index: number;
+    entries: SlideTourEntry[]
+}
+
+export type MultiChoiceOption = {
     choice: string;
 
     /**
@@ -144,7 +149,7 @@ export interface EduAnswer {
     isAnswer: boolean;
 }
 
-export interface Geometry {
+export type Geometry = {
     type: string;
     coordinates: MultiPolygon | Polygon | LineString;
 }
@@ -152,9 +157,3 @@ export interface Geometry {
 export type Polygon = number[][][];
 export type MultiPolygon = number[][][][];
 export type LineString = number[][];
-
-export type SlideTourState = {
-    active: boolean;
-    index: number;
-    entries: SlideTourEntry[]
-}

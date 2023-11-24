@@ -1,9 +1,9 @@
-import { Organization, Workspace } from "types";
+import { EduOrganization, EduWorkspace } from "types";
 import "styles/Scrollbar.css";
 
 interface ProjectSelectorProps {
-    workspaces?: Workspace[];
-    organization: Organization;
+    workspaces?: EduWorkspace[];
+    organization: EduOrganization;
     onProjectChange: (newProject: string) => void;
 }
 

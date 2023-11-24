@@ -1,6 +1,6 @@
 import { hostState } from "lib/atoms";
 import { getRecoil } from "recoil-nexus";
-import { ServerConfiguration } from "../types";
+import { EduServerConfiguration } from "../types";
 import { SlideRepository } from "./EduViewer";
 
 /**
@@ -57,7 +57,7 @@ export const isValidHost = async (url: string) => {
 
     try {
         const response = await fetch(new URL("/api/v0/server", url).href);
-        const configuration = await response.json() as ServerConfiguration;
+        const configuration = await response.json() as EduServerConfiguration;
 
         return configuration.guestLoginEnabled;
     } catch {
