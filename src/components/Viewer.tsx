@@ -124,13 +124,6 @@ function Viewer({ slide }: Props) {
     const slideTour = useRecoilValue(slideTourState);
 
     useEffect(() => {
-        if (selectedAnnotation && viewer) {
-            viewer.ZoomAndPanToAnnotation(selectedAnnotation);
-            viewer.HighlightAnnotation(selectedAnnotation);
-        }
-    }, [selectedAnnotation]);
-
-    useEffect(() => {
         setViewer(new EduViewer(OpenSeadragon({
             id: "Viewer",
             defaultZoomLevel: 0,
@@ -145,7 +138,14 @@ function Viewer({ slide }: Props) {
                 dblClickToZoom: true,
             }
         }), setSelectedAnnotation));
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (selectedAnnotation && viewer) {
+            viewer.ZoomAndPanToAnnotation(selectedAnnotation);
+            viewer.HighlightAnnotation(selectedAnnotation);
+        }
+    }, [selectedAnnotation]);
 
     useEffect(() => {
         if (!slide) return;
@@ -168,6 +168,17 @@ function Viewer({ slide }: Props) {
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.
 
+    useEffect(() => {
+        viewer?.ClearAnnotations();
+
+        if (slideTour.active) {
+            DrawCurrentSlideTourEntry();
+        } else {
+            viewer?.SetRotation(0);
+            viewer?.DrawAnnotations(cachedAnnotations);
+        }
+    }, [slideTour]);
+
     /**
      * Draw any annotations for this slide tour entry and pan & zoom to correct position.
      */
@@ -184,17 +195,6 @@ function Viewer({ slide }: Props) {
         viewer?.ClearAnnotations();
         viewer?.DrawAnnotations(annotations || []);
     }
-
-    useEffect(() => {
-        viewer?.ClearAnnotations();
-
-        if (slideTour.active) {
-            DrawCurrentSlideTourEntry();
-        } else {
-            viewer?.SetRotation(0);
-            viewer?.DrawAnnotations(cachedAnnotations);
-        }
-    }, [slideTour]);
 
     return <div id="Viewer" className="h-full flex-grow bg-black" />;
 }
