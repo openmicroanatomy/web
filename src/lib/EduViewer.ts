@@ -49,6 +49,11 @@ export type SlideProperties = {
     serverUri: string,
 
     millimetersPerPixel: number
+
+    /**
+     * @see http://openseadragon.github.io/docs/OpenSeadragon.TileSource.html#getTileUrl
+     */
+    getTileUrl: (level: number, x: number, y: number, properties: SlideProperties) => string;
 }
 
 export default class EduViewer {
@@ -79,42 +84,7 @@ export default class EduViewer {
                 return 1 / this.SlideProperties.downsamples[this.SlideProperties.levelCount - level - 1];
             },
             getTileUrl: (level: number, x: number, y: number) => {
-                level = this.SlideProperties.levelCount - level - 1;
-
-                if (this.SlideProperties.repository === SlideRepository.OMERO) {
-                    return this.SlideProperties.serverUri
-                        .replaceAll("{tileX}", String(x))
-                        .replaceAll("{tileY}", String(y))
-                        .replaceAll("{level}", String(level))
-                        .replaceAll("{tileWidth}", String(this.SlideProperties.tileWidth))
-                        .replaceAll("{tileHeight}", String(this.SlideProperties.tileHeight));
-                }
-
-                const downsample = this.SlideProperties.downsamples[level];
-
-                let adjustY = 0;
-                let adjustX = 0;
-
-                const tileY = y * this.SlideProperties.tileHeight * downsample;
-                const tileX = x * this.SlideProperties.tileWidth  * downsample;
-
-                if (tileX + downsample * this.SlideProperties.tileWidth > this.SlideProperties.slideWidth) {
-                    adjustX = this.SlideProperties.tileWidth  - Math.floor(Math.abs((tileX - this.SlideProperties.slideWidth) / downsample));
-                }
-
-                if (tileY + downsample * this.SlideProperties.tileHeight > this.SlideProperties.slideHeight) {
-                    adjustY = this.SlideProperties.tileHeight - Math.floor(Math.abs((tileY - this.SlideProperties.slideHeight) / downsample));
-                }
-
-                const height = this.SlideProperties.tileHeight - adjustY;
-                const width  = this.SlideProperties.tileWidth  - adjustX;
-
-                return this.SlideProperties.serverUri
-                    .replaceAll("{tileX}", String(tileX))
-                    .replaceAll("{tileY}", String(tileY))
-                    .replaceAll("{level}", String(level))
-                    .replaceAll("{tileWidth}", String(width))
-                    .replaceAll("{tileHeight}", String(height));
+                return this.SlideProperties.getTileUrl(level, x, y, this.SlideProperties)
             },
         });
 

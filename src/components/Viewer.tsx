@@ -38,7 +38,17 @@ async function InitializeOMEROSlide(slide: Image): Promise<SlideProperties> {
         tileWidth: data.tiles ? data.tile_size.width : data.size.width,
         tileHeight: data.tiles ? data.tile_size.height : data.size.height,
         serverUri: `https://idr.openmicroscopy.org/webgateway/render_image_region/${data.id}/0/0/?tile={level},{tileX},{tileY},{tileWidth},{tileHeight}`,
-        millimetersPerPixel: parseFloat(data.pixel_size.x) * 10
+        millimetersPerPixel: parseFloat(data.pixel_size.x) * 10,
+        getTileUrl: (level, x, y, properties) => {
+            level = properties.levelCount - level - 1;
+
+            return properties.serverUri
+                .replaceAll("{tileX}", String(x))
+                .replaceAll("{tileY}", String(y))
+                .replaceAll("{level}", String(level))
+                .replaceAll("{tileWidth}", String(properties.tileWidth))
+                .replaceAll("{tileHeight}", String(properties.tileHeight));
+        }
     } satisfies SlideProperties;
 }
 
@@ -63,7 +73,36 @@ async function InitializeOpenMicroanatomySlide(slide: Image): Promise<SlidePrope
         tileWidth: parseInt(data["openslide.level[0].tile-height"]),
         tileHeight: parseInt(data["openslide.level[0].tile-width"]),
         serverUri: data["openslide.remoteserver.uri"],
-        millimetersPerPixel: parseFloat(data["aperio.MPP"])
+        millimetersPerPixel: parseFloat(data["aperio.MPP"]),
+        getTileUrl: (level, x, y, properties) => {
+            level = properties.levelCount - level - 1;
+
+            const downsample = properties.downsamples[level];
+
+            const tileY = y * properties.tileHeight * downsample;
+            const tileX = x * properties.tileWidth  * downsample;
+
+            let adjustY = 0;
+            let adjustX = 0;
+
+            if (tileX + downsample * properties.tileWidth > properties.slideWidth) {
+                adjustX = properties.tileWidth - Math.floor(Math.abs((tileX - properties.slideWidth) / downsample));
+            }
+
+            if (tileY + downsample * properties.tileHeight > properties.slideHeight) {
+                adjustY = properties.tileHeight - Math.floor(Math.abs((tileY - properties.slideHeight) / downsample));
+            }
+
+            const height = properties.tileHeight - adjustY;
+            const width  = properties.tileWidth  - adjustX;
+
+            return properties.serverUri
+                .replaceAll("{tileX}", String(tileX))
+                .replaceAll("{tileY}", String(tileY))
+                .replaceAll("{level}", String(level))
+                .replaceAll("{tileWidth}", String(width))
+                .replaceAll("{tileHeight}", String(height));
+        }
     } satisfies SlideProperties;
 }
 
