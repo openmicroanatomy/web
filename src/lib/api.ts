@@ -9,19 +9,23 @@ import { ServerConfiguration } from "../types";
  * @returns data response as json
  */
 async function request(path: string, init: RequestInit = {}) {
-    const host = getRecoil(hostState);
+    let host = getRecoil(hostState)?.host;
     if (!host) {
         throw new Error("No host selected");
     }
 
-    if (host.host.endsWith("/")) {
+    if (path.startsWith("http")) {
+        host = "";
+    }
+
+    if (host.endsWith("/")) {
         path = path.substring(1);
     }
 
     let response: Response;
 
     try {
-        response = await fetch(`${host.host}${path}`, {
+        response = await fetch(`${host}${path}`, {
             ...init,
             mode: "cors",
         });
@@ -78,4 +82,8 @@ export const fetchWorkspaces = () => {
 
 export const fetchSlide = (id: string) => {
     return request(`/api/v0/slides/${id}`, { method: "GET" });
+};
+
+export const fetchSlideOmero = (id: string) => {
+    return request(`https://idr.openmicroscopy.org/iviewer/image_data/${id}/`);
 };

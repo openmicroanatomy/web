@@ -99,9 +99,10 @@ export interface Image {
 // Commented out unused props
 export interface ServerBuilder {
     uri: string;
-    // builderType: string
-    // providerClassName: string
-    // args: string[]
+    builderType: string;
+    providerClassName: string;
+    args: string[];
+    metadata: unknown;
 }
 
 // Annotation

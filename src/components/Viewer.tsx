@@ -1,6 +1,6 @@
-import { fetchSlide } from "lib/api";
+import { fetchSlide, fetchSlideOmero } from "lib/api";
 import { selectedAnnotationState, slideTourState } from "lib/atoms";
-import EduViewer from "lib/EduViewer";
+import EduViewer, { SlideRepository } from "lib/EduViewer";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -48,22 +48,43 @@ function Viewer({ slide }: Props) {
     useEffect(() => {
         if (!slide) return;
 
-        const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
+        if (slide.serverBuilder.providerClassName.includes("OmeroWebImageServerBuilder")) {
+            const slideId = slide.serverBuilder.uri.split("?show=image-")[1];
 
-        fetchSlide(slideId)
-            .then((data) => {
-                const annotations = JSON.parse(slide.annotations || "[]");
+            fetchSlideOmero(slideId)
+                .then((data) => {
+                    const annotations = JSON.parse(slide.annotations || "[]");
 
-                viewer?.LoadSlide(data);
+                    viewer?.SetSlideRepository(SlideRepository.OMERO);
+                    viewer?.LoadSlide(data);
+                    viewer?.ClearAnnotations();
+                    viewer?.DrawAnnotations(annotations || []);
 
-                viewer?.ClearAnnotations();
-                viewer?.DrawAnnotations(annotations || []);
+                    setCachedAnnotations(annotations || []);
+                }).catch((error) => {
+                    toast.error(error.message);
+                    console.error(error);
+                });
+        } else if (slide.serverBuilder.providerClassName.includes("EduServerBuilder")) {
+            const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
 
-                setCachedAnnotations(annotations || []);
-            }).catch((error) => {
-                toast.error(error.message);
-                console.error(error);
-            });
+            fetchSlide(slideId)
+                .then((data) => {
+                    const annotations = JSON.parse(slide.annotations || "[]");
+
+                    viewer?.SetSlideRepository(SlideRepository.OpenMicroanatomy);
+                    viewer?.LoadSlide(data);
+                    viewer?.ClearAnnotations();
+                    viewer?.DrawAnnotations(annotations || []);
+
+                    setCachedAnnotations(annotations || []);
+                }).catch((error) => {
+                    toast.error(error.message);
+                    console.error(error);
+                });
+        } else {
+            toast.error("Unknown server builder, please retry...");
+        }
     }, [slide, viewer]);
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.

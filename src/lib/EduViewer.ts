@@ -4,10 +4,17 @@ import { SetterOrUpdater } from "recoil";
 import * as d3 from "d3";
 import OpenSeadragon from "openseadragon";
 
+export enum SlideRepository {
+    NONE,
+    OMERO,
+    OpenMicroanatomy
+}
+
 export default class EduViewer {
 
     private Viewer: OpenSeadragon.Viewer;
     private Overlay: OpenSeadragon.SvgOverlay | undefined;
+    private SlideRepository = SlideRepository.NONE;
 
     private Downsamples!: number[];
     private LevelCount!: number;
@@ -28,23 +35,55 @@ export default class EduViewer {
         this.SetSelectedAnnotation = updater;
     }
 
-    LoadSlide(data: Record<string, string>) {
-        this.LevelCount = parseInt(data["openslide.level-count"]);
+    LoadSlide(data: any) {
+        if (this.SlideRepository == SlideRepository.OMERO) {
+            const SlideID = data.id;
 
-        this.Downsamples = [];
-        for (let i = 0; i < this.LevelCount; i++) {
-            const downsample = parseInt(data["openslide.level[" + i + "].downsample"]);
-            this.Downsamples.push(Math.floor(downsample));
+            this.LevelCount = parseInt(data.levels) || 1;
+
+            this.Downsamples = [];
+
+            if (this.LevelCount > 1) {
+                for (let i = 0; i < this.LevelCount; i++) {
+                    this.Downsamples.push(1 / data.zoomLevelScaling[i]);
+                }
+            } else {
+                this.Downsamples.push(1);
+            }
+
+            this.SlideHeight = parseInt(data.size.height);
+            this.SlideWidth  = parseInt(data.size.width);
+
+            if (data.tiles) {
+                this.TileHeight  = data.tile_size.height;
+                this.TileWidth   = data.tile_size.width;
+            } else {
+                this.TileHeight  = data.size.height;
+                this.TileWidth   = data.size.width;
+            }
+
+            this.ServerUri = `https://idr.openmicroscopy.org/webgateway/render_image_region/${SlideID}/0/0/?tile={level},{tileX},{tileY},{tileWidth},{tileHeight}`
+            this.MillimetersPerPixel = parseFloat(data.pixel_size.x) * 10 // OMERO is in µm/px
+        } else if (this.SlideRepository === SlideRepository.OpenMicroanatomy) {
+            this.LevelCount = parseInt(data["openslide.level-count"]);
+
+            this.Downsamples = [];
+            for (let i = 0; i < this.LevelCount; i++) {
+                const downsample = parseInt(data["openslide.level[" + i + "].downsample"]);
+                this.Downsamples.push(Math.floor(downsample));
+            }
+
+            this.SlideHeight = parseInt(data["openslide.level[0].height"]);
+            this.SlideWidth  = parseInt(data["openslide.level[0].width"]);
+            this.TileHeight  = parseInt(data["openslide.level[0].tile-width"]);
+            this.TileWidth   = parseInt(data["openslide.level[0].tile-height"]);
+            this.ServerUri   = data["openslide.remoteserver.uri"];
+
+            // TODO: Create fallback if doesn't exist (alternatively openslide.mpp-x or openslide.mpp-y)
+            this.MillimetersPerPixel = parseFloat(data["aperio.MPP"])
+        } else {
+            console.error("Unknown SlideRepository, cannot continue ...")
         }
-
-        this.SlideHeight = parseInt(data["openslide.level[0].height"]);
-        this.SlideWidth  = parseInt(data["openslide.level[0].width"]);
-        this.TileHeight  = parseInt(data["openslide.level[0].tile-width"]);
-        this.TileWidth   = parseInt(data["openslide.level[0].tile-height"]);
-        this.ServerUri   = data["openslide.remoteserver.uri"];
-
-        // TODO: Create fallback if doesn't exist (alternatively openslide.mpp-x or openslide.mpp-y)
-        this.MillimetersPerPixel = parseFloat(data["aperio.MPP"])
 
         this.InitializeViewer();
         this.InitializeScalebar();
@@ -65,6 +104,15 @@ export default class EduViewer {
             },
             getTileUrl: (level: number, x: number, y: number) => {
                 level = this.LevelCount - level - 1;
+
+                if (this.SlideRepository === SlideRepository.OMERO) {
+                    return this.ServerUri
+                        .replaceAll("{tileX}", String(x))
+                        .replaceAll("{tileY}", String(y))
+                        .replaceAll("{level}", String(level))
+                        .replaceAll("{tileWidth}", String(this.TileWidth))
+                        .replaceAll("{tileHeight}", String(this.TileHeight));
+                }
 
                 const downsample = this.Downsamples[level];
 
@@ -201,6 +249,10 @@ export default class EduViewer {
      */
     SetRotation(radians: number) {
         this.Viewer.viewport.setRotation(radians * (180 / Math.PI));
+    }
+
+    SetSlideRepository(slideRepository: SlideRepository) {
+        this.SlideRepository = slideRepository;
     }
 
     private DrawLine(annotation: Annotation) {
