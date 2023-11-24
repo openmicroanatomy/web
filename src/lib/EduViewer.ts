@@ -10,23 +10,52 @@ export enum SlideRepository {
     OpenMicroanatomy
 }
 
+export type SlideProperties = {
+    repository: SlideRepository,
+
+    /**
+     * Count of pyramid levels. 0 = most zoomed in.
+     */
+    levelCount: number,
+
+    /**
+     * Downsamples for each level; length of array must equal <code>levelCount</code>.
+     */
+    downsamples: number[];
+
+    /**
+     * Slide height (maximum zoom) in pixels.
+     */
+    slideHeight: number,
+
+    /**
+     * Slide width (maximum zoom) in pixels.
+     */
+    slideWidth: number,
+
+    /**
+     * Tile height in pixels.
+     */
+    tileHeight: number,
+
+    /**
+     * Tile width in pixels.
+     */
+    tileWidth: number,
+
+    /**
+     * Supported placeholders: {level}, {tileX}, {tileY}, {tileHeight} and {tileWidth}
+     */
+    serverUri: string,
+
+    millimetersPerPixel: number
+}
+
 export default class EduViewer {
 
     private Viewer: OpenSeadragon.Viewer;
     private Overlay: OpenSeadragon.SvgOverlay | undefined;
-    private SlideRepository = SlideRepository.NONE;
-
-    private Downsamples!: number[];
-    private LevelCount!: number;
-
-    private SlideHeight!: number;
-    private SlideWidth!: number;
-
-    private TileHeight!: number;
-    private TileWidth!: number;
-    
-    private ServerUri!: string;
-    private MillimetersPerPixel!: number;
+    private SlideProperties!: SlideProperties;
 
     private SetSelectedAnnotation: SetterOrUpdater<Annotation | null>;
 
@@ -35,115 +64,65 @@ export default class EduViewer {
         this.SetSelectedAnnotation = updater;
     }
 
-    LoadSlide(data: any) {
-        if (this.SlideRepository == SlideRepository.OMERO) {
-            const SlideID = data.id;
+    OpenSlide(properties: SlideProperties) {
+        this.SlideProperties = properties;
 
-            this.LevelCount = parseInt(data.levels) || 1;
-
-            this.Downsamples = [];
-
-            if (this.LevelCount > 1) {
-                for (let i = 0; i < this.LevelCount; i++) {
-                    this.Downsamples.push(1 / data.zoomLevelScaling[i]);
-                }
-            } else {
-                this.Downsamples.push(1);
-            }
-
-            this.SlideHeight = parseInt(data.size.height);
-            this.SlideWidth  = parseInt(data.size.width);
-
-            if (data.tiles) {
-                this.TileHeight  = data.tile_size.height;
-                this.TileWidth   = data.tile_size.width;
-            } else {
-                this.TileHeight  = data.size.height;
-                this.TileWidth   = data.size.width;
-            }
-
-            this.ServerUri = `https://idr.openmicroscopy.org/webgateway/render_image_region/${SlideID}/0/0/?tile={level},{tileX},{tileY},{tileWidth},{tileHeight}`
-            this.MillimetersPerPixel = parseFloat(data.pixel_size.x) * 10 // OMERO is in µm/px
-        } else if (this.SlideRepository === SlideRepository.OpenMicroanatomy) {
-            this.LevelCount = parseInt(data["openslide.level-count"]);
-
-            this.Downsamples = [];
-            for (let i = 0; i < this.LevelCount; i++) {
-                const downsample = parseInt(data["openslide.level[" + i + "].downsample"]);
-                this.Downsamples.push(Math.floor(downsample));
-            }
-
-            this.SlideHeight = parseInt(data["openslide.level[0].height"]);
-            this.SlideWidth  = parseInt(data["openslide.level[0].width"]);
-            this.TileHeight  = parseInt(data["openslide.level[0].tile-width"]);
-            this.TileWidth   = parseInt(data["openslide.level[0].tile-height"]);
-            this.ServerUri   = data["openslide.remoteserver.uri"];
-
-            // TODO: Create fallback if doesn't exist (alternatively openslide.mpp-x or openslide.mpp-y)
-            this.MillimetersPerPixel = parseFloat(data["aperio.MPP"])
-        } else {
-            console.error("Unknown SlideRepository, cannot continue ...")
-        }
-
-        this.InitializeViewer();
-        this.InitializeScalebar();
-        this.InitializeOverlay();
-    }
-
-    InitializeViewer() {
         this.Viewer.open({
-            height: this.SlideHeight,
-            width: this.SlideWidth,
-            tileHeight: this.TileHeight,
-            tileWidth: this.TileWidth,
+            height: this.SlideProperties.slideHeight,
+            width: this.SlideProperties.slideWidth,
+            tileHeight: this.SlideProperties.tileHeight,
+            tileWidth: this.SlideProperties.tileWidth,
             minLevel: 0,
-            maxLevel: this.LevelCount - 1,
+            maxLevel: this.SlideProperties.levelCount - 1,
             tileOverlap: 0,
             getLevelScale: (level: number) => {
-                return 1 / this.Downsamples[this.LevelCount - level - 1];
+                return 1 / this.SlideProperties.downsamples[this.SlideProperties.levelCount - level - 1];
             },
             getTileUrl: (level: number, x: number, y: number) => {
-                level = this.LevelCount - level - 1;
+                level = this.SlideProperties.levelCount - level - 1;
 
-                if (this.SlideRepository === SlideRepository.OMERO) {
-                    return this.ServerUri
+                if (this.SlideProperties.repository === SlideRepository.OMERO) {
+                    return this.SlideProperties.serverUri
                         .replaceAll("{tileX}", String(x))
                         .replaceAll("{tileY}", String(y))
                         .replaceAll("{level}", String(level))
-                        .replaceAll("{tileWidth}", String(this.TileWidth))
-                        .replaceAll("{tileHeight}", String(this.TileHeight));
+                        .replaceAll("{tileWidth}", String(this.SlideProperties.tileWidth))
+                        .replaceAll("{tileHeight}", String(this.SlideProperties.tileHeight));
                 }
 
-                const downsample = this.Downsamples[level];
+                const downsample = this.SlideProperties.downsamples[level];
 
                 let adjustY = 0;
                 let adjustX = 0;
 
-                const tileY = y * this.TileHeight * downsample;
-                const tileX = x * this.TileWidth  * downsample;
+                const tileY = y * this.SlideProperties.tileHeight * downsample;
+                const tileX = x * this.SlideProperties.tileWidth  * downsample;
 
-                if (tileX + downsample * this.TileWidth > this.SlideWidth) {
-                    adjustX = this.TileWidth  - Math.floor(Math.abs((tileX - this.SlideWidth) / downsample));
+                if (tileX + downsample * this.SlideProperties.tileWidth > this.SlideProperties.slideWidth) {
+                    adjustX = this.SlideProperties.tileWidth  - Math.floor(Math.abs((tileX - this.SlideProperties.slideWidth) / downsample));
                 }
 
-                if (tileY + downsample * this.TileHeight > this.SlideHeight) {
-                    adjustY = this.TileHeight - Math.floor(Math.abs((tileY - this.SlideHeight) / downsample));
+                if (tileY + downsample * this.SlideProperties.tileHeight > this.SlideProperties.slideHeight) {
+                    adjustY = this.SlideProperties.tileHeight - Math.floor(Math.abs((tileY - this.SlideProperties.slideHeight) / downsample));
                 }
 
-                const height = this.TileHeight - adjustY;
-                const width  = this.TileWidth  - adjustX;
+                const height = this.SlideProperties.tileHeight - adjustY;
+                const width  = this.SlideProperties.tileWidth  - adjustX;
 
-                return this.ServerUri
-                           .replaceAll("{tileX}", String(tileX))
-                           .replaceAll("{tileY}", String(tileY))
-                           .replaceAll("{level}", String(level))
-                           .replaceAll("{tileWidth}", String(width))
-                           .replaceAll("{tileHeight}", String(height));
+                return this.SlideProperties.serverUri
+                    .replaceAll("{tileX}", String(tileX))
+                    .replaceAll("{tileY}", String(tileY))
+                    .replaceAll("{level}", String(level))
+                    .replaceAll("{tileWidth}", String(width))
+                    .replaceAll("{tileHeight}", String(height));
             },
         });
+
+        this.InitializeScalebar();
+        this.InitializeOverlay();
     }
 
-    InitializeScalebar() {
+    private InitializeScalebar() {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.Viewer.scalebar({
@@ -153,11 +132,11 @@ export default class EduViewer {
             color: "#555555",
             fontColor: "#333333",
             backgroundColor: "rgba(255, 255, 255, 0.5)",
-            pixelsPerMeter: this.MillimetersPerPixel ? 1e6 / this.MillimetersPerPixel : 0,
+            pixelsPerMeter: this.SlideProperties.millimetersPerPixel ? 1e6 / this.SlideProperties.millimetersPerPixel : 0,
         });
     }
 
-    InitializeOverlay() {
+    private InitializeOverlay() {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.Overlay = this.Viewer.svgOverlay() as SvgOverlay;
@@ -251,10 +230,6 @@ export default class EduViewer {
         this.Viewer.viewport.setRotation(radians * (180 / Math.PI));
     }
 
-    SetSlideRepository(slideRepository: SlideRepository) {
-        this.SlideRepository = slideRepository;
-    }
-
     private DrawLine(annotation: Annotation) {
         if (!this.Overlay) return;
 
@@ -311,13 +286,13 @@ export default class EduViewer {
     }
 
     private ScaleX(x: number) {
-        return x / this.SlideWidth;
+        return x / this.SlideProperties.slideWidth;
     }
 
     private ScaleY(y: number) {
         // For some reason we need to multiply the y-coordinate by the ratio of the height and width.
         // This is not necessary for the x-coordinate for some reason.
         // This requires some further investigation into why this happens.
-        return (y / this.SlideHeight) * (this.SlideHeight / this.SlideWidth);
+        return (y / this.SlideProperties.slideHeight) * (this.SlideProperties.slideHeight / this.SlideProperties.slideWidth);
     }
 }

@@ -1,6 +1,7 @@
 import { hostState } from "lib/atoms";
 import { getRecoil } from "recoil-nexus";
 import { ServerConfiguration } from "../types";
+import { SlideRepository } from "./EduViewer";
 
 /**
  * Helper to make GET requests to the API.
@@ -80,10 +81,12 @@ export const fetchWorkspaces = () => {
     return request(`/api/v0/workspaces`, { method: "GET" });
 };
 
-export const fetchSlide = (id: string) => {
-    return request(`/api/v0/slides/${id}`, { method: "GET" });
-};
-
-export const fetchSlideOmero = (id: string) => {
-    return request(`https://idr.openmicroscopy.org/iviewer/image_data/${id}/`);
+export const fetchSlideProperties = (id: string, slideRepository: SlideRepository) => {
+    if (slideRepository === SlideRepository.OMERO) {
+        return request(`https://idr.openmicroscopy.org/iviewer/image_data/${id}/`);
+    } else if (slideRepository === SlideRepository.OpenMicroanatomy) {
+        return request(`/api/v0/slides/${id}`, { method: "GET" });
+    } else {
+        throw new Error(`Unknown / unsupported Slide Repository: ${slideRepository}`)
+    }
 };

@@ -1,6 +1,6 @@
-import { fetchSlide, fetchSlideOmero } from "lib/api";
+import { fetchSlideProperties } from "lib/api";
 import { selectedAnnotationState, slideTourState } from "lib/atoms";
-import EduViewer, { SlideRepository } from "lib/EduViewer";
+import EduViewer, { SlideProperties, SlideRepository } from "lib/EduViewer";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -12,6 +12,69 @@ import OpenSeadragon from "openseadragon";
 
 interface Props {
     slide?: Image | null;
+}
+
+async function InitializeOMEROSlide(slide: Image): Promise<SlideProperties> {
+    const slideId = slide.serverBuilder.uri.split("?show=image-")[1];
+    const data = await fetchSlideProperties(slideId, SlideRepository.OMERO);
+
+    const levelCount = parseInt(data.levels) || 1
+    const downsamples = [];
+
+    if (levelCount > 1) {
+        for (let i = 0; i < levelCount; i++) {
+            downsamples.push(1 / data.zoomLevelScaling[i]);
+        }
+    } else {
+        downsamples.push(1);
+    }
+
+    return {
+        repository: SlideRepository.OMERO,
+        levelCount: levelCount,
+        downsamples: downsamples,
+        slideHeight: parseInt(data.size.height),
+        slideWidth: parseInt(data.size.width),
+        tileWidth: data.tiles ? data.tile_size.width : data.size.width,
+        tileHeight: data.tiles ? data.tile_size.height : data.size.height,
+        serverUri: `https://idr.openmicroscopy.org/webgateway/render_image_region/${data.id}/0/0/?tile={level},{tileX},{tileY},{tileWidth},{tileHeight}`,
+        millimetersPerPixel: parseFloat(data.pixel_size.x) * 10
+    } satisfies SlideProperties;
+}
+
+async function InitializeOpenMicroanatomySlide(slide: Image): Promise<SlideProperties> {
+    const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
+    const data = await fetchSlideProperties(slideId, SlideRepository.OpenMicroanatomy);
+
+    const levelCount = parseInt(data["openslide.level-count"]);
+    const downsamples = [];
+
+    for (let i = 0; i < levelCount; i++) {
+        const downsample = parseInt(data["openslide.level[" + i + "].downsample"]);
+        downsamples.push(Math.floor(downsample));
+    }
+
+    return {
+        repository: SlideRepository.OpenMicroanatomy,
+        levelCount: levelCount,
+        downsamples: downsamples,
+        slideHeight: parseInt(data["openslide.level[0].height"]),
+        slideWidth: parseInt(data["openslide.level[0].width"]),
+        tileWidth: parseInt(data["openslide.level[0].tile-height"]),
+        tileHeight: parseInt(data["openslide.level[0].tile-width"]),
+        serverUri: data["openslide.remoteserver.uri"],
+        millimetersPerPixel: parseFloat(data["aperio.MPP"])
+    } satisfies SlideProperties;
+}
+
+async function InitializeSlide(slide: Image): Promise<SlideProperties> {
+    if (slide.serverBuilder.providerClassName.includes("OmeroWebImageServerBuilder")) {
+        return InitializeOMEROSlide(slide);
+    } else if (slide.serverBuilder.providerClassName.includes("EduServerBuilder")) {
+        return InitializeOpenMicroanatomySlide(slide);
+    } else {
+        throw new Error("Unsupported image. Try opening this slide using QuPath Edu");
+    }
 }
 
 function Viewer({ slide }: Props) {
@@ -48,43 +111,20 @@ function Viewer({ slide }: Props) {
     useEffect(() => {
         if (!slide) return;
 
-        if (slide.serverBuilder.providerClassName.includes("OmeroWebImageServerBuilder")) {
-            const slideId = slide.serverBuilder.uri.split("?show=image-")[1];
+        InitializeSlide(slide)
+            .then(properties => {
+                const annotations = JSON.parse(slide.annotations || "[]");
 
-            fetchSlideOmero(slideId)
-                .then((data) => {
-                    const annotations = JSON.parse(slide.annotations || "[]");
+                viewer?.OpenSlide(properties);
+                viewer?.ClearAnnotations();
+                viewer?.DrawAnnotations(annotations || []);
 
-                    viewer?.SetSlideRepository(SlideRepository.OMERO);
-                    viewer?.LoadSlide(data);
-                    viewer?.ClearAnnotations();
-                    viewer?.DrawAnnotations(annotations || []);
-
-                    setCachedAnnotations(annotations || []);
-                }).catch((error) => {
-                    toast.error(error.message);
-                    console.error(error);
-                });
-        } else if (slide.serverBuilder.providerClassName.includes("EduServerBuilder")) {
-            const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
-
-            fetchSlide(slideId)
-                .then((data) => {
-                    const annotations = JSON.parse(slide.annotations || "[]");
-
-                    viewer?.SetSlideRepository(SlideRepository.OpenMicroanatomy);
-                    viewer?.LoadSlide(data);
-                    viewer?.ClearAnnotations();
-                    viewer?.DrawAnnotations(annotations || []);
-
-                    setCachedAnnotations(annotations || []);
-                }).catch((error) => {
-                    toast.error(error.message);
-                    console.error(error);
-                });
-        } else {
-            toast.error("Unknown server builder, please retry...");
-        }
+                setCachedAnnotations(annotations || []);
+            })
+            .catch((error) => {
+                toast.error(error.message);
+                console.error(error);
+            });
     }, [slide, viewer]);
     // This hook needs to also run when Viewer changes because the setViewer() function is
     // async and has not finished unless the user has already opened the Viewer tab.
