@@ -1,7 +1,7 @@
 import { fetchSlideProperties } from "lib/api";
 import { selectedAnnotationState, slideTourState } from "lib/atoms";
 import EduViewer, { SlideProperties, SlideRepository } from "lib/EduViewer";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Viewer.css";
@@ -11,7 +11,7 @@ import "openseadragon/openseadragon-svg-overlay";
 import OpenSeadragon from "openseadragon";
 
 interface Props {
-    slide?: Slide | null;
+    slide: Slide | null;
 }
 
 async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
@@ -118,13 +118,13 @@ async function InitializeSlide(slide: Slide): Promise<SlideProperties> {
 
 function Viewer({ slide }: Props) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
-    const [viewer, setViewer] = useState<EduViewer>();
-    const [cachedAnnotations, setCachedAnnotations] = useState<Annotation[]>([]);
 
+    const cachedAnnotations = useRef<Annotation[]>([])
+    const viewer = useRef<EduViewer>();
     const slideTour = useRecoilValue(slideTourState);
 
     useEffect(() => {
-        setViewer(new EduViewer(OpenSeadragon({
+        viewer.current = new EduViewer(OpenSeadragon({
             id: "Viewer",
             defaultZoomLevel: 0,
             //debugMode: import.meta.env.PROD,
@@ -137,47 +137,49 @@ function Viewer({ slide }: Props) {
                 clickToZoom: false,
                 dblClickToZoom: true,
             }
-        }), setSelectedAnnotation));
+        }), setSelectedAnnotation);
+
+        if (slide) OpenSlide(slide);
     }, []);
 
     useEffect(() => {
-        if (selectedAnnotation && viewer) {
-            viewer.ZoomAndPanToAnnotation(selectedAnnotation);
-            viewer.HighlightAnnotation(selectedAnnotation);
+        if (selectedAnnotation && viewer.current) {
+            viewer.current.ZoomAndPanToAnnotation(selectedAnnotation);
+            viewer.current.HighlightAnnotation(selectedAnnotation);
         }
     }, [selectedAnnotation]);
 
     useEffect(() => {
         if (!slide) return;
 
-        InitializeSlide(slide)
-            .then(properties => {
-                const annotations = JSON.parse(slide.annotations || "[]");
-
-                viewer?.OpenSlide(properties);
-                viewer?.ClearAnnotations();
-                viewer?.DrawAnnotations(annotations || []);
-
-                setCachedAnnotations(annotations || []);
-            })
-            .catch((error) => {
-                toast.error(error.message);
-                console.error(error);
-            });
-    }, [slide, viewer]);
-    // This hook needs to also run when Viewer changes because the setViewer() function is
-    // async and has not finished unless the user has already opened the Viewer tab.
+        OpenSlide(slide);
+    }, [slide]);
 
     useEffect(() => {
-        viewer?.ClearAnnotations();
+        viewer.current?.ClearAnnotations();
 
         if (slideTour.active) {
             DrawCurrentSlideTourEntry();
         } else {
-            viewer?.SetRotation(0);
-            viewer?.DrawAnnotations(cachedAnnotations);
+            viewer.current?.SetRotation(0);
+            viewer.current?.DrawAnnotations(cachedAnnotations.current);
         }
     }, [slideTour]);
+
+    async function OpenSlide(slide: Slide) {
+        try {
+            const properties = await InitializeSlide(slide);
+            const annotations = JSON.parse(slide.annotations || "[]");
+
+            viewer.current?.OpenSlide(properties);
+            viewer.current?.ClearAnnotations();
+            viewer.current?.DrawAnnotations(annotations || []);
+            cachedAnnotations.current = annotations || [];
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Unknown error while opening slide");
+            console.error(error);
+        }
+    }
 
     /**
      * Draw any annotations for this slide tour entry and pan & zoom to correct position.
@@ -188,12 +190,12 @@ function Viewer({ slide }: Props) {
         const entry = slideTour.entries[slideTour.index];
         const annotations = entry.annotations;
 
-        viewer?.PanTo(entry.x, entry.y);
-        viewer?.ZoomTo(entry.magnification);
-        viewer?.SetRotation(entry.rotation);
+        viewer.current?.PanTo(entry.x, entry.y);
+        viewer.current?.ZoomTo(entry.magnification);
+        viewer.current?.SetRotation(entry.rotation);
 
-        viewer?.ClearAnnotations();
-        viewer?.DrawAnnotations(annotations || []);
+        viewer.current?.ClearAnnotations();
+        viewer.current?.DrawAnnotations(annotations || []);
     }
 
     return <div id="Viewer" className="h-full flex-grow bg-black" />;
