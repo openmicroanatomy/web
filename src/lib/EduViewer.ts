@@ -1,6 +1,5 @@
 import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
-import { SetterOrUpdater } from "recoil";
 import * as d3 from "d3";
 import OpenSeadragon from "openseadragon";
 
@@ -62,11 +61,25 @@ export default class EduViewer {
     private Overlay: OpenSeadragon.SvgOverlay | undefined;
     private SlideProperties!: SlideProperties;
 
-    private SetSelectedAnnotation: SetterOrUpdater<Annotation | null>;
+    private readonly SetSelectedAnnotation: (annotation: Annotation | null) => void;
 
-    constructor(viewer: OpenSeadragon.Viewer, updater: SetterOrUpdater<Annotation | null>) {
-        this.Viewer = viewer;
-        this.SetSelectedAnnotation = updater;
+    constructor(callback: (annotation: Annotation | null) => void) {
+        this.Viewer = OpenSeadragon({
+            id: "Viewer",
+            defaultZoomLevel: 0,
+            //debugMode: import.meta.env.PROD,
+            showNavigator: true,
+            navigatorSizeRatio: 0.15,
+            navigatorAutoFade: false,
+            showNavigationControl: false,
+            zoomPerScroll: 1.4,
+            gestureSettingsMouse: {
+                clickToZoom: false,
+                dblClickToZoom: true,
+            }
+        });
+
+        this.SetSelectedAnnotation = callback;
     }
 
     OpenSlide(properties: SlideProperties) {
@@ -171,7 +184,7 @@ export default class EduViewer {
     DrawAnnotations(annotations: Annotation[]) {
         if (!this.Overlay) return;
 
-        Array.from(annotations).forEach((annotation) => {
+        for (const annotation of annotations) {
             if (annotation.geometry.type === "LineString") {
                 this.DrawLine(annotation);
             } else if (annotation.geometry.type === "Polygon") {
@@ -181,7 +194,7 @@ export default class EduViewer {
             } else {
                 console.log(`${annotation.geometry.type} geometry type not implemented.`);
             }
-        });
+        }
     }
 
     PanTo(x: number, y: number) {

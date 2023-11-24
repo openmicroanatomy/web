@@ -8,7 +8,6 @@ import "styles/Viewer.css";
 import { Annotation, Slide } from "types";
 import "openseadragon/openseadragon-scalebar";
 import "openseadragon/openseadragon-svg-overlay";
-import OpenSeadragon from "openseadragon";
 
 interface Props {
     slide: Slide | null;
@@ -124,20 +123,7 @@ function Viewer({ slide }: Props) {
     const slideTour = useRecoilValue(slideTourState);
 
     useEffect(() => {
-        viewer.current = new EduViewer(OpenSeadragon({
-            id: "Viewer",
-            defaultZoomLevel: 0,
-            //debugMode: import.meta.env.PROD,
-            showNavigator: true,
-            navigatorSizeRatio: 0.15,
-            navigatorAutoFade: false,
-            showNavigationControl: false,
-            zoomPerScroll: 1.4,
-            gestureSettingsMouse: {
-                clickToZoom: false,
-                dblClickToZoom: true,
-            }
-        }), setSelectedAnnotation);
+        viewer.current = new EduViewer(setSelectedAnnotation);
 
         if (slide) OpenSlide(slide);
     }, []);
