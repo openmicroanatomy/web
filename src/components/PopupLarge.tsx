@@ -1,8 +1,8 @@
-import { ReactNode, useEffect, useState } from "react"
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 import Popup from "reactjs-popup"
 
 type Props = {
-    activator?: JSX.Element | ((isOpen: boolean) => JSX.Element);
+    activator?: ReactElement | ((isOpen: boolean) => ReactElement);
     children: ReactNode;
     disabled?: boolean;
 }

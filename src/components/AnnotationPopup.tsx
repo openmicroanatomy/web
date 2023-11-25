@@ -2,7 +2,7 @@ import { AnnotationAnswerTypes, parseAnswerData } from "lib/helpers";
 import { Annotation } from "types";
 import AnnotationQuiz from "./AnnotationQuiz";
 import PopupLarge from "./PopupLarge";
-import React from "react";
+import React, { ReactElement } from "react";
 
 type Props = {
     annotation: Annotation;
@@ -12,7 +12,7 @@ type Props = {
      * @param text to display.
      * @param disabled true if this annotation has no action (i.e. click to show answer).
      */
-    renderer?: (text: string, clickable: boolean) => React.JSX.Element;
+    renderer?: (text: string, clickable: boolean) => ReactElement;
 }
 
 export default function AnnotationPopup({ annotation, renderer }: Props) {

@@ -7,6 +7,7 @@ import { SlideRepository } from "./EduViewer";
  * Helper to make GET requests to the API.
  *
  * @param path
+ * @param init
  * @returns data response as json
  */
 async function request(path: string, init: RequestInit = {}) {
