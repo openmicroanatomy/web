@@ -8,6 +8,7 @@ import "styles/Viewer.css";
 import { Annotation, Slide } from "types";
 import "openseadragon/openseadragon-scalebar";
 import "openseadragon/openseadragon-svg-overlay";
+import "openseadragon/openseadragon-measuring";
 
 type Props = {
     slide: Slide | null;

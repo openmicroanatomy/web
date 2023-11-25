@@ -1,7 +1,10 @@
 import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
 import * as d3 from "d3";
-import OpenSeadragon from "openseadragon";
+import OpenSeadragon, { ControlAnchor } from "openseadragon";
+import { MeasuringPlugin, Tool } from "../openseadragon/openseadragon-measuring";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
 
 export enum SlideRepository {
     NONE,
@@ -59,6 +62,7 @@ export default class EduViewer {
 
     private Viewer: OpenSeadragon.Viewer;
     private Overlay: OpenSeadragon.SvgOverlay | undefined;
+    private Tools: MeasuringPlugin | undefined;
     private SlideProperties!: SlideProperties;
 
     private readonly SetSelectedAnnotation: (annotation: Annotation | null) => void;
@@ -103,6 +107,7 @@ export default class EduViewer {
 
         this.InitializeScalebar();
         this.InitializeOverlay();
+        this.InitializeMeasuringTools();
     }
 
     private InitializeScalebar() {
@@ -123,6 +128,33 @@ export default class EduViewer {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.Overlay = this.Viewer.svgOverlay() as SvgOverlay;
+    }
+
+    private InitializeMeasuringTools() {
+        // @ts-ignore
+        this.Tools = this.Viewer.Tools({
+            viewer: this.Viewer,
+            overlay: this.Overlay,
+            enableControls: true,
+            scaling: {
+                x: this.SlideProperties.millimetersPerPixel,
+                y: this.SlideProperties.millimetersPerPixel
+            }
+        })
+
+        // @ts-ignore
+        this.Viewer.removeControl("tool-controls");
+
+        if (this.Tools === undefined) return;
+
+        this.Viewer.addControl(
+            MakeToolControlsElement(this.Tools),
+            {
+                anchor: ControlAnchor.TOP_LEFT,
+                attachToViewer: true,
+                autoFade: false
+            }
+        );
     }
 
     ClearAnnotations() {
@@ -278,4 +310,47 @@ export default class EduViewer {
         // This requires some further investigation into why this happens.
         return (y / this.SlideProperties.slideHeight) * (this.SlideProperties.slideHeight / this.SlideProperties.slideWidth);
     }
+}
+
+function MakeToolControlsElement(tools: MeasuringPlugin) {
+    const buttons = document.createElement("div");
+    const buttonStyles = ["p-2", "cursor-pointer", "bg-blue-500", "hover:bg-blue-600"]
+
+    buttons.id = "tool-controls";
+    buttons.classList.add("!flex", "flex-col", "m-2");
+
+    const distance = document.createElement("button");
+    const area     = document.createElement("button");
+
+    distance.classList.add(...buttonStyles);
+    distance.innerHTML = renderToStaticMarkup(ToolMeasureDistanceIcon());
+    distance.onclick = () => {
+        if (tools.getTool() === Tool.Distance) {
+            area.classList.toggle("bg-blue-600", false);
+            distance.classList.toggle("bg-blue-600", false);
+            tools.setTool(Tool.None);
+        } else {
+            area.classList.toggle("bg-blue-600", false);
+            distance.classList.toggle("bg-blue-600", true);
+            tools.setTool(Tool.Distance);
+        }
+    }
+
+    area.classList.add(...buttonStyles);
+    area.innerHTML = renderToStaticMarkup(ToolMeasureAreaIcon());
+    area.onclick = () => {
+        if (tools.getTool() === Tool.Area) {
+            area.classList.toggle("bg-blue-600", false);
+            distance.classList.toggle("bg-blue-600", false);
+            tools.setTool(Tool.None);
+        } else {
+            area.classList.toggle("bg-blue-600", true);
+            distance.classList.toggle("bg-blue-600", false);
+            tools.setTool(Tool.Area);
+        }
+    }
+
+    buttons.append(distance, area);
+
+    return buttons;
 }

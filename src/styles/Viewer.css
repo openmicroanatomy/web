@@ -23,3 +23,32 @@
 #Viewer .openseadragon-container {
     position: absolute !important;
 }
+
+/* Measurements */
+
+.measurement {
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.measurement--line {
+    fill: transparent;
+    stroke: rgb(255, 0, 0);
+}
+
+.measurement--area {
+    fill: rgb(255, 0, 0, 0.3);
+    stroke: rgb(255, 0, 0);
+}
+
+.measurement-tag {
+    z-index: 10;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 5px;
+    padding: 2px 6px;
+    font-weight: bold;
+    cursor: default;
+}
