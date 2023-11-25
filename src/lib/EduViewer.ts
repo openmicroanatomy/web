@@ -5,6 +5,7 @@ import OpenSeadragon, { ControlAnchor } from "openseadragon";
 import { MeasuringPlugin, Tool } from "../openseadragon/openseadragon-measuring";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
+import SvgOverlay = OpenSeadragon.SvgOverlay;
 
 export enum SlideRepository {
     NONE,
@@ -111,8 +112,7 @@ export default class EduViewer {
     }
 
     private InitializeScalebar() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-ignore: cannot extend OpenSeadragon type definition
         this.Viewer.scalebar({
             xOffset: 10,
             yOffset: 10,
@@ -125,13 +125,12 @@ export default class EduViewer {
     }
 
     private InitializeOverlay() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-ignore: cannot extend OpenSeadragon type definition
         this.Overlay = this.Viewer.svgOverlay() as SvgOverlay;
     }
 
     private InitializeMeasuringTools() {
-        // @ts-ignore
+        // @ts-ignore: cannot extend OpenSeadragon type definition
         this.Tools = this.Viewer.Tools({
             viewer: this.Viewer,
             overlay: this.Overlay,
@@ -142,7 +141,7 @@ export default class EduViewer {
             }
         })
 
-        // @ts-ignore
+        // @ts-ignore: incorrect type; allows also element id
         this.Viewer.removeControl("tool-controls");
 
         if (this.Tools === undefined) return;

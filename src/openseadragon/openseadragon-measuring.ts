@@ -22,7 +22,7 @@ export type ToolPluginOptions = {
 		throw new Error("Requires OpenSeadragon 3.0.0+");
 	}
 
-	// @ts-ignore
+	// @ts-ignore: cannot extend OpenSeadragon type definition
 	$.Viewer.prototype.Tools = function(options: ToolPluginOptions) {
 		options = options || {};
 		options.viewer = this;
@@ -81,7 +81,7 @@ export class MeasuringPlugin {
 
 				if (!measuring || !StartPoint) return;
 
-				// @ts-ignore
+				// @ts-ignore: missing type definition for position
 				EndPoint = e.position;
 
 				const distance = this.getLineDistance(StartPoint!, EndPoint!);
@@ -183,7 +183,7 @@ export class MeasuringPlugin {
 	}
 
 	updateMeasurementROI(svg: Node) {
-		// @ts-ignore
+		// @ts-ignore: missing type definition for open()
 		this.overlay.open(); // todo: fix this; currently not triggering open(); event so this is never run
 		const elements = Array.from(this.overlay.node().children);
 
