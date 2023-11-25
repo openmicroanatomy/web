@@ -9,6 +9,7 @@ export function ToggleDisplaySlideNumbers() {
 		<a
 			className={`rounded--button flex justify-center items-center ${displaySlideNumbers && "bg-gray-100"}`}
 			onClick={() => setDisplaySlideNumbers((currentValue) => !currentValue)}
+			title={"Toggle slide numbering"}
 		>
 			<DisplaySlideNumbersIcon />
 		</a>

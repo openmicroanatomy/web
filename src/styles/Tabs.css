@@ -7,7 +7,7 @@
 }
 
 .react-tabs__tab--selected {
-    @apply border-blue-400 font-bold text-blue-600 lg:text-black;
+    @apply border-blue-400 font-bold text-blue-600 lg:text-black outline-none;
 }
 
 .react-tabs__tab-panel {

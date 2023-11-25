@@ -49,7 +49,12 @@ export default function EmbedProjectPopup({ slide, projectId}: Props) {
     return (
         <PopupLarge 
             activator={
-                <a className="rounded--button">&lt;&gt;</a>   
+                <a
+                    className="rounded--button"
+                    title="Embed on another website"
+                >
+                    &lt;&gt;
+                </a>
             }
         >
             <p className="font-bold">Share current project</p>

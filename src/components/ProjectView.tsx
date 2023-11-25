@@ -168,7 +168,7 @@ export default function ProjectView({ projectId, onProjectChange, embedded = fal
     }
 
     return (
-        <main className="flex h-full p-2 gap-2 overflow-hidden">
+        <main className="flex h-full p-2 overflow-hidden">
             {sidebarVisible ? (
                 <ProjectViewSidebar
                     projectId={projectId}

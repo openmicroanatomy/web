@@ -42,11 +42,11 @@ export default function Slides({ slides }: Props) {
                 .map((slide, index) => (
                     <div
                         key={slide.entryID}
-                        className={`bg-white p-2 mb-2 shadow-sm border-y cursor-pointer border-l-4 ${isCurrentSlide(slide) ? "border-l-blue-400" : "border-l-transparent" }`}
+                        className={`bg-white p-2 mb-2 shadow-sm border-y cursor-pointer border-l-4 hover:border-l-blue-300 ${isCurrentSlide(slide) ? "!border-l-blue-400" : "border-l-transparent" }`}
                         onClick={() => setSlide(slide)}
                     >
                         <p className="font-bold">{getDisplayName(slide.imageName, index)}</p>
-                        <p className="font-light text-xs">{slide.description}</p>
+                        <p className="text-sm">{slide.description}</p>
                     </div>
                 ))
             }

@@ -39,7 +39,7 @@ export default function Annotations({ annotations }: Props) {
                 })
                 .map((annotation, index) => (
                     <div
-                        className={`bg-white p-2 mb-2 shadow-sm border-b border-t cursor-pointer border-l-4 ${isSelectedAnnotation(annotation) ? "border-l-blue-400" : "border-l-transparent" }`}
+                        className={`bg-white p-2 mb-2 shadow-sm border-b border-t cursor-pointer border-l-4 hover:border-l-blue-300 ${isSelectedAnnotation(annotation) ? "!border-l-blue-400" : "border-l-transparent" }`}
                         key={sha1(annotation)}
                         onClick={() => setSelectedAnnotation(annotation)}
                     >

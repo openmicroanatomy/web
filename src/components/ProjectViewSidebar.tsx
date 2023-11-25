@@ -27,8 +27,8 @@ export default function ProjectViewSidebar({ projectId, projectData, embedded, o
             <div className="sticky top-0">
                 <div className="flex justify-between sticky top-0 p-2 bg-white">
                     { !embedded && 
-                        <a className="cursor-pointer font-bold" onClick={() => onProjectChange("")}>
-                            Return to lessons
+                        <a className="cursor-pointer font-mono font-bold" onClick={() => onProjectChange("")}>
+                            &laquo; Return to lessons
                         </a>
                     }
 

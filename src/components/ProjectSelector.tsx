@@ -22,11 +22,11 @@ export default function ProjectSelector({ workspaces, organization, onProjectCha
         <>
             {workspaces.map((workspace) => (
                 <div key={workspace.id}>
-                    <p className="text-xl">{workspace.name}</p>
+                    <p className="font-bold text-xl">{workspace.name}</p>
 
                     {workspace.subjects.map((subject) => (
                         <div key={subject.id}>
-                            <p className="text-sm italic">{subject.name}</p>
+                            <p className="italic">{subject.name}</p>
                             <ul className="list-disc list-inside">
                                 {subject.projects
                                     .sort((a, b) => {

@@ -11,7 +11,7 @@ export default function App() {
 
     return (
         <HashRouter hashType="hashbang"> { /* Switch to other router when equipped with an server, currently server via nginx */ }
-            <div className="App mx-auto font-mono h-full flex flex-col">
+            <div className="App mx-auto h-full flex flex-col">
                 <ToastContainer />
 
                 <Switch>
