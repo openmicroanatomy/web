@@ -13,8 +13,34 @@ type Props = {
     slide: Slide | null;
 }
 
+/**
+ * URL for the OMERO WebGateway API for rendering a specific tile.
+ * Possible placeholders: <code>{host}, {slideId}, {level}, {tileX}, {tileY}, {tileWidth}, {tileHeight}</code>.
+ * <code>{host}</code> <b>must</b> include the scheme, domain and any possible port, and must <b>not</b> end with a forward slash (<code>/</code>).
+ * @see https://docs.openmicroscopy.org/omero/5.4.3/developers/Web/WebGateway.html
+ */
+const OMERO_TILE_URL = `{host}/webgateway/render_image_region/{slideId}/0/0/?tile={level},{tileX},{tileY},{tileWidth},{tileHeight}`
+
+function getOmeroSlideId(url: string) {
+    if (url.includes("?show=image-")) {
+        return url.split("?show=image-")[1];
+    } else {
+        throw new Error("Unsupported OMERO server, cannot decode ID.")
+    }
+}
+
+function parseOmeroServerURL(url: string): URL {
+    try {
+        return new URL(url);
+    } catch (e) {
+        throw new Error("Error while decoding server URI", { cause: e })
+    }
+}
+
 async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
-    const slideId = slide.serverBuilder.uri.split("?show=image-")[1];
+    const serverURL = parseOmeroServerURL(slide.serverBuilder.uri);
+    const slideId = getOmeroSlideId(slide.serverBuilder.uri);
+
     const data = await fetchSlideProperties(slideId, SlideRepository.OMERO);
 
     const levelCount = parseInt(data.levels) || 1
@@ -28,6 +54,10 @@ async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
         downsamples.push(1);
     }
 
+    const tileURL = OMERO_TILE_URL
+        .replaceAll("{host}", serverURL.origin)
+        .replaceAll("{slideId}", slideId);
+
     return {
         repository: SlideRepository.OMERO,
         levelCount: levelCount,
@@ -36,7 +66,7 @@ async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
         slideWidth: parseInt(data.size.width),
         tileWidth: data.tiles ? data.tile_size.width : data.size.width,
         tileHeight: data.tiles ? data.tile_size.height : data.size.height,
-        serverUri: `https://idr.openmicroscopy.org/webgateway/render_image_region/${data.id}/0/0/?tile={level},{tileX},{tileY},{tileWidth},{tileHeight}`,
+        serverUri: tileURL,
         millimetersPerPixel: parseFloat(data.pixel_size.x) * 10,
         getTileUrl: (level, x, y, properties) => {
             level = properties.levelCount - level - 1;
