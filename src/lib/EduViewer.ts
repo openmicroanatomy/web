@@ -45,7 +45,7 @@ export type SlideProperties = {
     /**
      * Supported placeholders: {level}, {tileX}, {tileY}, {tileHeight} and {tileWidth}
      */
-    serverUri: string,
+    tileURL: string,
 
     millimetersPerPixel: number
 

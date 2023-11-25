@@ -66,12 +66,12 @@ async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
         slideWidth: parseInt(data.size.width),
         tileWidth: data.tiles ? data.tile_size.width : data.size.width,
         tileHeight: data.tiles ? data.tile_size.height : data.size.height,
-        serverUri: tileURL,
+        tileURL: tileURL,
         millimetersPerPixel: parseFloat(data.pixel_size.x) * 10,
         getTileUrl: (level, x, y, properties) => {
             level = properties.levelCount - level - 1;
 
-            return properties.serverUri
+            return properties.tileURL
                 .replaceAll("{tileX}", String(x))
                 .replaceAll("{tileY}", String(y))
                 .replaceAll("{level}", String(level))
@@ -101,7 +101,7 @@ async function InitializeOpenMicroanatomySlide(slide: Slide): Promise<SlidePrope
         slideWidth: parseInt(data["openslide.level[0].width"]),
         tileWidth: parseInt(data["openslide.level[0].tile-height"]),
         tileHeight: parseInt(data["openslide.level[0].tile-width"]),
-        serverUri: data["openslide.remoteserver.uri"],
+        tileURL: data["openslide.remoteserver.uri"],
         millimetersPerPixel: parseFloat(data["aperio.MPP"]),
         getTileUrl: (level, x, y, properties) => {
             level = properties.levelCount - level - 1;
@@ -125,7 +125,7 @@ async function InitializeOpenMicroanatomySlide(slide: Slide): Promise<SlidePrope
             const height = properties.tileHeight - adjustY;
             const width  = properties.tileWidth  - adjustX;
 
-            return properties.serverUri
+            return properties.tileURL
                 .replaceAll("{tileX}", String(tileX))
                 .replaceAll("{tileY}", String(tileY))
                 .replaceAll("{level}", String(level))
