@@ -2,7 +2,7 @@ import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
 import * as d3 from "d3";
 import OpenSeadragon, { ControlAnchor } from "openseadragon";
-import { MeasuringPlugin, Tool } from "../openseadragon/openseadragon-measuring";
+import { MeasuringPlugin, Tool, ToolPluginOptions } from "../openseadragon/openseadragon-measuring";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
 import SvgOverlay = OpenSeadragon.SvgOverlay;
@@ -131,16 +131,22 @@ export default class EduViewer {
     }
 
     private InitializeMeasuringTools() {
-        // @ts-ignore: cannot extend OpenSeadragon type definition
-        this.Tools = this.Viewer.Tools({
+        const options = {
             viewer: this.Viewer,
             overlay: this.Overlay,
-            enableControls: true,
             scaling: {
                 x: this.SlideProperties.millimetersPerPixel,
                 y: this.SlideProperties.millimetersPerPixel
             }
-        })
+        } as ToolPluginOptions;
+
+        if (this.Tools) {
+            this.Tools.UpdateOptions(options);
+            return;
+        }
+
+        // @ts-ignore: cannot extend OpenSeadragon type definition
+        this.Tools = this.Viewer.Tools(options);
 
         // @ts-ignore: incorrect type; allows also element id
         this.Viewer.removeControl("tool-controls");

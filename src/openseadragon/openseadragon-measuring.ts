@@ -24,10 +24,22 @@ export type ToolPluginOptions = {
 
 	// @ts-ignore: cannot extend OpenSeadragon type definition
 	$.Viewer.prototype.Tools = function(options: ToolPluginOptions) {
-		options = options || {};
-		options.viewer = this;
+		// @ts-ignore: cannot extend OpenSeadragon type definition
+		let instance = options.viewer.toolsInstance;
 
-		return new MeasuringPlugin(options);
+		if (instance) {
+			instance.UpdateOptions(options);
+		} else {
+			options = options || {};
+			options.viewer = this;
+
+			instance = new MeasuringPlugin(options);
+
+			// @ts-ignore: cannot extend OpenSeadragon type definition
+			options.viewer.toolsInstance = instance;
+		}
+
+		return instance;
 	}
 })();
 
@@ -63,6 +75,11 @@ export class MeasuringPlugin {
 
 		this.Ruler();
 		this.Area();
+	}
+
+	UpdateOptions(options: ToolPluginOptions) {
+		this.scaling = options.scaling;
+		this.overlay = options.overlay;
 	}
 
 	Ruler() {
