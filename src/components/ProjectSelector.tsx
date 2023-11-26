@@ -19,32 +19,36 @@ export default function ProjectSelector({ workspaces, organization, onProjectCha
     }
 
     return (
-        <>
+        <div className="flex flex-col">
             {workspaces.map((workspace) => (
                 <div key={workspace.id}>
-                    <p className="font-bold text-xl">{workspace.name}</p>
+                    <div className="font-bold uppercase p-2 bg-gray-50">
+                        {workspace.name}
+                    </div>
 
                     {workspace.subjects.map((subject) => (
                         <div key={subject.id}>
-                            <p className="italic">{subject.name}</p>
-                            <ul className="list-disc list-inside">
-                                {subject.projects
-                                    .sort((a, b) => {
-                                        return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
-                                    })
-                                    .map((project) => (
-                                        <li key={project.id}>
-                                            <a className="cursor-pointer" onClick={() => onProjectChange(project.id)}>
-                                                {project.name}
-                                            </a>
-                                        </li>
-                                    ))
-                                }
-                            </ul>
+                            <div className="bg-gray-50 p-2 border-b italic">
+                                {subject.name}
+                            </div>
+
+                            {subject.projects
+                                .sort((a, b) => {
+                                    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+                                })
+                                .map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="p-2 cursor-pointer border-l-4 border-l-transparent border-b hover:border-l-blue-500"
+                                        onClick={() => onProjectChange(project.id)}
+                                    >
+                                        {project.name}
+                                    </div>
+                                ))}
                         </div>
                     ))}
                 </div>
             ))}
-        </>
+        </div>
     );
 }

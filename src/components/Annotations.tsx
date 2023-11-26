@@ -12,11 +12,11 @@ export default function Annotations({ annotations }: Props) {
     const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
     if (!annotations) {
-        return <p className="p-2 font-bold text-center">Loading ...</p>;
+        return <p className="flex h-full items-center justify-center font-bold text-slate-600">Loading ...</p>;
     }
 
     if (annotations.length == 0) {
-        return <p className="p-2 font-bold text-center">No annotations</p>;
+        return <p className="flex h-full items-center justify-center font-bold text-slate-600">No annotations</p>;
     }
 
     /**
@@ -27,7 +27,7 @@ export default function Annotations({ annotations }: Props) {
     }
 
     return (
-        <div className="pt-2 bg-gray-50">
+        <div className="flex flex-col gap-2 py-2 bg-gray-50">
             {annotations
                 .sort((a, b) => {
                     // Check that both annotations have a name.
@@ -39,15 +39,11 @@ export default function Annotations({ annotations }: Props) {
                 })
                 .map((annotation, index) => (
                     <div
-                        className={`bg-white p-2 mb-2 shadow-sm border-b border-t cursor-pointer border-l-4 hover:border-l-blue-300 ${isSelectedAnnotation(annotation) ? "!border-l-blue-400" : "border-l-transparent" }`}
+                        className={`bg-white p-2 shadow-sm cursor-pointer transition-all duration-200 border-y border-l-4 hover:border-l-blue-400 ${isSelectedAnnotation(annotation) ? "!border-l-blue-500 font-bold" : "border-l-transparent" }`}
                         key={sha1(annotation)}
                         onClick={() => setSelectedAnnotation(annotation)}
                     >
-                        <div
-                            className={`cursor-pointer ${isSelectedAnnotation(annotation) && "font-bold"}`}
-                        >
-                            {`${index + 1}. ${annotation.properties.name || "Unnamed annotation"}`}
-                        </div>
+                        {`${index + 1}. ${annotation.properties.name || "Unnamed annotation"}`}
                     </div>
                 ))
             }

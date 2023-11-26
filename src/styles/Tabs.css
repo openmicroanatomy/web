@@ -3,11 +3,11 @@
 }
 
 .react-tabs__tab {
-    @apply mb-0 lg:border-b-4 p-2 hover:border-blue-400 cursor-pointer;
+    @apply mb-0 font-bold lg:border-b-4 p-4 text-slate-600 hover:border-blue-500 hover:text-blue-500 cursor-pointer outline-none transition-all duration-200;
 }
 
 .react-tabs__tab--selected {
-    @apply border-blue-400 font-bold text-blue-600 lg:text-black outline-none;
+    @apply border-blue-500 font-bold text-blue-500;
 }
 
 .react-tabs__tab-panel {

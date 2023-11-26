@@ -168,19 +168,15 @@ export default function ProjectView({ projectId, onProjectChange, embedded = fal
     }
 
     return (
-        <main className="flex h-full p-2 overflow-hidden">
-            {sidebarVisible ? (
-                <ProjectViewSidebar
-                    projectId={projectId}
-                    projectData={projectData}
-                    embedded={embedded}
-                    onProjectChange={onProjectChange}
-                />
-            ) : (
-                <ToggleSidebar />
-            )}
+        <main className="flex h-full shadow-lg">
+            <ProjectViewSidebar
+                projectId={projectId}
+                projectData={projectData}
+                embedded={embedded}
+                onProjectChange={onProjectChange}
+            />
 
-            <div className="flex-grow border rounded-sm shadow-lg bg-white">
+            <div className="flex-grow overflow-hidden rounded-r-lg">
                 <Tabs className="h-full flex flex-col" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
                     <TabList>
                         <Tab>Information</Tab>

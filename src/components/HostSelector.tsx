@@ -78,13 +78,13 @@ export default function HostSelector({ hosts }: Props) {
 
     if (host) {
         return (
-            <div className="flex">
-                <div className="button-like w-full m-1 text-center">
+            <div className="flex gap-2">
+                <div className="flex-grow button-like text-center">
                     {host.name}
                 </div>
 
                 <button
-                    className="button-red m-1"
+                    className="bg-white button-red"
                     onClick={() => {
                         setHost(null);
                         setValue(Constants.LOCALSTORAGE_HOST_KEY, null);

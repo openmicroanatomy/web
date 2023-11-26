@@ -11,23 +11,21 @@ export default function App() {
 
     return (
         <HashRouter hashType="hashbang"> { /* Switch to other router when equipped with an server, currently server via nginx */ }
-            <div className="App mx-auto h-full flex flex-col">
-                <ToastContainer />
+            <ToastContainer />
 
-                <Switch>
-                    <Route path="/embed/:host/:project/:slide">
-                        <EmbeddedSingleSlide />
-                    </Route>
+            <Switch>
+                <Route path="/embed/:host/:project/:slide">
+                    <EmbeddedSingleSlide />
+                </Route>
 
-                    <Route path="/embed/:host/:project">
-                        <EmbeddedProject />
-                    </Route>
+                <Route path="/embed/:host/:project">
+                    <EmbeddedProject />
+                </Route>
 
-                    <Route path="/">
-                        <Home />
-                    </Route>
-                </Switch>
-            </div>
+                <Route path="/">
+                    <Home />
+                </Route>
+            </Switch>
         </HashRouter>
     );
 }

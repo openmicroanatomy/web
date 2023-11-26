@@ -8,7 +8,7 @@ export default function ProjectInformation({ data }: Props) {
     const styles = `<link rel="stylesheet" href="ckeditor.css" />`;
 
     if (!data) {
-        return <p className="flex h-full items-center justify-center font-bold">Loading ...</p>;
+        return <p className="flex h-full items-center justify-center font-bold text-slate-600">Loading ...</p>;
     }
 
     return (
@@ -16,7 +16,7 @@ export default function ProjectInformation({ data }: Props) {
             {data.projectInformation ? (
                 <iframe srcDoc={styles + data.projectInformation} className="w-full h-full"></iframe>
             ) : (
-                <p className="flex h-full items-center justify-center font-bold">No additional information available for this lesson.</p>
+                <p className="flex h-full items-center justify-center font-bold text-slate-600">No additional information available for this lesson.</p>
             )}
         </div>
     );

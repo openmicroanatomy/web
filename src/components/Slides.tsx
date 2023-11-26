@@ -11,11 +11,11 @@ export default function Slides({ slides }: Props) {
     const displaySlideNumbers = useRecoilValue(displaySlideNumbersState);
 
     if (!slides) {
-        return <p className="text-center font-bold p-2">Loading ...</p>;
+        return <p className="flex h-full items-center justify-center font-bold text-slate-600">Loading ...</p>;
     }
 
     if (slides.length == 0) {
-        return <p className="text-center font-bold p-2">No slides</p>;
+        return <p className="flex h-full items-center justify-center font-bold text-slate-600">No slides</p>;
     }
 
     /**
@@ -34,7 +34,7 @@ export default function Slides({ slides }: Props) {
     }
 
     return (
-        <div className="lg:py-2 bg-gray-50">
+        <div className="flex flex-col gap-2 py-2 bg-gray-50">
             {slides
                 .sort((a, b) => {
                     return a.imageName.localeCompare(b.imageName, undefined, { numeric: true, sensitivity: 'base' });
@@ -42,7 +42,7 @@ export default function Slides({ slides }: Props) {
                 .map((slide, index) => (
                     <div
                         key={slide.entryID}
-                        className={`bg-white p-2 mb-2 shadow-sm border-y cursor-pointer border-l-4 hover:border-l-blue-300 ${isCurrentSlide(slide) ? "!border-l-blue-400" : "border-l-transparent" }`}
+                        className={`bg-white p-2 shadow-sm cursor-pointer transition-all duration-200 border-y border-l-4 hover:border-l-blue-400 ${isCurrentSlide(slide) ? "!border-l-blue-500" : "border-l-transparent" }`}
                         onClick={() => setSlide(slide)}
                     >
                         <p className="font-bold">{getDisplayName(slide.imageName, index)}</p>
