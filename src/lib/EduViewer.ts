@@ -78,6 +78,7 @@ export default class EduViewer {
             navigatorAutoFade: false,
             showNavigationControl: false,
             zoomPerScroll: 1.4,
+            navigatorBorderColor: "#9ca3af", /* same as tailwind bg-gray-400 */
             gestureSettingsMouse: {
                 clickToZoom: false,
                 dblClickToZoom: true,

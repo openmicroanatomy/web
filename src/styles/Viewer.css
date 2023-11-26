@@ -24,6 +24,10 @@
     position: absolute !important;
 }
 
+.navigator {
+    margin: 10px !important;
+}
+
 /* Measurements */
 
 .measurement {
