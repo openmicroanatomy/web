@@ -314,10 +314,10 @@ export default class EduViewer {
 
 function MakeToolControlsElement(tools: MeasuringPlugin) {
     const buttons = document.createElement("div");
-    const buttonStyles = ["p-2", "cursor-pointer", "bg-blue-500", "hover:bg-blue-600"]
+    const buttonStyles = ["p-2", "cursor-pointer", "bg-gray-400", "hover:bg-blue-400"]
 
     buttons.id = "tool-controls";
-    buttons.classList.add("!flex", "flex-col", "m-2");
+    buttons.classList.add("!hidden", "lg:!flex", "flex-col", "m-2");
 
     const distance = document.createElement("button");
     const area     = document.createElement("button");
@@ -326,12 +326,12 @@ function MakeToolControlsElement(tools: MeasuringPlugin) {
     distance.innerHTML = renderToStaticMarkup(ToolMeasureDistanceIcon());
     distance.onclick = () => {
         if (tools.getTool() === Tool.Distance) {
-            area.classList.toggle("bg-blue-600", false);
-            distance.classList.toggle("bg-blue-600", false);
+            area.classList.toggle("!bg-blue-400", false);
+            distance.classList.toggle("!bg-blue-400", false);
             tools.setTool(Tool.None);
         } else {
-            area.classList.toggle("bg-blue-600", false);
-            distance.classList.toggle("bg-blue-600", true);
+            area.classList.toggle("!bg-blue-400", false);
+            distance.classList.toggle("!bg-blue-400", true);
             tools.setTool(Tool.Distance);
         }
     }
@@ -340,12 +340,12 @@ function MakeToolControlsElement(tools: MeasuringPlugin) {
     area.innerHTML = renderToStaticMarkup(ToolMeasureAreaIcon());
     area.onclick = () => {
         if (tools.getTool() === Tool.Area) {
-            area.classList.toggle("bg-blue-600", false);
-            distance.classList.toggle("bg-blue-600", false);
+            area.classList.toggle("!bg-blue-400", false);
+            distance.classList.toggle("!bg-blue-400", false);
             tools.setTool(Tool.None);
         } else {
-            area.classList.toggle("bg-blue-600", true);
-            distance.classList.toggle("bg-blue-600", false);
+            area.classList.toggle("!bg-blue-400", true);
+            distance.classList.toggle("!bg-blue-400", false);
             tools.setTool(Tool.Area);
         }
     }
