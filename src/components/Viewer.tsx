@@ -103,7 +103,7 @@ async function InitializeOpenMicroanatomySlide(slide: Slide): Promise<SlidePrope
         tileWidth: parseInt(data["openslide.level[0].tile-height"]),
         tileHeight: parseInt(data["openslide.level[0].tile-width"]),
         tileURL: data["openslide.remoteserver.uri"],
-        millimetersPerPixel: parseFloat(data["aperio.MPP"]),
+        millimetersPerPixel: parseFloat(data["openslide.mpp-x"]),
         getTileUrl: (level, x, y, properties) => {
             level = properties.levelCount - level - 1;
 
