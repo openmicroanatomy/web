@@ -85,12 +85,13 @@ export class MeasuringPlugin {
 				EndPoint = e.position;
 
 				const distance = this.getLineDistance(StartPoint!, EndPoint!);
-				const middlePoint = this.getLineMiddlePoint(StartPoint!, EndPoint!);
+				const measurementTagLocation = this.viewer.viewport.viewerElementToViewportCoordinates(EndPoint!);
+				const placement = this.getLineMeasurementTagPlacement(StartPoint!, EndPoint!);
 
 				if (distance > 1000) {
-					this.updateMeasurementTag(`${(distance / 1000).toFixed(2)} mm`, middlePoint);
+					this.updateMeasurementTag(`${(distance / 1000).toFixed(2)} mm`, measurementTagLocation, placement);
 				} else {
-					this.updateMeasurementTag(`${distance.toFixed(2)} µm`, middlePoint);
+					this.updateMeasurementTag(`${distance.toFixed(2)} µm`, measurementTagLocation, placement);
 				}
 
 				this.updateMeasurementROI(this.createLineSVG(StartPoint!, EndPoint!));
@@ -167,7 +168,7 @@ export class MeasuringPlugin {
 		this.scaling = scaling;
 	}
 
-	updateMeasurementTag(tag: string, centre: OpenSeadragon.Point) {
+	updateMeasurementTag(tag: string, centre: OpenSeadragon.Point, placement: Placement = Placement.CENTER) {
 		this.clearMeasurementTag();
 
 		const measurement = document.createElement("div");
@@ -175,7 +176,7 @@ export class MeasuringPlugin {
 		measurement.className = "measurement-tag";
 		measurement.innerText = tag;
 
-		this.viewer.addOverlay(measurement, centre, Placement.CENTER);
+		this.viewer.addOverlay(measurement, centre, placement);
 	}
 
 	clearMeasurementTag() {
@@ -294,6 +295,27 @@ export class MeasuringPlugin {
 		const y = (p2.y - p1.y) * this.scaling.y;
 
 		return Math.hypot(x, y);
+	}
+
+	/**
+	 * Place the distance measurement tag so that it does not overlap the line at any point.
+	 * @param p1 line start point.
+	 * @param p2 line end point.
+	 */
+	getLineMeasurementTagPlacement(p1: OpenSeadragon.Point, p2: OpenSeadragon.Point): Placement {
+		if (p2.x > p1.x) {
+			if (p2.y > p1.y) {
+				return Placement.TOP_LEFT
+			} else {
+				return Placement.BOTTOM_LEFT;
+			}
+		} else {
+			if (p2.y > p1.y) {
+				return Placement.TOP_RIGHT;
+			} else {
+				return Placement.BOTTOM_RIGHT
+			}
+		}
 	}
 
 	/**
