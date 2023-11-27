@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import "styles/Buttons.css";
 import { EduHost } from "types";
-import validator from "validator";
+import isURL from "validator/lib/isURL";
 import Select from "react-select";
 
 type Props = {
@@ -26,7 +26,7 @@ export default function HostSelector({ hosts }: Props) {
     const onHostChange = async (url: string) => {
         setInput(url);
 
-        const valid = url.length >= 0 && validator.isURL(url, { require_tld: false });
+        const valid = url.length >= 0 && isURL(url, { require_tld: false });
         const host = hosts.find((host, index) => host.host == url && index != hosts.length - 1);
 
         setIsValidUrl(!valid);
