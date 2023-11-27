@@ -25,7 +25,7 @@ export default function OrganizationSelector({ currentOrganization, organization
     }
 
     if (!organizations) {
-        return <p className="font-bold text-center">Loading ...</p>;
+        return <p className="font-bold text-center text-slate-600">Loading ...</p>;
     }
 
     if (organizations.length == 0) {

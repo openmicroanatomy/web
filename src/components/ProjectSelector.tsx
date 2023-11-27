@@ -9,7 +9,7 @@ type Props = {
 
 export default function ProjectSelector({ workspaces, organization, onProjectChange }: Props) {
     if (!workspaces) {
-        return <p className="font-bold text-center">Loading ...</p>;
+        return <p className="font-bold text-center text-slate-600">Loading ...</p>;
     }
 
     workspaces = workspaces.filter(workspace => workspace.owner.id == organization.id)
