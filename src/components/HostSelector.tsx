@@ -2,14 +2,16 @@ import { isValidHost } from "lib/api";
 import { hostState } from "lib/atoms";
 import Constants from "lib/constants";
 import { setValue } from "lib/localStorage";
-import { useEffect, useState } from "react";
-import { ThreeDots } from "react-loading-icons";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import "styles/Buttons.css";
 import { EduHost } from "types";
 import isURL from "validator/lib/isURL";
+import { LoadingIcon } from "./icons/LoadingIcon";
 import Select from "react-select";
+
+const CUSTOM_HOST_ID = "custom-host";
 
 type Props = {
     hosts: EduHost[];
@@ -17,28 +19,22 @@ type Props = {
 
 export default function HostSelector({ hosts }: Props) {
     const [selectedHost, setSelectedHost] = useState<EduHost | null>(null);
-    const [isValidUrl, setIsValidUrl] = useState(false);
-    const [isCustomHost, setIsCustomHost] = useState<boolean>(false);
     const [waiting, setWaiting] = useState<boolean>(false);
     const [host, setHost] = useRecoilState(hostState);
-    const [input, setInput] = useState("");
 
-    const onHostChange = async (url: string) => {
-        setInput(url);
+    const isCustomHost = selectedHost?.id === CUSTOM_HOST_ID;
+    const hostUrl = selectedHost?.host;
+    const isValidUrl = hostUrl !== undefined && hostUrl.length >= 0 && isURL(hostUrl, { require_tld: false })
 
-        const valid = url.length >= 0 && isURL(url, { require_tld: false });
-        const host = hosts.find((host, index) => host.host == url && index != hosts.length - 1);
+    addCustomHost(hosts);
 
-        setIsValidUrl(!valid);
+    function onCustomHostURLChange(url: string) {
+        if (!selectedHost) return;
 
-        if (valid && host) {
-            setIsCustomHost(false);
-            setSelectedHost(host);
-        } else {
-            setIsCustomHost(true);
-            getLastHost().host = url;
-            setSelectedHost(getLastHost());
-        }
+        setSelectedHost({
+            ...selectedHost,
+            host: url
+        });
     }
 
     const onSave = async () => {
@@ -56,24 +52,10 @@ export default function HostSelector({ hosts }: Props) {
         setWaiting(false);
     };
 
-    useEffect(() => {
-        setIsCustomHost(hosts.length === 0);
-
-        // Add the fake "Custom host" organization to the list, which we can modify.
-        if (hosts.length >= 1 && getLastHost().id !== "custom-host") {
-            hosts.push(createCustomHost());
+    function addCustomHost(hosts: EduHost[]) {
+        if (hosts[hosts.length - 1]?.id !== CUSTOM_HOST_ID) {
+            hosts.push({ id: CUSTOM_HOST_ID, name: "Custom host", "host": "", img: "" });
         }
-    }, [hosts]);
-
-    const createCustomHost = () => {
-        return { id: "custom-host", name: "Custom host", "host": "", img: "" };
-    }
-
-    /**
-     * This *should* always point to the Custom host, as that should be the last element on the array.
-     */
-    const getLastHost = () => {
-        return hosts[hosts.length - 1];
     }
 
     if (host) {
@@ -106,32 +88,33 @@ export default function HostSelector({ hosts }: Props) {
                     isSearchable={false}
                     getOptionLabel={host => host.name}
                     getOptionValue={host => host.id}
-                    onChange={host => onHostChange(host?.host || "")}
+                    onChange={host => setSelectedHost(host)}
                     menuPortalTarget={document.querySelector("body")}
                 />
             )}
 
-            <form className={`${!isCustomHost && "hidden"}`}>
-                <input
-                    type="text"
-                    value={input}
-                    onChange={event => onHostChange(event.currentTarget.value)}
-                    className="w-full border border-gray-300 rounded-sm text-black p-1 my-2"
-                />
-            </form>
+            { isCustomHost && (
+                <form>
+                    <input
+                        type="text"
+                        value={hostUrl}
+                        onChange={event => onCustomHostURLChange(event.currentTarget.value)}
+                        className="w-full border border-gray-300 rounded-sm text-black p-1 my-2"
+                    />
 
-            <p className={`${!isCustomHost && "hidden" } font-bold text-center ${isValidUrl ? "text-red-500" : "text-green-500"}`}>
-                {isValidUrl ? "Not a valid URL" : "Valid URL"}
-            </p>
+                    <p className={`font-bold text-center ${isValidUrl ? "text-green-500" : "text-red-500"}`}>
+                        {isValidUrl ? "Valid URL" : "Invalid URL"}
+                    </p>
+                </form>
+            )}
 
             <button
                 className="button w-full mt-4"
                 type="button"
-                disabled={waiting || !selectedHost || isValidUrl}
+                disabled={waiting || !selectedHost || !isValidUrl}
                 onClick={() => onSave()}
             >
-                Save preferences
-                {waiting && <ThreeDots className="m-auto" stroke="white" speed={2} />}
+                {waiting ? <LoadingIcon className="m-auto" stroke={"#fff"} fill={"#fff"} width={"32px"} height={"32px"} /> : "Save preferences"}
             </button>
         </div>
     );
