@@ -1,5 +1,5 @@
 .react-tabs__tab-list {
-    @apply flex pb-4 lg:pb-0 text-sm lg:text-base border-t-2 lg:border-t-0 border-b bg-white justify-around lg:justify-start;
+    @apply flex pb-4 lg:pb-0 text-sm lg:text-base border-t-2 lg:border-t-0 lg:border-b bg-white justify-around lg:justify-start;
 }
 
 .react-tabs__tab {
@@ -11,7 +11,7 @@
 }
 
 .react-tabs__tab-panel {
-    @apply hidden bg-white m-2 lg:m-0 border lg:border-0 rounded-sm lg:rounded-none shadow-lg lg:shadow-none;
+    @apply hidden bg-white border lg:border-0 rounded-sm lg:rounded-none shadow-lg lg:shadow-none;
 }
 
 .react-tabs__tab-panel-viewer {

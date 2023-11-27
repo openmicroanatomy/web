@@ -14,7 +14,7 @@ export function AnnotationDetail() {
     }
 
     return (
-        <div className="flex p-2 bg-blue-500 rounded-b-sm text-white font-bold text-sm align-middle">
+        <div className="flex p-2 bg-blue-500 text-white font-bold text-sm align-middle">
             <div className="flex-grow text-left break-words">
                 {selectedAnnotation.properties.name || "Unnamed annotation"}
             </div>
