@@ -1,6 +1,6 @@
 import { Annotation, LineString, MultiPolygon, Polygon } from "types";
 import { sha1 } from "object-hash";
-import * as d3 from "d3";
+import { select } from "d3";
 import OpenSeadragon, { ControlAnchor } from "openseadragon";
 import { MeasuringPlugin, Tool, ToolPluginOptions } from "../openseadragon/openseadragon-measuring";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -166,7 +166,7 @@ export default class EduViewer {
     ClearAnnotations() {
         if (!this.Overlay) return;
 
-        d3.select(this.Overlay.node())
+        select(this.Overlay.node())
             .selectAll("*")
             .remove();
     }
@@ -177,9 +177,9 @@ export default class EduViewer {
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // Find the SVG element for the current Annotation and use its BoundingBox to zoom into. 
-        const node = d3.select(this.Overlay.node())
+        const node = select(this.Overlay.node())
             .selectAll(".annotation")
-            .filter(function(data, index, nodes) {
+            .filter(function(_, index, nodes) {
                 const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
 
                 return SelectedAnnotationHash == CurrentAnnotationHash;
@@ -204,12 +204,12 @@ export default class EduViewer {
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
         // First remove any highlight by removing the `selected--annotation` class from every annotation
-        d3.select(this.Overlay.node())
+        select(this.Overlay.node())
             .selectAll(".annotation")
             .classed("selected--annotation", false)
 
         // Now add the `selected--annotation` class to our selected annotation
-        d3.select(this.Overlay.node())
+        select(this.Overlay.node())
             .selectAll(".annotation")
             .filter(function(data, index, nodes) {
                 const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
@@ -256,7 +256,7 @@ export default class EduViewer {
 
         const coordinates = annotation.geometry.coordinates as LineString;
 
-        d3.select(this.Overlay.node())
+        select(this.Overlay.node())
             .append("line")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
@@ -276,7 +276,7 @@ export default class EduViewer {
             return [point[0], point[1]].join(",");
         }).join(" ");
         
-        d3.select(this.Overlay.node())
+        select(this.Overlay.node())
             .append("polygon")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
@@ -298,7 +298,7 @@ export default class EduViewer {
             }).join(" ");
         }).join(" ");
 
-        d3.select(this.Overlay.node())
+        select(this.Overlay.node())
             .append("polygon")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
