@@ -1,5 +1,5 @@
 import { fetchProjectData } from "lib/api";
-import { currentSlideState, selectedAnnotationState, sidebarVisibleState, slideTourState } from "lib/atoms";
+import { currentSlideState, selectedAnnotationState, slideTourState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
@@ -8,7 +8,6 @@ import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
 import { Project, Slide, SlideTourEntry, Annotation } from "types";
-import ToggleSidebar from "./project/ToggleSidebar";
 import ProjectInformation from "./ProjectInformation";
 import ProjectViewSidebar from "./ProjectViewSidebar";
 import Viewer from "./Viewer";
@@ -18,6 +17,21 @@ import Slides from "./Slides";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
 import SlideTour from "./SlideTour";
+import { base64DecodeUnicode, legacyBase64Decode } from "../lib/helpers";
+
+function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
+    try {
+        if (slide.slideTour && slide.slideTour.length > 0) {
+            const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
+
+            return JSON.parse(data) as SlideTourEntry[];
+        }
+    } catch (e) {
+        console.error("Error while loading slide tour", e);
+    }
+
+    return [];
+}
 
 type Props = {
     projectId: string;
@@ -28,92 +42,47 @@ type Props = {
 export default function ProjectView({ projectId, onProjectChange, embedded = false }: Props) {
     const [projectData, setProjectData] = useState<Project | null>(null);
     const [annotations, setAnnotations] = useState<Annotation[]>();
-    const slide = useRecoilValue(currentSlideState);
     const [tabIndex, setTabIndex] = useState(0);
-    const sidebarVisible = useRecoilValue(sidebarVisibleState);
-    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
 
-    /* Slide Tours */
+    const slide = useRecoilValue(currentSlideState);
+    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
     const [slideTour, setSlideTour] = useRecoilState(slideTourState);
 
     // Same as Tailwind 'lg'
     const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
-
-    // See: https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
-    const base64DecodeUnicode = (str: string) => {
-        return decodeURIComponent(atob(str).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-    }
-
-    /**
-     * @Deprecated to be removed in version 1.1
-     */
-    const legacyBase64Decode = (data: number[]) => {
-        try {
-            return atob(data.map(byte => String.fromCharCode(byte)).join(''));
-        } catch (e) {
-            return new TextDecoder("utf-8").decode(new Uint8Array(data));
-        }
-    }
-
-    const loadSlideTour = (slide: Slide) => {
-        let entries: SlideTourEntry[] = [];
-
-        try {
-            if (slide.slideTour && slide.slideTour.length > 0) {
-                const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
-
-                entries = JSON.parse(data) as SlideTourEntry[];
-            }
-        } catch (e) {
-            console.error("Error while loading slide tour", e)
-        }
-
-        setSlideTour({
-            active: false,
-            index: 0,
-            entries: entries
-        })
-    }
 
     useEffect(() => {
         if (!projectData || !slide) return;
 
         setSelectedAnnotation(null);
         setAnnotations(JSON.parse(slide.annotations || "[]"));
-        loadSlideTour(slide);
+        setSlideTour({
+            active: false,
+            index: 0,
+            entries: parseSlideTourEntries(slide)
+        });
+
+        // Open the Viewer tab when opening a slide.
         setTabIndex(isMobile ? 3 : 1);
     }, [slide]);
 
     useEffect(() => {
-        if (isMobile && slide && selectedAnnotation != null) {
+        // Switch to Viewer tab on Mobile when starting a slide tour / selecting a annotation
+        if (isMobile && (selectedAnnotation || slideTour.active)) {
             setTabIndex(3);
         }
-    }, [selectedAnnotation])
+    }, [selectedAnnotation, slideTour])
 
     useEffect(() => {
-        fetchProjectData(projectId)
-            .then(data => {
-                setProjectData(data);
-            }).catch(e => {
-                setProjectData(null);
-
-                if (e instanceof Error) {
-                    toast.error(e.message);
-                } else {
-                    toast.error("Error while loading project.");
-                    console.error(e);
-                }
-            });
+        (async () => {
+            try {
+                setProjectData(await fetchProjectData(projectId));
+            } catch (e) {
+                toast.error(`Error while loading project (${e instanceof Error ? e.message : "Unknown error"}`);
+                console.error(e);
+            }
+        })();
     }, [projectId]);
-
-    useEffect(() => {
-        // Switch to Viewer tab on Mobile when starting a Slide Tour
-        if (slideTour.active && isMobile) {
-            setTabIndex(3);
-        }
-    }, [slideTour]);
 
     if (isMobile) {
         return (

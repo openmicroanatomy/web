@@ -4,7 +4,7 @@ import "styles/Scrollbar.css";
 type Props = {
     workspaces?: EduWorkspace[];
     organization: EduOrganization;
-    onProjectChange: (newProject: string) => void;
+    onProjectChange: (projectId: string) => void;
 }
 
 export default function ProjectSelector({ workspaces, organization, onProjectChange }: Props) {

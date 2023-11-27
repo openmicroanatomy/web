@@ -2,7 +2,7 @@ import HostSelector from "components/HostSelector";
 import OrganizationSelector from "components/OrganizationSelector";
 import ProjectSelector from "components/ProjectSelector";
 import ProjectView from "components/ProjectView";
-import { currentSlideState, hostState, slideTourState } from "lib/atoms";
+import { currentSlideState, hostState, selectedAnnotationState, slideTourState } from "lib/atoms";
 import Constants from "lib/constants";
 import { getValue } from "lib/localStorage";
 import { useEffect, useState } from "react";
@@ -21,57 +21,55 @@ export default function Home() {
     const [organization, setOrganization] = useState<EduOrganization | null>(null)
     const [projectId, setProjectId] = useState("");
 
+    const setSelectedAnnotation = useSetRecoilState(selectedAnnotationState);
     const setSlide = useSetRecoilState(currentSlideState);
     const setSlideTour = useSetRecoilState(slideTourState);
 
     useEffect(() => {
         (async () => {
-            // Read from browser's local storage
+            // Read from browser's local storage the previous host
             const cachedHost = getValue(Constants.LOCALSTORAGE_HOST_KEY);
 
             if (cachedHost) {
                 setHost(cachedHost);
             }
-        })();
 
-        fetchHosts()
-            .then(hosts => setHosts(hosts))
-            .catch(e => {
-                console.error(e);
-            });
+            try {
+                setHosts(await fetchHosts());
+            } catch (err) {
+                toast.error("Error while loading hosts, please retry ...")
+                console.error("Error while fetching hosts")
+            }
+        })();
     }, []);
 
     useEffect(() => {
         setOrganization(null);
-        setWorkspaces(undefined);
-        setOrganizations(undefined);
+        setWorkspaces([]);
+        setOrganizations([]);
 
         if (!host) {
             return;
         }
 
-        const fetchData = async () => {
-            const [organizations, workspaces] = await Promise.all([fetchOrganizations(), fetchWorkspaces()]);
+        (async () => {
+            try {
+                const [organizations, workspaces] = await Promise.all([fetchOrganizations(), fetchWorkspaces()]);
 
-            setOrganizations(organizations);
-            setWorkspaces(workspaces);
-        }
-
-        fetchData()
-            .catch(e => {
-                toast.error("Error while loading, please retry ...");
+                setOrganizations(organizations);
+                setWorkspaces(workspaces);
+            } catch (err) {
                 setWorkspaces([]);
                 setOrganizations([]);
-                console.error(e)
-            });
+                toast.error("Error while loading, please retry ...");
+                console.error("Error while loading organizations / workspaces", err);
+            }
+        })();
     }, [host]);
 
-    const onOrganizationChange = (newOrganization: EduOrganization | null) => {
-        setOrganization(newOrganization);
-    };
-
-    const onProjectChange = (newProjectId: string) => {
-        setProjectId(newProjectId);
+    const onProjectChange = (projectId: string) => {
+        setProjectId(projectId);
+        setSelectedAnnotation(null);
         setSlide(null);
         setSlideTour({ active: false, index: 0, entries: [] })
     };
@@ -94,7 +92,7 @@ export default function Home() {
                         currentOrganization={organization}
                         organizations={organizations}
                         workspaces={workspaces}
-                        onOrganizationChange={onOrganizationChange}
+                        onOrganizationChange={setOrganization}
                     />
                 }
             </div>

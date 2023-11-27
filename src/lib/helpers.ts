@@ -47,3 +47,23 @@ export const parseAnswerData = (input?: string | null | undefined): Answer => {
 export const clamp = (num: number, min: number, max: number) => {
     return Math.min(Math.max(num, min), max);
 }
+
+/**
+ * @see: https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
+ */
+export function base64DecodeUnicode(input: string) {
+    return decodeURIComponent(atob(input).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
+/**
+ * @Deprecated to be removed in version 1.1
+ */
+export function legacyBase64Decode(data: number[]) {
+    try {
+        return atob(data.map(byte => String.fromCharCode(byte)).join(''));
+    } catch (e) {
+        return new TextDecoder("utf-8").decode(new Uint8Array(data));
+    }
+}
