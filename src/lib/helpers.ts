@@ -67,3 +67,11 @@ export function legacyBase64Decode(data: number[]) {
         return new TextDecoder("utf-8").decode(new Uint8Array(data));
     }
 }
+
+export function setCSSVariable(key: string, value: string) {
+    document.documentElement.style.setProperty(`--${key}`, value);
+}
+
+export function getCSSVariable(key: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(`--${key}`);
+}

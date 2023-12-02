@@ -1,5 +1,6 @@
 import OpenSeadragon, { Placement, Point } from "openseadragon";
 import SvgOverlay = OpenSeadragon.SvgOverlay;
+import { clamp, getCSSVariable, setCSSVariable } from "../lib/helpers";
 
 /**
  * Scaling factor used for measurement; pixels/mm.
@@ -46,7 +47,8 @@ export type ToolPluginOptions = {
 export enum Tool {
 	None,
 	Distance,
-	Area
+	Area,
+	BrightnessAndContrast,
 }
 
 export class MeasuringPlugin {
@@ -75,6 +77,7 @@ export class MeasuringPlugin {
 
 		this.Ruler();
 		this.Area();
+		this.BrightnessAndContrast();
 	}
 
 	UpdateOptions(options: ToolPluginOptions) {
@@ -167,6 +170,32 @@ export class MeasuringPlugin {
 			this.updateMeasurementROI(this.createPolygonSVG(points));
 
 			points = [];
+		})
+	}
+
+	BrightnessAndContrast() {
+		this.viewer.addHandler("canvas-drag", e => {
+			if (this.getTool() !== Tool.BrightnessAndContrast) return;
+
+			e.preventDefaultAction = true;
+
+			let brightness = Number(getCSSVariable("brightness").slice(0, -1))
+			let contrast   = Number(getCSSVariable("contrast").slice(0, -1));
+
+			if (e.delta.x > 0) {
+				contrast = clamp(++contrast, 0, 200);
+			} else if (e.delta.x < 0) {
+				contrast = clamp(--contrast, 0, 200);
+			}
+
+			if (e.delta.y > 0) {
+				brightness = clamp(--brightness, 0, 200);
+			} else if (e.delta.y < 0) {
+				brightness = clamp(++brightness, 0, 200);
+			}
+
+			setCSSVariable("brightness", `${brightness}%`);
+			setCSSVariable("contrast",   `${contrast}%`);
 		})
 	}
 

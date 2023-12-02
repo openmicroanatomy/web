@@ -4,7 +4,7 @@ import { select } from "d3";
 import OpenSeadragon, { ControlAnchor } from "openseadragon";
 import { MeasuringPlugin, Tool, ToolPluginOptions } from "../openseadragon/openseadragon-measuring";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
+import { ToolBrightnessAndContrastIcon, ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
 import SvgOverlay = OpenSeadragon.SvgOverlay;
 
 export enum SlideRepository {
@@ -327,36 +327,61 @@ function MakeToolControlsElement(tools: MeasuringPlugin) {
 
     const distance = document.createElement("button");
     const area     = document.createElement("button");
+    const bandc    = document.createElement("button");
+
+    function DisableAllButtons() {
+        area.classList.toggle("!bg-blue-400", false);
+        distance.classList.toggle("!bg-blue-400", false);
+        bandc.classList.toggle("!bg-blue-400", false);
+    }
+
+    function EnableButton(button: Element) {
+        button.classList.toggle("!bg-blue-400", true);
+    }
 
     distance.classList.add(...buttonStyles);
+    distance.title = "Measure Distance";
     distance.innerHTML = renderToStaticMarkup(ToolMeasureDistanceIcon());
     distance.onclick = () => {
+        DisableAllButtons();
+
         if (tools.getTool() === Tool.Distance) {
-            area.classList.toggle("!bg-blue-400", false);
-            distance.classList.toggle("!bg-blue-400", false);
             tools.setTool(Tool.None);
         } else {
-            area.classList.toggle("!bg-blue-400", false);
-            distance.classList.toggle("!bg-blue-400", true);
+            EnableButton(distance);
             tools.setTool(Tool.Distance);
         }
     }
 
     area.classList.add(...buttonStyles);
+    area.title = "Measure Area";
     area.innerHTML = renderToStaticMarkup(ToolMeasureAreaIcon());
     area.onclick = () => {
+        DisableAllButtons();
+
         if (tools.getTool() === Tool.Area) {
-            area.classList.toggle("!bg-blue-400", false);
-            distance.classList.toggle("!bg-blue-400", false);
             tools.setTool(Tool.None);
         } else {
-            area.classList.toggle("!bg-blue-400", true);
-            distance.classList.toggle("!bg-blue-400", false);
+            EnableButton(area);
             tools.setTool(Tool.Area);
         }
     }
 
-    buttons.append(distance, area);
+    bandc.classList.add(...buttonStyles);
+    bandc.title = "Adjust Brightness & Contrast";
+    bandc.innerHTML = renderToStaticMarkup(ToolBrightnessAndContrastIcon());
+    bandc.onclick = () => {
+        DisableAllButtons();
+
+        if (tools.getTool() === Tool.BrightnessAndContrast) {
+            tools.setTool(Tool.None);
+        } else {
+            EnableButton(bandc);
+            tools.setTool(Tool.BrightnessAndContrast);
+        }
+    }
+
+    buttons.append(distance, area, bandc);
 
     return buttons;
 }
