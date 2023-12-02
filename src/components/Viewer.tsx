@@ -157,6 +157,15 @@ export default function Viewer({ slide }: Props) {
         viewer.current = new EduViewer(setSelectedAnnotation);
 
         if (slide) OpenSlide(slide);
+
+        if (import.meta.env.DEV) {
+            // Removes any OpenSeadragon containers. Only relevant when developing because a hot reload
+            // would spawn a new Openseadragon instance. In production this never happens and unmounting
+            // <Viewer /> naturally removes the orphan OpenSeadragon containers.
+            return () => {
+                document.querySelectorAll(".openseadragon-container").forEach(element => element.remove())
+            }
+        }
     }, []);
 
     useEffect(() => {
