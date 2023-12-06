@@ -128,6 +128,8 @@ export default class EduViewer {
     private InitializeOverlay() {
         // @ts-ignore: cannot extend OpenSeadragon type definition
         this.Overlay = this.Viewer.svgOverlay() as SvgOverlay;
+
+        this.RegisterArrowHeadMarkers();
     }
 
     private InitializeMeasuringTools() {
@@ -169,6 +171,8 @@ export default class EduViewer {
         select(this.Overlay.node())
             .selectAll("*")
             .remove();
+
+        this.RegisterArrowHeadMarkers();
     }
 
     ZoomAndPanToAnnotation(annotation: Annotation) {
@@ -203,20 +207,45 @@ export default class EduViewer {
 
         const SelectedAnnotationHash = sha1(annotation.geometry.coordinates);
 
-        // First remove any highlight by removing the `selected--annotation` class from every annotation
-        select(this.Overlay.node())
-            .selectAll(".annotation")
-            .classed("selected--annotation", false)
+        function RemoveHighlightedMarker(element: SVGElement, name: string) {
+            return element.getAttribute(name)?.replace("--active", "--inactive") || "none";
+        }
 
-        // Now add the `selected--annotation` class to our selected annotation
+        function AddHighlightedMarker(element: SVGElement, name: string) {
+            return element.getAttribute(name)?.replace("--inactive", "--active") || "none";
+        }
+
+        // Find the currently selected annotation by searching for `selected-annotation`,
+        // then remove the selected class and any markers which end with `--active`
         select(this.Overlay.node())
             .selectAll(".annotation")
-            .filter(function(data, index, nodes) {
+            .filter(function(_, index, nodes) {
+                return (nodes[index] as Element).classList.contains("selected--annotation")
+            })
+            .classed("selected--annotation", false)
+            .attr("marker-start", function() {
+                return RemoveHighlightedMarker(this as SVGElement, "marker-start")
+            })
+            .attr("marker-end", function() {
+                return RemoveHighlightedMarker(this as SVGElement, "marker-end")
+            })
+
+        // Now add the `selected--annotation` class to our selected annotation and if there
+        // are any markers, change it to `--active` to swap it to a yellow marker.
+        select(this.Overlay.node())
+            .selectAll(".annotation")
+            .filter(function(_, index, nodes) {
                 const CurrentAnnotationHash = (nodes[index] as Element).getAttribute("data-hash");
 
                 return SelectedAnnotationHash == CurrentAnnotationHash;
             })
-            .classed("selected--annotation", true);
+            .classed("selected--annotation", true)
+            .attr("marker-start", function() {
+                return AddHighlightedMarker(this as SVGElement, "marker-start")
+            })
+            .attr("marker-end", function() {
+                return AddHighlightedMarker(this as SVGElement, "marker-end")
+            })
     }
 
     DrawAnnotations(annotations: Annotation[]) {
@@ -251,15 +280,74 @@ export default class EduViewer {
         this.Viewer.viewport.setRotation(radians * (180 / Math.PI));
     }
 
+    /**
+     * Register arrow head marker definitions used by line (=arrow) annotations to the SVG.
+     * Checks for existing marker definitions first.
+     */
+    private RegisterArrowHeadMarkers() {
+        if (!this.Overlay) return;
+
+        if (!(select(this.Overlay.node()).select("defs").empty())) {
+            console.debug("Markers already defined; ignoring ...")
+            return;
+        }
+
+        /*
+         * We need a red (inactive) and yellow (active) marker for both selected and non-selected annotations.
+         * Markers are currently unable to inherit the `fill` and `stroke` attributes from the parent.
+         * @see https://caniuse.com/mdn-svg_attributes_presentation_fill_context-fill
+         */
+        const defs = select(this.Overlay.node()).append("defs");
+
+        defs.append("marker")
+            .attr("id", "arrow-start--inactive")
+            .attr("viewBox", "0 0 13 10")
+            .attr("refX", 2)
+            .attr("refY", 5)
+            .attr("markerWidth", 8)
+            .attr("markerHeight", 8)
+            .attr("orient", "auto")
+            .style("fill", "#ff0000")
+            .append("path")
+            .attr("d", "M 13 0 C 13 0, 10 5, 13 10 L 13 10 L 0 5");
+
+        defs.append("marker")
+            .attr("id", "arrow-end--inactive")
+            .attr("viewBox", "0 0 13 10")
+            .attr("refX", 10)
+            .attr("refY", 5)
+            .attr("markerWidth", 8)
+            .attr("markerHeight", 8)
+            .attr("orient", "auto")
+            .style("fill", "#ff0000")
+            .append("path")
+            .attr("d", "M 0 0 C 0 0, 3 5, 0 10 L 0 10 L 13 5");
+
+        // Clone the `--active` markers and swap the `fill` color to yellow.
+
+        defs.select("#arrow-end--inactive")
+            .clone(true)
+            .attr("id", "arrow-end--active")
+            .style("fill", "#ffff00")
+
+        defs.select("#arrow-start--inactive")
+            .clone(true)
+            .attr("id", "arrow-start--active")
+            .style("fill", "#ffff00")
+    }
+
     private DrawLine(annotation: Annotation) {
         if (!this.Overlay) return;
 
         const coordinates = annotation.geometry.coordinates as LineString;
+        const arrowhead = annotation.properties.metadata?.arrowhead || "";
 
         select(this.Overlay.node())
             .append("line")
             .attr("data-hash", sha1(coordinates))
             .attr("class", "annotation")
+            .attr("marker-start", arrowhead.includes("<") ? "url(#arrow-start--inactive)" : "none")
+            .attr("marker-end",   arrowhead.includes(">") ? "url(#arrow-end--inactive)"   : "none")
             .attr("x1", coordinates[0][0])
             .attr("y1", coordinates[0][1])
             .attr("x2", coordinates[1][0])

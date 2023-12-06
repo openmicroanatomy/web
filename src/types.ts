@@ -123,6 +123,16 @@ type AnnotationMetadata = {
     ANNOTATION_DESCRIPTION?: string | null;
     EDU_ANSWER?: string | null;
     Answer?: string | null;
+
+    /**
+     * <p> <code>&lt;</code> = arrow start
+     * <p> <code>&gt;</code> = arrow end
+     * <p> <code>&lt;&gt;</code> = double arrow
+     *
+     * @see https://github.com/qupath/qupath/blob/864ac71893a8749ff226c99e51642a5e10ea89ea/qupath-gui-fx/src/main/java/qupath/lib/gui/viewer/tools/handlers/PathToolEventHandlers.java#L40-L50
+     */
+    arrowhead?: "<" | ">" | "<>" | null;
+    [key: string]: unknown;
 }
 
 export type SlideTourEntry = {
