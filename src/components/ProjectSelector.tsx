@@ -36,6 +36,8 @@ export default function ProjectSelector({ workspaces, organization, onProjectCha
                                 .sort((a, b) => {
                                     return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
                                 })
+                                // todo: check for write access when authentication implemented
+                                .filter(project => !(project.hidden))
                                 .map((project) => (
                                     <div
                                         key={project.id}
