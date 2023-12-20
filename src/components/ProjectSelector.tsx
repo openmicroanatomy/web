@@ -44,7 +44,8 @@ export default function ProjectSelector({ workspaces, organization, onProjectCha
                                         className="p-2 cursor-pointer border-l-4 border-l-transparent border-b hover:border-l-blue-500"
                                         onClick={() => onProjectChange(project.id)}
                                     >
-                                        {project.name}
+                                        <p>{project.name}</p>
+                                        { project.description && <span className="text-sm italic">{project.description}</span> }
                                     </div>
                                 ))}
                         </div>
