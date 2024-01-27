@@ -2,7 +2,7 @@ import { hostState, sidebarVisibleState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Viewer from "./Viewer";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { fetchProjectData } from "lib/api";
 import { toast } from "react-toastify";
 import { Project, Slide, Annotation } from "types";
@@ -18,7 +18,7 @@ type Slugs = {
 export default function EmbeddedSingleSlide() {
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState<Slide | null>(null);
-    const sidebarVisible = useRecoilValue(sidebarVisibleState);
+    const [ sideBarVisible, setSidebarVisible ] = useRecoilState(sidebarVisibleState);
 
     const [host, setHost] = useRecoilState(hostState);
     const slugs = useParams<Slugs>();
@@ -65,20 +65,23 @@ export default function EmbeddedSingleSlide() {
     }, [host]);
 
     return (
-        <main className="flex flex-grow p-2 gap-2 overflow-hidden">
-            {sidebarVisible ? (
-                <div className="flex-none w-1/4 border rounded-sm shadow-lg bg-white overflow-y-auto scrollbar">
-                    <div className="flex justify-end p-2">
+        <main className="flex h-full shadow-lg rounded-lg overflow-hidden">
+            <div
+              className={`w-1/4 border-r rounded-l-lg overflow-hidden ${sideBarVisible ? "bg-gray-50" : "w-4 bg-gray-100 cursor-pointer"} transition-all ease-in-out duration-500`}
+              onClick={() => sideBarVisible ? null : setSidebarVisible(true) }
+            >
+                <div className={`flex flex-col transition h-full max-h-full duration-500 ${sideBarVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                    <div className="flex justify-end p-2 bg-white border-b">
                         <ToggleSidebar />
                     </div>
 
-                    <Annotations annotations={annotations} />
+                    <div className="h-full overflow-y-auto scrollbar bg-gray-50">
+                        <Annotations annotations={annotations} />
+                    </div>
                 </div>
-            ) : (
-                <ToggleSidebar />
-            )}
+            </div>
 
-            <div className="flex-grow border rounded-sm shadow-lg bg-white">
+            <div className="flex-grow bg-white">
                 <Viewer slide={slide} />
             </div>
         </main>
