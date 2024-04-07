@@ -47,7 +47,7 @@ async function request(path: string, init: RequestInit = {}) {
 }
 
 export const fetchHosts = async () => {
-    const response = await fetch(import.meta.env.VITE_REACT_APP_SERVERS_URL || "http://localhost:7778/api/servers");
+    const response = await fetch(import.meta.env.VITE_REACT_APP_SERVERS_URL || "https://edu.qupath.yli-hallila.fi/api/servers");
     return response.json();
 };
 

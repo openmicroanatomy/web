@@ -4,10 +4,14 @@
     "license": "Zlib",
     "private": true,
     "type": "module",
+    "homepage": "https://openmicroanatomy.github.io/web/",
     "scripts": {
         "start": "vite",
         "build": "tsc && vite build",
-        "prettier": "prettier --write ."
+        "build-gh-pages": "tsc && vite build --base=/web/ --mode gh-pages",
+        "prettier": "prettier --write .",
+        "predeploy" : "npm run build-gh-pages",
+        "deploy" : "gh-pages -d build"
     },
     "dependencies": {
         "@heroicons/react": "^1.0.6",
@@ -41,6 +45,7 @@
         "autoprefixer": "^10.4.14",
         "cssnano": "^6.0.1",
         "eslint-config-prettier": "^8.8.0",
+        "gh-pages": "^6.1.1",
         "postcss": "^8.4.12",
         "prettier": "^2.8.8",
         "tailwindcss": "^3.3.2",
