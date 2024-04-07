@@ -1,5 +1,6 @@
 [
   {
+    "//": "This listing is used when OpenMicroanatomy Web is deployed to Github pages; see .env.gh-pages",
     "id": "cb88196c-ba25-4b11-886e-8fe38c4e6028",
     "name": "University of Oulu",
     "host": "https://qupath.oulu.fi/",
