@@ -16,7 +16,7 @@ export default function ProjectInformation({ data }: Props) {
             {data.projectInformation ? (
                 <iframe srcDoc={styles + data.projectInformation} className="w-full h-full"></iframe>
             ) : (
-                <p className="flex h-full items-center justify-center font-bold text-slate-600">No additional information available for this lesson.</p>
+                <p className="flex h-full items-center justify-center font-bold text-slate-600 text-center">No additional information available for this lesson.</p>
             )}
         </div>
     );
