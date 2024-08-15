@@ -39,7 +39,7 @@ export default function EmbedProjectPopup({ slide, projectId}: Props) {
                  .replace("http://", "");
 
         if (slide) {
-            const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
+            const slideId = new URL(slide.serverBuilder.uri).pathname.substring(1);
             return `${url}/${projectId}/${slideId}`;
         } else {
             return `${url}/${projectId}`;

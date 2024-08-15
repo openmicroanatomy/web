@@ -1,4 +1,3 @@
-import OpenSeadragon from "openseadragon";
 import { atom } from "recoil";
 import { Annotation, EduHost, Slide, SlideTourState } from "types";
 

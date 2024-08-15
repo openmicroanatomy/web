@@ -83,7 +83,7 @@ async function InitializeOMEROSlide(slide: Slide): Promise<SlideProperties> {
 }
 
 async function InitializeOpenMicroanatomySlide(slide: Slide): Promise<SlideProperties> {
-    const slideId = new URL(slide.serverBuilder.uri).pathname.substr(1);
+    const slideId = new URL(slide.serverBuilder.uri).pathname.substring(1);
     const data = await fetchSlideProperties(slideId, SlideRepository.OpenMicroanatomy);
 
     const levelCount = parseInt(data["openslide.level-count"]);
