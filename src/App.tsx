@@ -11,7 +11,7 @@ export default function App() {
 
     return (
         <HashRouter hashType="hashbang"> { /* Switch to other router when equipped with an server, currently server via nginx */ }
-            <ToastContainer />
+            <ToastContainer stacked />
 
             <Switch>
                 <Route path="/embed/:host/:project/:slide">
