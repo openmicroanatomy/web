@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Viewer from "./Viewer";
+import Viewer from "../components/Viewer";
 import { fetchProject } from "lib/api";
 import { toast } from "react-toastify";
 import { Project, Slide, Annotation } from "types";
-import ToggleSidebar from "./project/ToggleSidebar";
-import Annotations from "./Annotations";
+import ToggleSidebar from "../components/project/ToggleSidebar";
+import Annotations from "../components/Annotations";
 import { useStore } from "../lib/StateStore";
 
 type Slugs = {

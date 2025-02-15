@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import ProjectView from "./ProjectView";
+import ProjectView from "../components/ProjectView";
 import { useEffect, useState } from "react";
 import { useStore } from "../lib/StateStore";
 import { fetchProject } from "../lib/api";
