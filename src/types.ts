@@ -10,7 +10,7 @@ export type EduServerConfiguration = {
     microsoftLoginEnabled: boolean;
 }
 
-export type EduHost = {
+export type EduServer = {
     id: string;
     name: string;
     host: string;

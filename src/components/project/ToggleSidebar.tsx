@@ -1,13 +1,14 @@
-import { sidebarVisibleState } from "lib/atoms";
-import { useRecoilState } from "recoil";
+import { useStore } from "../../lib/StateStore";
 
 export default function ToggleSidebar() {
-    const [sidebarVisible, setSidebarVisible] = useRecoilState(sidebarVisibleState);
+    const [sidebarVisible, setSidebarVisible] = useStore(state => [
+      state.sidebarVisible, state.setSidebarVisible
+    ]);
 
     return (
         <a
             className="rounded--button"
-            onClick={() => setSidebarVisible((o) => !o)}
+            onClick={() => setSidebarVisible(!sidebarVisible)}
             title={sidebarVisible ? "Hide sidebar" : "Show sidebar"}
         >
             { sidebarVisible ? 

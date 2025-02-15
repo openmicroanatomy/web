@@ -1,7 +1,6 @@
-import { useRecoilState } from "recoil";
 import { useMediaQuery } from "react-responsive";
 import { clamp } from "../lib/helpers";
-import { slideTourState } from "../lib/atoms";
+import { useStore } from "../lib/StateStore";
 
 /**
  * Text to display when slide tour text is undefined. Should ideally match phrase used in QuPath.
@@ -9,12 +8,16 @@ import { slideTourState } from "../lib/atoms";
 const TEXT_MISSING_PLACEHOLDER = "Description not set"
 
 export default function SlideTour() {
-	const [slideTour, setSlideTour] = useRecoilState(slideTourState);
+	const [slideTour, setSlideTour] = useStore(state => [
+		state.slideTour, state.setSlideTour
+	]);
 
 	// Same as Tailwind 'lg'
 	const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
 
 	const nextEntry = () => {
+		if (slideTour.index == slideTour.entries.length - 1) return;
+
 		setSlideTour({
 			...slideTour,
 			index: clamp(slideTour.index + 1, 0 , slideTour.entries.length - 1)
@@ -22,6 +25,8 @@ export default function SlideTour() {
 	}
 
 	const previousEntry = () => {
+		if (slideTour.index == 0) return;
+
 		setSlideTour({
 			...slideTour,
 			index: clamp(slideTour.index - 1, 0 , slideTour.entries.length - 1)

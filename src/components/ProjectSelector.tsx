@@ -1,26 +1,45 @@
-import { EduOrganization, EduWorkspace } from "types";
 import "styles/Scrollbar.css";
+import { fetchProject } from "../lib/api";
+import { useStore } from "../lib/StateStore";
+import { useMemo } from "react";
 
-type Props = {
-    workspaces?: EduWorkspace[];
-    organization: EduOrganization;
-    onProjectChange: (projectId: string) => void;
-}
+export default function ProjectSelector() {
+    const [ server, workspaces, organization, setProject ] = useStore(state => [
+      state.server, state.workspaces, state.organization, state.setProject
+    ]);
 
-export default function ProjectSelector({ workspaces, organization, onProjectChange }: Props) {
-    if (!workspaces) {
-        return <p className="font-bold text-center text-slate-600">Loading ...</p>;
+    const filteredWorkspaces = useMemo(() => {
+        if (!server || !organization) return [];
+
+        return workspaces.filter(workspace => workspace.owner.id == organization.id)
+      }, [server, organization]
+    );
+
+    if (!server || !organization) {
+        return null;
     }
 
-    workspaces = workspaces.filter(workspace => workspace.owner.id == organization.id)
-
-    if (workspaces.length === 0) {
+    if (filteredWorkspaces.length === 0) {
         return <p className="font-bold text-center">No workspaces available.</p>;
+    }
+
+    async function onProjectChange(projectId: string) {
+        // todo: loading = true
+
+        try {
+            const project = await fetchProject(projectId);
+
+            setProject(project);
+        } catch (e) {
+            console.error("Error while fetching project", e);
+        } finally {
+            // todo: loading = false
+        }
     }
 
     return (
         <div className="flex flex-col">
-            {workspaces.map((workspace) => (
+            {filteredWorkspaces.map((workspace) => (
                 <div key={workspace.id}>
                     <div className="font-bold uppercase p-2 bg-gray-50">
                         {workspace.name}

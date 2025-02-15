@@ -1,13 +1,12 @@
-import { hostState, sidebarVisibleState } from "lib/atoms";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Viewer from "./Viewer";
-import { useRecoilState } from "recoil";
-import { fetchProjectData } from "lib/api";
+import { fetchProject } from "lib/api";
 import { toast } from "react-toastify";
 import { Project, Slide, Annotation } from "types";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Annotations from "./Annotations";
+import { useStore } from "../lib/StateStore";
 
 type Slugs = {
     host: string;
@@ -18,21 +17,26 @@ type Slugs = {
 export default function EmbeddedSingleSlide() {
     const [annotations, setAnnotations] = useState([]);
     const [slide, setSlide] = useState<Slide | null>(null);
-    const [ sideBarVisible, setSidebarVisible ] = useRecoilState(sidebarVisibleState);
+    const [ sideBarVisible, setSidebarVisible ] = useStore(state => [
+      state.sidebarVisible, state.setSidebarVisible
+    ]);
 
-    const [host, setHost] = useRecoilState(hostState);
+    const [server, initializeServer] = useStore(state => [
+        state.server, state.initializeServer
+    ]);
+
     const slugs = useParams<Slugs>();
     
     useEffect(() => {
-        setHost({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" });
+        initializeServer({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" }, [], []);
     }, []);
 
     useEffect(() => {
-        if (!host) {
+        if (!server) {
             return;
         }
 
-        fetchProjectData(slugs.project)
+        fetchProject(slugs.project)
             .then((data: Project) => {
                 if (data.images.length == 0) {
                     return;
@@ -62,7 +66,7 @@ export default function EmbeddedSingleSlide() {
                 console.error(e);
                 toast.error(e.message);
             })
-    }, [host]);
+    }, [server]);
 
     return (
         <main className="flex h-full shadow-lg rounded-lg overflow-hidden">

@@ -1,17 +1,18 @@
-import { hostState } from "lib/atoms";
-import { getRecoil } from "recoil-nexus";
-import { EduServerConfiguration } from "../types";
+import { EduOrganization, EduProject, EduServerConfiguration, EduWorkspace, Project } from "../types";
 import { SlideRepository } from "./EduViewer";
+import { useStore } from "./StateStore";
 
 /**
  * Helper to make GET requests to the API.
  *
  * @param path
  * @param init
+ * @param hostOverride
  * @returns data response as json
  */
-async function request(path: string, init: RequestInit = {}) {
-    let host = getRecoil(hostState)?.host;
+async function request(path: string, init: RequestInit = {}, hostOverride?: string) {
+    let host = hostOverride ? hostOverride : useStore.getState().server?.host;
+
     if (!host) {
         throw new Error("No host selected");
     }
@@ -46,10 +47,10 @@ async function request(path: string, init: RequestInit = {}) {
     return response.json();
 }
 
-export const fetchHosts = async () => {
+export async function fetchServers() {
     const response = await fetch(import.meta.env.VITE_REACT_APP_SERVERS_URL || "https://edu.qupath.yli-hallila.fi/api/servers");
     return response.json();
-};
+}
 
 export const isValidHost = async (url: string) => {
     if (!url) {
@@ -66,28 +67,28 @@ export const isValidHost = async (url: string) => {
     }
 };
 
-export const fetchOrganizations = () => {
-    return request(`/api/v0/organizations`, { method: "GET" });
-};
+export function fetchOrganizations(host?: string): Promise<EduOrganization[]> {
+    return request(`/api/v0/organizations`, { method: "GET" }, host);
+}
 
-export const fetchProjects = () => {
+export function fetchProjects(): Promise<EduProject[]> {
     return request(`/api/v0/projects`, { method: "GET" });
-};
+}
 
-export const fetchProjectData = (id: string) => {
+export function fetchProject(id: string): Promise<Project> {
     return request(`/api/v0/projects/${id}`, { method: "GET" });
-};
+}
 
-export const fetchWorkspaces = () => {
-    return request(`/api/v0/workspaces`, { method: "GET" });
-};
+export function fetchWorkspaces(host?: string): Promise<EduWorkspace[]> {
+    return request(`/api/v0/workspaces`, { method: "GET" }, host);
+}
 
-export const fetchSlideProperties = (id: string, slideRepository: SlideRepository) => {
+export function fetchSlideProperties(id: string, slideRepository: SlideRepository) {
     if (slideRepository === SlideRepository.OMERO) {
         return request(`https://idr.openmicroscopy.org/iviewer/image_data/${id}/`);
     } else if (slideRepository === SlideRepository.OpenMicroanatomy) {
         return request(`/api/v0/slides/${id}`, { method: "GET" });
     } else {
-        throw new Error(`Unknown / unsupported Slide Repository: ${slideRepository}`)
+        throw new Error(`Unknown / unsupported Slide Repository: ${slideRepository}`);
     }
-};
+}

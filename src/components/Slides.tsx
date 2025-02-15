@@ -1,14 +1,13 @@
 import { Slide } from "types";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { currentSlideState, displaySlideNumbersState } from "../lib/atoms";
+import { useStore } from "../lib/StateStore";
 
 type Props = {
     slides?: Slide[];
 }
 
 export default function Slides({ slides }: Props) {
-    const [slide, setSlide] = useRecoilState(currentSlideState);
-    const displaySlideNumbers = useRecoilValue(displaySlideNumbersState);
+    const [slide, setSlide] = useStore(state => [ state.slide, state.setSlide ]);
+    const displaySlideNumbers = useStore(state => state.displaySlideNumbers);
 
     if (!slides) {
         return <p className="flex h-full items-center justify-center font-bold text-slate-600">Loading ...</p>;

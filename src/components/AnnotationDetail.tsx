@@ -1,9 +1,8 @@
-import { useRecoilValue } from "recoil";
-import { selectedAnnotationState } from "../lib/atoms";
 import AnnotationPopup from "./AnnotationPopup";
+import { useStore } from "../lib/StateStore";
 
 export function AnnotationDetail() {
-    const selectedAnnotation = useRecoilValue(selectedAnnotationState);
+    const selectedAnnotation = useStore(state => state.selectedAnnotation);
 
     if (!selectedAnnotation) {
         return (

@@ -1,15 +1,16 @@
-import { selectedAnnotationState } from "lib/atoms";
-import { useRecoilState } from "recoil";
 import { Annotation } from "types";
 import AnnotationPopup from "./AnnotationPopup";
 import { sha1 } from "object-hash";
+import { useStore } from "../lib/StateStore";
 
 type Props = {
     annotations?: Annotation[];
 }
 
 export default function Annotations({ annotations }: Props) {
-    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
+    const [selectedAnnotation, setSelectedAnnotation] = useStore(state => [
+        state.selectedAnnotation, state.setSelectedAnnotation
+    ]);
 
     if (!annotations) {
         return <p className="flex h-full items-center justify-center font-bold text-slate-600">Loading ...</p>;

@@ -1,14 +1,13 @@
 import { fetchSlideProperties } from "lib/api";
-import { selectedAnnotationState, slideTourState } from "lib/atoms";
 import EduViewer, { SlideProperties, SlideRepository } from "lib/EduViewer";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Viewer.css";
 import { Annotation, Slide } from "types";
 import "openseadragon/openseadragon-scalebar";
 import "openseadragon/openseadragon-svg-overlay";
 import "openseadragon/openseadragon-measuring";
+import { useStore } from "../lib/StateStore";
 
 type Props = {
     slide: Slide | null;
@@ -147,11 +146,13 @@ async function InitializeSlide(slide: Slide): Promise<SlideProperties> {
 }
 
 export default function Viewer({ slide }: Props) {
-    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
+    const [selectedAnnotation, setSelectedAnnotation] = useStore(state => [
+      state.selectedAnnotation, state.setSelectedAnnotation
+    ]);
 
     const cachedAnnotations = useRef<Annotation[]>([])
     const viewer = useRef<EduViewer>();
-    const slideTour = useRecoilValue(slideTourState);
+    const slideTour = useStore(state => state.slideTour);
 
     useEffect(() => {
         viewer.current = new EduViewer(setSelectedAnnotation);

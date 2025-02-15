@@ -1,9 +1,5 @@
-import { fetchProjectData } from "lib/api";
-import { currentSlideState, selectedAnnotationState, slideTourState } from "lib/atoms";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import { toast } from "react-toastify";
-import { useRecoilState, useRecoilValue } from "recoil";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
@@ -18,6 +14,7 @@ import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
 import SlideTour from "./SlideTour";
 import { base64DecodeUnicode, legacyBase64Decode } from "../lib/helpers";
+import { useStore } from "../lib/StateStore";
 
 function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
     try {
@@ -34,28 +31,29 @@ function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
 }
 
 type Props = {
-    projectId: string;
-    onProjectChange: (newProject: string) => void;
+    project: Project;
     embedded?: boolean;
 }
 
-export default function ProjectView({ projectId, onProjectChange, embedded = false }: Props) {
-    const [projectData, setProjectData] = useState<Project | null>(null);
-    const [annotations, setAnnotations] = useState<Annotation[]>();
+export default function ProjectView({ project, embedded = false }: Props) {
     const [tabIndex, setTabIndex] = useState(0);
 
-    const slide = useRecoilValue(currentSlideState);
-    const [selectedAnnotation, setSelectedAnnotation] = useRecoilState(selectedAnnotationState);
-    const [slideTour, setSlideTour] = useRecoilState(slideTourState);
+    const [ setProject, slide, selectedAnnotation, setSelectedAnnotation, slideTour, setSlideTour] = useStore(state => [
+      state.setProject, state.slide, state.selectedAnnotation, state.setSelectedAnnotation, state.slideTour, state.setSlideTour
+    ]);
 
     // Same as Tailwind 'lg'
     const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
 
+    const annotations: Annotation[] = useMemo(
+        () => JSON.parse(slide?.annotations || "[]"),
+        [slide]
+    );
+
     useEffect(() => {
-        if (!projectData || !slide) return;
+        if (!slide) return;
 
         setSelectedAnnotation(null);
-        setAnnotations(JSON.parse(slide.annotations || "[]"));
         setSlideTour({
             active: false,
             index: 0,
@@ -72,17 +70,6 @@ export default function ProjectView({ projectId, onProjectChange, embedded = fal
             setTabIndex(3);
         }
     }, [selectedAnnotation, slideTour])
-
-    useEffect(() => {
-        (async () => {
-            try {
-                setProjectData(await fetchProjectData(projectId));
-            } catch (e) {
-                toast.error(`Error while loading project (${e instanceof Error ? e.message : "Unknown error"}`);
-                console.error(e);
-            }
-        })();
-    }, [projectId]);
 
     if (isMobile) {
         return (
@@ -109,15 +96,15 @@ export default function ProjectView({ projectId, onProjectChange, embedded = fal
                 </TabList>
 
                 <TabPanel className="react-tabs__tab-panel overflow-y-scroll flex-grow">
-                    <a className="sticky top-0 bg-white p-3 border-b-2 block cursor-pointer font-bold" onClick={() => onProjectChange("")}>
+                    <a className="sticky top-0 bg-white p-3 border-b-2 block cursor-pointer font-bold" onClick={() => setProject(null)}>
                         <ArrowLeftIcon className="w-4 h-4 inline-block h:translate-x-2" /> Return to lessons
                     </a>
 
-                    <Slides slides={projectData?.images} />
+                    <Slides slides={project.images} />
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow">
-                    <ProjectInformation data={projectData} />
+                    <ProjectInformation data={project.projectInformation} />
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow overflow-y-scroll">
@@ -138,12 +125,7 @@ export default function ProjectView({ projectId, onProjectChange, embedded = fal
 
     return (
         <main className="flex h-full shadow-lg">
-            <ProjectViewSidebar
-                projectId={projectId}
-                projectData={projectData}
-                embedded={embedded}
-                onProjectChange={onProjectChange}
-            />
+            <ProjectViewSidebar project={project} embedded={embedded} />
 
             <div className="flex-grow overflow-hidden rounded-r-lg">
                 <Tabs className="h-full flex flex-col" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
@@ -153,7 +135,7 @@ export default function ProjectView({ projectId, onProjectChange, embedded = fal
                     </TabList>
 
                     <TabPanel className="react-tabs__tab-panel flex-grow bg-gray-50">
-                        <ProjectInformation data={projectData} />
+                        <ProjectInformation data={project.projectInformation} />
                     </TabPanel>
 
                     { /* Without forceRender Viewer position will reset when changing tabs */ }

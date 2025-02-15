@@ -1,34 +1,27 @@
-import { hostState } from "lib/atoms";
-import { useRecoilValue } from "recoil";
-import { EduOrganization, EduWorkspace } from "types";
 import Select from 'react-select'
 import { useMemo } from "react";
+import { useStore } from "../lib/StateStore";
 
-type Props = {
-    currentOrganization: EduOrganization | null;
-    organizations?: EduOrganization[];
-    workspaces?: EduWorkspace[];
-    onOrganizationChange: (organization: EduOrganization | null) => void;
-}
-
-export default function OrganizationSelector({ currentOrganization, organizations, workspaces, onOrganizationChange }: Props) {
-    const host = useRecoilValue(hostState);
+export default function OrganizationSelector() {
+    const [ server, organizations, workspaces, organization, setOrganization ] = useStore(state => [
+      state.server, state.organizations, state.workspaces, state.organization, state.setOrganization
+    ]);
 
     // Remove organizations with zero workspaces.
-    const filteredOrganizations = useMemo(() => {
-        const organizationsWithWorkspaces = workspaces?.map(workspace => workspace.owner.id) || [];
-        return organizations?.filter(organization => organizationsWithWorkspaces.includes(organization.id)) || [];
-    }, [organizations, workspaces]);
 
-    if (!host) {
+    const filteredOrganizations = useMemo(() => {
+        if (!server) return [];
+
+        const organizationsWithWorkspaces = workspaces?.map(workspace => workspace.owner.id) || [];
+
+        return organizations.filter(organization => organizationsWithWorkspaces.includes(organization.id)) || [];
+    }, [server]);
+
+    if (!server) {
         return <p className="font-bold text-center">No host selected</p>;
     }
 
-    if (!organizations) {
-        return <p className="font-bold text-center text-slate-600">Loading ...</p>;
-    }
-
-    if (organizations.length == 0) {
+    if (filteredOrganizations.length == 0) {
         return <p className="font-bold text-center">No organizations available</p>;
     }
 
@@ -39,8 +32,9 @@ export default function OrganizationSelector({ currentOrganization, organization
             isSearchable={false}
             getOptionLabel={org => org.name}
             getOptionValue={org => org.id}
-            defaultValue={currentOrganization}
-            onChange={e => onOrganizationChange(e)}
-            menuPortalTarget={document.querySelector("body")}  />
+            defaultValue={organization}
+            onChange={e => setOrganization(e)}
+            menuPortalTarget={document.querySelector("body")}
+        />
     );
 }

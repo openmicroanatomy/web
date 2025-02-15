@@ -11,7 +11,7 @@ export default tseslint.config(
     {
         rules: {
             "@typescript-eslint/ban-ts-comment": [ "error", { "ts-ignore": "allow-with-description" } ],
-            "@typescript-eslint/no-unused-vars": "warn",
+            "@typescript-eslint/no-unused-vars": "error",
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/explicit-module-boundary-types": "off"
         }

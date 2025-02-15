@@ -1,27 +1,28 @@
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { Project } from "types";
 import Annotations from "./Annotations";
 import EmbedProjectPopup from "./project/EmbedProjectPopup";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Slides from "./Slides";
 import SlideTour from "./SlideTour";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { currentSlideState, sidebarVisibleState, slideTourState } from "../lib/atoms";
 import { ToggleDisplaySlideNumbers } from "./project/ToggleDisplaySlideNumbers";
+import { useStore } from "../lib/StateStore";
+import { useMemo } from "react";
+import { Project } from "../types";
 
 type Props = {
-    projectId: string;
-    projectData: Project | null;
+    project: Project;
     embedded: boolean;
-    onProjectChange: (project: string) => void;
 }
 
-export default function ProjectViewSidebar({ projectId, projectData, embedded, onProjectChange }: Props) {
-    const [ sideBarVisible, setSidebarVisible ] = useRecoilState(sidebarVisibleState);
-    const slide = useRecoilValue(currentSlideState);
-    const slideTour = useRecoilValue(slideTourState);
+export default function ProjectViewSidebar({ project, embedded }: Props) {
+    const [ setProject, sideBarVisible, setSidebarVisible, slide, slideTour ] = useStore(state => [
+      state.setProject, state.sidebarVisible, state.setSidebarVisible, state.slide, state.slideTour
+    ]);
 
-    const annotations = JSON.parse(slide?.annotations || "[]");
+    const annotations = useMemo(
+      () => JSON.parse(slide?.annotations || "[]"),
+      [slide]
+    );
 
     return (
         <div
@@ -31,7 +32,7 @@ export default function ProjectViewSidebar({ projectId, projectData, embedded, o
             <div className={`flex flex-col transition h-full max-h-full duration-500 ${sideBarVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                 <div className="flex justify-between p-2 bg-white">
                     { !embedded &&
-                        <a className="cursor-pointer font-mono font-bold text-slate-600" onClick={() => onProjectChange("")}>
+                        <a className="cursor-pointer font-mono font-bold text-slate-600" onClick={() => setProject(null)}>
                             &laquo; Return to lessons
                         </a>
                     }
@@ -41,7 +42,7 @@ export default function ProjectViewSidebar({ projectId, projectData, embedded, o
 
                         <ToggleDisplaySlideNumbers />
 
-                        <EmbedProjectPopup slide={slide} projectId={projectId} />
+                        <EmbedProjectPopup slide={slide} />
                     </div>
                 </div>
 
@@ -52,7 +53,7 @@ export default function ProjectViewSidebar({ projectId, projectData, embedded, o
                     </TabList>
 
                     <TabPanel className="react-tabs__tab-panel h-full overflow-y-auto scrollbar bg-gray-50" forceRender>
-                        <Slides slides={projectData?.images} />
+                        <Slides slides={project.images} />
                     </TabPanel>
 
                     <TabPanel className="react-tabs__tab-panel h-full overflow-y-auto scrollbar bg-gray-50" forceRender>
