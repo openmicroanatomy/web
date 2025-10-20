@@ -84,7 +84,7 @@ export default function ServerSelector({ servers }: Props) {
                 </div>
 
                 <button
-                    className="bg-white button-red"
+                    className="bg-white button button-red"
                     onClick={() => {
                         initializeServer(null, [], []);
                         setValue(Constants.LOCALSTORAGE_HOST_KEY, null);

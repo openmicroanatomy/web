@@ -1,28 +1,17 @@
-.button {
-    @apply bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded;
-}
+@reference "../index.css";
 
-.button--fill {
-    @apply bg-blue-500 text-white;
+.button {
+    @apply bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded cursor-pointer;
 }
 
 .button-like {
-    @apply bg-transparent bg-blue-500 font-semibold text-white py-2 px-4 border border-blue-500 rounded;
+    @apply bg-blue-500 font-semibold text-white py-2 px-4 border border-blue-500 rounded;
 }
 
 .button-red {
-    @apply button border-red-500 text-red-700 hover:bg-red-500;
+    @apply border-red-500 text-red-700 hover:bg-red-500;
 }
 
-.button3d {
-    @apply bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded;
-}
-
-.button:disabled,
-.button3d:disabled {
+.button:disabled {
     @apply bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed;
-}
-
-.button-close-dialog {
-    @apply bg-gray-400 cursor-pointer hover:bg-red-600 p-2 text-white font-bold;
 }

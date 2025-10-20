@@ -151,7 +151,7 @@ export default function Viewer({ slide }: Props) {
     ]);
 
     const cachedAnnotations = useRef<Annotation[]>([])
-    const viewer = useRef<EduViewer>();
+    const viewer = useRef<EduViewer>(null);
     const slideTour = useStore(state => state.slideTour);
 
     useEffect(() => {
