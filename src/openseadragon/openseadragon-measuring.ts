@@ -1,5 +1,4 @@
 import OpenSeadragon, { Placement, Point } from "openseadragon";
-import SvgOverlay = OpenSeadragon.SvgOverlay;
 
 /**
  * Scaling factor used for measurement; pixels/mm.
@@ -11,7 +10,7 @@ export type MeasurementScaling = {
 
 export type ToolPluginOptions = {
 	viewer: OpenSeadragon.Viewer;
-	overlay: SvgOverlay;
+	overlay: OpenSeadragon.SvgOverlay;
 	scaling: MeasurementScaling;
 }
 
@@ -22,9 +21,7 @@ export type ToolPluginOptions = {
 		throw new Error("Requires OpenSeadragon 3.0.0+");
 	}
 
-	// @ts-ignore: cannot extend OpenSeadragon type definition
 	$.Viewer.prototype.Tools = function(options: ToolPluginOptions) {
-		// @ts-ignore: cannot extend OpenSeadragon type definition
 		let instance = options.viewer.toolsInstance;
 
 		if (instance) {
@@ -35,7 +32,6 @@ export type ToolPluginOptions = {
 
 			instance = new MeasuringPlugin(options);
 
-			// @ts-ignore: cannot extend OpenSeadragon type definition
 			options.viewer.toolsInstance = instance;
 		}
 
@@ -55,7 +51,7 @@ export class MeasuringPlugin {
 	private scaling: MeasurementScaling = { x: 1, y: 1 };
 	private viewer: OpenSeadragon.Viewer;
 
-	private overlay: SvgOverlay;
+	private overlay: OpenSeadragon.SvgOverlay;
 	private readonly MEASUREMENT_OVERLAY_ID: string;
 
 	constructor(options: ToolPluginOptions) {
@@ -201,7 +197,6 @@ export class MeasuringPlugin {
 	}
 
 	updateMeasurementROI(svg: Node) {
-		// @ts-ignore: missing type definition for open()
 		this.overlay.open(); // todo: fix this; currently not triggering open(); event so this is never run
 		const elements = Array.from(this.overlay.node().children);
 

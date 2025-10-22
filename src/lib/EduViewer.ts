@@ -5,7 +5,6 @@ import OpenSeadragon, { ControlAnchor } from "openseadragon";
 import { MeasuringPlugin, Tool, ToolPluginOptions } from "../openseadragon/openseadragon-measuring";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
-import SvgOverlay = OpenSeadragon.SvgOverlay;
 import { SlideTourPlugin, SlideTourPluginOptions } from "../openseadragon/openseadragon-slide-tours";
 
 export enum SlideRepository {
