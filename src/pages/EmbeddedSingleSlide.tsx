@@ -7,7 +7,7 @@ import { Project } from "types";
 import ToggleSidebar from "../components/project/ToggleSidebar";
 import Annotations from "../components/Annotations";
 import { useStore } from "../lib/StateStore";
-import { parseSlideTourEntries } from "../components/ProjectView";
+import { parseSlideTourEntries } from "../lib/helpers";
 
 type Slugs = {
     host: string;

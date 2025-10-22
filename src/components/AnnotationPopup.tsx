@@ -1,5 +1,5 @@
-import { AnnotationAnswerTypes, parseAnswerData } from "lib/helpers";
-import { Annotation } from "types";
+import { parseAnswerData } from "lib/helpers";
+import { Annotation, AnnotationAnswerTypes } from "types";
 import AnnotationQuiz from "./AnnotationQuiz";
 import PopupLarge from "./PopupLarge";
 import React, { ReactElement } from "react";

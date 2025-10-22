@@ -162,6 +162,23 @@ export type MultiChoiceOption = {
     isAnswer: boolean;
 }
 
+export enum AnnotationAnswerTypes {
+    QUIZ,
+    TEXT,
+    UNDEFINED,
+}
+
+export type Answer = {
+    data: MultiChoiceOption[];
+    type: AnnotationAnswerTypes.QUIZ;
+} | {
+    data: string;
+    type: AnnotationAnswerTypes.TEXT;
+} | {
+    data: null;
+    type: AnnotationAnswerTypes.UNDEFINED;
+};
+
 export type Geometry = {
     type: string;
     coordinates: MultiPolygon | Polygon | LineString;

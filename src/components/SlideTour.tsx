@@ -1,4 +1,4 @@
-import { clamp } from "../lib/helpers";
+import { clamp, fixLegacyStringEncoding } from "../lib/helpers";
 import { useStore } from "../lib/StateStore";
 
 /**
@@ -46,19 +46,6 @@ export default function SlideTour({ isMobile = false }: Props) {
 			active: false,
 			index: 0
 		});
-	}
-
-	/**
-	 * Slide tours were previously saved with incorrect character encoding, causing issues with umlauts.
-	 * This function fixes any weird characters caused by incorrect encoding.
-	 * @Deprecated to be removed in version 1.1
-	 */
-	const fixLegacyStringEncoding = (str: string) => {
-		try {
-			return decodeURIComponent(escape(str));
-		} catch {
-			return str;
-		}
 	}
 
 	const getSlideTourText = () => {

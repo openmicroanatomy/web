@@ -1,21 +1,4 @@
-import { MultiChoiceOption } from "types";
-
-export enum AnnotationAnswerTypes {
-    QUIZ,
-    TEXT,
-    UNDEFINED,
-}
-
-export type Answer = {
-    data: MultiChoiceOption[];
-    type: AnnotationAnswerTypes.QUIZ;
-} | {
-    data: string;
-    type: AnnotationAnswerTypes.TEXT;
-} | {
-    data: null;
-    type: AnnotationAnswerTypes.UNDEFINED;
-};
+import { AnnotationAnswerTypes, Answer, MultiChoiceOption, Slide, SlideTourEntry } from "types";
 
 /*
  * Parses the answer data into objects easily understood by TypeScript.
@@ -57,6 +40,20 @@ export function base64DecodeUnicode(input: string) {
     }).join(''));
 }
 
+export function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
+    try {
+        if (slide.slideTour && slide.slideTour.length > 0) {
+            const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
+
+            return JSON.parse(data) as SlideTourEntry[];
+        }
+    } catch (e) {
+        console.error("Error while loading slide tour", e);
+    }
+
+    return [];
+}
+
 /**
  * @Deprecated to be removed in version 1.1
  */
@@ -67,3 +64,17 @@ export function legacyBase64Decode(data: number[]) {
         return new TextDecoder("utf-8").decode(new Uint8Array(data));
     }
 }
+
+/**
+ * Slide tours were previously saved with incorrect character encoding, causing issues with umlauts.
+ * This function fixes any weird characters caused by incorrect encoding.
+ * @Deprecated to be removed in version 1.1
+ */
+export function fixLegacyStringEncoding(str: string) {
+    try {
+        return decodeURIComponent(escape(str));
+    } catch {
+        return str;
+    }
+}
+

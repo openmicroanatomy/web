@@ -3,7 +3,6 @@ import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
-import { Slide, SlideTourEntry } from "types";
 import ProjectInformation from "./ProjectInformation";
 import ProjectViewSidebar from "./ProjectViewSidebar";
 import Viewer from "./Viewer";
@@ -13,22 +12,8 @@ import Slides from "./Slides";
 import { AnnotationDetail } from "./AnnotationDetail";
 import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
 import SlideTour from "./SlideTour";
-import { base64DecodeUnicode, legacyBase64Decode } from "../lib/helpers";
+import { parseSlideTourEntries } from "../lib/helpers";
 import { useStore } from "../lib/StateStore";
-
-export function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
-    try {
-        if (slide.slideTour && slide.slideTour.length > 0) {
-            const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
-
-            return JSON.parse(data) as SlideTourEntry[];
-        }
-    } catch (e) {
-        console.error("Error while loading slide tour", e);
-    }
-
-    return [];
-}
 
 type Props = {
     embedded?: boolean;
