@@ -7,11 +7,8 @@ import { Annotation, Slide } from "types";
 import "openseadragon/openseadragon-scalebar";
 import "openseadragon/openseadragon-svg-overlay";
 import "openseadragon/openseadragon-measuring";
+import "openseadragon/openseadragon-slide-tours";
 import { useStore } from "../lib/StateStore";
-
-type Props = {
-    slide: Slide | null;
-}
 
 /**
  * URL for the OMERO WebGateway API for rendering a specific tile.
@@ -145,14 +142,17 @@ async function InitializeSlide(slide: Slide): Promise<SlideProperties> {
     }
 }
 
-export default function Viewer({ slide }: Props) {
-    const [selectedAnnotation, setSelectedAnnotation] = useStore(state => [
-      state.selectedAnnotation, state.setSelectedAnnotation
+type Props = {
+    isMobile?: boolean;
+}
+
+export default function Viewer({ isMobile = false }: Props) {
+    const [ slide, slideTour, setSideBarVisible, selectedAnnotation, setSelectedAnnotation ] = useStore(state => [
+      state.slide, state.slideTour, state.setSidebarVisible, state.selectedAnnotation, state.setSelectedAnnotation
     ]);
 
     const cachedAnnotations = useRef<Annotation[]>([])
     const viewer = useRef<EduViewer>(null);
-    const slideTour = useStore(state => state.slideTour);
 
     useEffect(() => {
         viewer.current = new EduViewer(setSelectedAnnotation);
@@ -177,12 +177,22 @@ export default function Viewer({ slide }: Props) {
     }, [selectedAnnotation]);
 
     useEffect(() => {
-        if (!slide) return;
-
-        OpenSlide(slide);
+        if (slide) {
+            OpenSlide(slide);
+        } else {
+            viewer.current?.CloseViewer();
+        }
     }, [slide]);
 
     useEffect(() => {
+        // todo: integrate SlideTour and Slide into same variable
+        if (!slide) return;
+
+        if (!isMobile) {
+            viewer.current?.SlideTours?.UpdateSlideTourUI();
+            setSideBarVisible(!slideTour.active);
+        }
+
         viewer.current?.ClearAnnotations();
 
         if (slideTour.active) {

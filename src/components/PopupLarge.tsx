@@ -36,7 +36,7 @@ export default function PopupLarge({ activator, children, disabled = false }: Pr
             onOpen={() => setIsOpen(true)}
             onClose={() => setIsOpen(false)}
         >
-            <div className="w-auto h-auto p-4 m-4 rounded-sm shadow-md bg-gray-200">
+            <div className="w-auto max-w-[640px] h-auto p-4 m-4 rounded-lg bg-gray-200">
                 {children}
             </div>
         </Popup>

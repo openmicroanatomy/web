@@ -13,7 +13,7 @@
 }
 
 .react-tabs__tab-panel {
-    @apply hidden bg-gray-50 border lg:border-0 rounded-sm lg:rounded-none shadow-lg lg:shadow-none;
+    @apply hidden bg-white border lg:border-0 rounded-sm lg:rounded-none shadow-lg lg:shadow-none;
 }
 
 .react-tabs__tab-panel-viewer {

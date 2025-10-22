@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import "styles/Scrollbar.css";
 import "styles/Sidebar.css";
 import "styles/Tabs.css";
-import { Project, Slide, SlideTourEntry, Annotation } from "types";
+import { Slide, SlideTourEntry } from "types";
 import ProjectInformation from "./ProjectInformation";
 import ProjectViewSidebar from "./ProjectViewSidebar";
 import Viewer from "./Viewer";
@@ -16,7 +16,7 @@ import SlideTour from "./SlideTour";
 import { base64DecodeUnicode, legacyBase64Decode } from "../lib/helpers";
 import { useStore } from "../lib/StateStore";
 
-function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
+export function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
     try {
         if (slide.slideTour && slide.slideTour.length > 0) {
             const data = Array.isArray(slide.slideTour) ? legacyBase64Decode(slide.slideTour) : base64DecodeUnicode(slide.slideTour);
@@ -31,24 +31,18 @@ function parseSlideTourEntries(slide: Slide): SlideTourEntry[] {
 }
 
 type Props = {
-    project: Project;
     embedded?: boolean;
 }
 
-export default function ProjectView({ project, embedded = false }: Props) {
+export default function ProjectView({ embedded = false }: Props) {
     const [tabIndex, setTabIndex] = useState(0);
 
-    const [ setProject, slide, selectedAnnotation, setSelectedAnnotation, slideTour, setSlideTour] = useStore(state => [
-      state.setProject, state.slide, state.selectedAnnotation, state.setSelectedAnnotation, state.slideTour, state.setSlideTour
+    const [ setLessonSelectorModalVisible, slide, selectedAnnotation, setSelectedAnnotation, slideTour, setSlideTour] = useStore(state => [
+      state.setLessonSelectorModalVisible, state.slide, state.selectedAnnotation, state.setSelectedAnnotation, state.slideTour, state.setSlideTour
     ]);
 
     // Same as Tailwind 'lg'
     const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
-
-    const annotations: Annotation[] = useMemo(
-        () => JSON.parse(slide?.annotations || "[]"),
-        [slide]
-    );
 
     useEffect(() => {
         if (!slide) return;
@@ -96,36 +90,36 @@ export default function ProjectView({ project, embedded = false }: Props) {
                 </TabList>
 
                 <TabPanel className="react-tabs__tab-panel overflow-y-scroll flex-grow">
-                    <a className="sticky top-0 bg-white p-3 border-b-2 block cursor-pointer font-bold" onClick={() => setProject(null)}>
+                    <a className="sticky top-0 bg-white p-3 border-b-2 block cursor-pointer font-bold" onClick={() => setLessonSelectorModalVisible(true)}>
                         <ArrowLeftIcon className="w-4 h-4 inline-block h:translate-x-2" /> Return to lessons
                     </a>
 
-                    <Slides slides={project.images} />
+                    <Slides />
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow">
-                    <ProjectInformation data={project.projectInformation} />
+                    <ProjectInformation />
                 </TabPanel>
 
                 <TabPanel className="react-tabs__tab-panel flex-grow overflow-y-scroll">
-                    <SlideTour />
+                    <SlideTour isMobile />
 
-                    { !slideTour.active && <Annotations annotations={annotations} /> }
+                    { !slideTour.active && <Annotations /> }
                 </TabPanel>
 
                 { /* Without forceRender Viewer position will reset when changing tabs*/ }
-                <TabPanel className="react-tabs__tab-panel react-tabs__tab-panel-viewer flex flex-col flex-grow" forceRender>
-                    <Viewer slide={slide} />
+                <TabPanel className="react-tabs__tab-panel react-tabs__tab-panel-viewer flex! flex-col flex-grow" forceRender>
+                    <Viewer isMobile />
 
-                    { slideTour.active ? <SlideTour /> : <AnnotationDetail /> }
+                    { slideTour.active ? <SlideTour isMobile /> : <AnnotationDetail /> }
                 </TabPanel>
             </Tabs>
         );
     }
 
     return (
-        <main className="flex h-full shadow-lg">
-            <ProjectViewSidebar project={project} embedded={embedded} />
+        <main className="flex h-full border border-gray-300 rounded-lg">
+            <ProjectViewSidebar embedded={embedded} />
 
             <div className="flex-grow overflow-hidden rounded-r-lg">
                 <Tabs className="h-full flex flex-col" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
@@ -135,12 +129,12 @@ export default function ProjectView({ project, embedded = false }: Props) {
                     </TabList>
 
                     <TabPanel className="react-tabs__tab-panel flex-grow bg-gray-50">
-                        <ProjectInformation data={project.projectInformation} />
+                        <ProjectInformation />
                     </TabPanel>
 
                     { /* Without forceRender Viewer position will reset when changing tabs */ }
                     <TabPanel className="react-tabs__tab-panel flex-grow" forceRender>
-                        <Viewer slide={slide} />
+                        <Viewer />
                     </TabPanel>
                 </Tabs>
             </div>

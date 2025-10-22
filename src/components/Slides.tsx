@@ -1,19 +1,20 @@
 import { Slide } from "types";
 import { useStore } from "../lib/StateStore";
 
-type Props = {
-    slides?: Slide[];
-}
+export default function Slides() {
+    const [ displaySlideNumbers, project, slide, setSlide ] = useStore(state => [
+        state.displaySlideNumbers, state.project, state.slide, state.setSlide
+    ]);
 
-export default function Slides({ slides }: Props) {
-    const [slide, setSlide] = useStore(state => [ state.slide, state.setSlide ]);
-    const displaySlideNumbers = useStore(state => state.displaySlideNumbers);
+    if (!project) {
+        return <p className="flex h-full items-center justify-center font-bold text-slate-600">No lesson selected</p>;
+    }
 
-    if (!slides) {
+    if (!project.images) {
         return <p className="flex h-full items-center justify-center font-bold text-slate-600">Loading ...</p>;
     }
 
-    if (slides.length == 0) {
+    if (project.images.length == 0) {
         return <p className="flex h-full items-center justify-center font-bold text-slate-600">No slides</p>;
     }
 
@@ -33,19 +34,23 @@ export default function Slides({ slides }: Props) {
     }
 
     return (
-        <div className="flex flex-col gap-2 py-2 bg-gray-50">
-            {slides
+        <div className="flex flex-col min-h-full gap-2 bg-white border-l border-gray-300 ml-2 py-2 pr-2">
+            {project.images
                 .sort((a, b) => {
                     return a.imageName.localeCompare(b.imageName, undefined, { numeric: true, sensitivity: 'base' });
                 })
                 .map((slide, index) => (
                     <div
                         key={slide.entryID}
-                        className={`bg-white p-2 shadow-sm cursor-pointer transition-all duration-200 border-y border-l-4 hover:border-l-blue-400 ${isCurrentSlide(slide) ? "!border-l-blue-500" : "border-l-transparent" }`}
-                        onClick={() => setSlide(slide)}
+                        className="flex items-center"
                     >
-                        <p className="font-bold">{getDisplayName(slide.imageName, index)}</p>
-                        <p className="text-sm">{slide.description}</p>
+                        <div className="flex min-w-[10px] h-[1px] bg-gray-300" />
+                        <div
+                            className={`flex flex-col flex-grow ${isCurrentSlide(slide) && "bg-gray-100" } p-2 rounded hover:bg-gray-100 cursor-pointer`}
+                            onClick={() => setSlide(slide)}
+                        >
+                            <p className="text-slate-700 font-semibold">{getDisplayName(slide.imageName, index)}</p>
+                        </div>
                     </div>
                 ))
             }

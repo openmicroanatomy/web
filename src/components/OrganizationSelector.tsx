@@ -34,7 +34,8 @@ export default function OrganizationSelector() {
             getOptionValue={org => org.id}
             defaultValue={organization}
             onChange={e => setOrganization(e)}
-            menuPortalTarget={document.querySelector("body")}
+            menuPortalTarget={document.querySelector("dialog")}
+            styles={{ menuPortal: (base) => ({ ...base, position: "fixed" })}}
         />
     );
 }

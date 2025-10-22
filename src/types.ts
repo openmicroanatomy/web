@@ -107,6 +107,9 @@ export type ServerBuilder = {
 
 export type Annotation = {
     type: string;
+
+    // UUID; Available in QuPath 0.6.0 and later
+    id: string | undefined;
     geometry: Geometry;
     properties: AnnotationProperties;
 }

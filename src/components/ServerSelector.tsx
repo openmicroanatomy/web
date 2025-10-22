@@ -107,7 +107,8 @@ export default function ServerSelector({ servers }: Props) {
                     getOptionLabel={host => host.name}
                     getOptionValue={host => host.id}
                     onChange={host => setSelectedServer(host)}
-                    menuPortalTarget={document.querySelector("body")}
+                    menuPortalTarget={document.querySelector("dialog")}
+                    styles={{ menuPortal: (base) => ({ ...base, position: "fixed" })}}
                 />
             )}
 

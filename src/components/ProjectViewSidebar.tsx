@@ -3,26 +3,16 @@ import Annotations from "./Annotations";
 import EmbedProjectPopup from "./project/EmbedProjectPopup";
 import ToggleSidebar from "./project/ToggleSidebar";
 import Slides from "./Slides";
-import SlideTour from "./SlideTour";
-import { ToggleDisplaySlideNumbers } from "./project/ToggleDisplaySlideNumbers";
 import { useStore } from "../lib/StateStore";
-import { useMemo } from "react";
-import { Project } from "../types";
 
 type Props = {
-    project: Project;
     embedded: boolean;
 }
 
-export default function ProjectViewSidebar({ project, embedded }: Props) {
-    const [ setProject, sideBarVisible, setSidebarVisible, slide, slideTour ] = useStore(state => [
-      state.setProject, state.sidebarVisible, state.setSidebarVisible, state.slide, state.slideTour
+export default function ProjectViewSidebar({ embedded }: Props) {
+    const [ setLessonSelectorModalVisible, sideBarVisible, setSidebarVisible, slide ] = useStore(state => [
+        state.setLessonSelectorModalVisible, state.sidebarVisible, state.setSidebarVisible, state.slide
     ]);
-
-    const annotations = useMemo(
-      () => JSON.parse(slide?.annotations || "[]"),
-      [slide]
-    );
 
     return (
         <div
@@ -32,15 +22,13 @@ export default function ProjectViewSidebar({ project, embedded }: Props) {
             <div className={`flex flex-col transition h-full max-h-full duration-500 ${sideBarVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                 <div className="flex justify-between p-2 bg-white">
                     { !embedded &&
-                        <a className="cursor-pointer font-mono font-bold text-slate-600" onClick={() => setProject(null)}>
-                            &laquo; Return to lessons
+                        <a className="cursor-pointer font-mono font-semibold text-slate-600" onClick={() => setLessonSelectorModalVisible(true)}>
+                            &laquo; Change lessons
                         </a>
                     }
 
                     <div className="flex justify-end gap-1">
                         <ToggleSidebar />
-
-                        <ToggleDisplaySlideNumbers />
 
                         <EmbedProjectPopup slide={slide} />
                     </div>
@@ -53,13 +41,11 @@ export default function ProjectViewSidebar({ project, embedded }: Props) {
                     </TabList>
 
                     <TabPanel className="react-tabs__tab-panel h-full overflow-y-auto scrollbar bg-gray-50" forceRender>
-                        <Slides slides={project.images} />
+                        <Slides />
                     </TabPanel>
 
                     <TabPanel className="react-tabs__tab-panel h-full overflow-y-auto scrollbar bg-gray-50" forceRender>
-                        <SlideTour />
-
-                        { !slideTour.active && <Annotations annotations={annotations} /> }
+                        <Annotations />
                     </TabPanel>
                 </Tabs>
             </div>

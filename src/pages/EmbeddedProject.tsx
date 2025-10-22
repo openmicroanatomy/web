@@ -46,6 +46,6 @@ export default function EmbeddedProject() {
     }
 
     return (
-        <ProjectView project={project} embedded />
+        <ProjectView embedded />
     );
 }

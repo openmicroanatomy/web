@@ -6,6 +6,7 @@ import { MeasuringPlugin, Tool, ToolPluginOptions } from "../openseadragon/opens
 import { renderToStaticMarkup } from "react-dom/server";
 import { ToolMeasureAreaIcon, ToolMeasureDistanceIcon } from "../components/icons/ToolIcons";
 import SvgOverlay = OpenSeadragon.SvgOverlay;
+import { SlideTourPlugin, SlideTourPluginOptions } from "../openseadragon/openseadragon-slide-tours";
 
 export enum SlideRepository {
     NONE,
@@ -64,8 +65,10 @@ export default class EduViewer {
     private Viewer: OpenSeadragon.Viewer;
     private Overlay: OpenSeadragon.SvgOverlay | undefined;
     private Tools: MeasuringPlugin | undefined;
+    public SlideTours: SlideTourPlugin | undefined;
     private SlideProperties!: SlideProperties;
 
+    // todo: remove; does not work
     private readonly SetSelectedAnnotation: (annotation: Annotation | null) => void;
 
     constructor(callback: (annotation: Annotation | null) => void) {
@@ -110,10 +113,15 @@ export default class EduViewer {
         this.InitializeScalebar();
         this.InitializeOverlay();
         this.InitializeMeasuringTools();
+        this.InitializeSlideTours();
+    }
+
+    CloseViewer() {
+        this.ClearAnnotations()
+        this.Viewer.close();
     }
 
     private InitializeScalebar() {
-        // @ts-ignore: cannot extend OpenSeadragon type definition
         this.Viewer.scalebar({
             xOffset: 10,
             yOffset: 10,
@@ -126,8 +134,7 @@ export default class EduViewer {
     }
 
     private InitializeOverlay() {
-        // @ts-ignore: cannot extend OpenSeadragon type definition
-        this.Overlay = this.Viewer.svgOverlay() as SvgOverlay;
+        this.Overlay = this.Viewer.svgOverlay();
 
         this.RegisterArrowHeadMarkers();
     }
@@ -147,10 +154,8 @@ export default class EduViewer {
             return;
         }
 
-        // @ts-ignore: cannot extend OpenSeadragon type definition
         this.Tools = this.Viewer.Tools(options);
 
-        // @ts-ignore: incorrect type; allows also element id
         this.Viewer.removeControl("tool-controls");
 
         if (this.Tools === undefined) return;
@@ -158,11 +163,27 @@ export default class EduViewer {
         this.Viewer.addControl(
             MakeToolControlsElement(this.Tools),
             {
-                anchor: ControlAnchor.TOP_LEFT,
+                anchor: ControlAnchor.BOTTOM_RIGHT,
                 attachToViewer: true,
                 autoFade: false
             }
         );
+    }
+
+    private InitializeSlideTours() {
+        const options = {
+            viewer: this.Viewer
+        } as SlideTourPluginOptions;
+
+        if (this.SlideTours) {
+            return;
+        }
+
+        this.SlideTours = this.Viewer.SlideTours(options);
+
+        if (this.SlideTours === undefined) return;
+
+        this.SlideTours.UpdateSlideTourUI();
     }
 
     ClearAnnotations() {

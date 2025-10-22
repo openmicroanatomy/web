@@ -32,6 +32,9 @@ type State = {
 
 	/* User Interface */
 
+    lessonSelectorModalVisible: boolean;
+    setLessonSelectorModalVisible: (visible: boolean) => void;
+
 	displaySlideNumbers: boolean,
 	setDisplaySlideNumbers: (display: boolean) => void;
 
@@ -77,6 +80,9 @@ export const useStore = create<State>((set) => ({
 	setSlideTour: (slideTour: SlideTourState) => set(() => ({ slideTour: slideTour })),
 
 	/* UI Related */
+
+    lessonSelectorModalVisible: true,
+    setLessonSelectorModalVisible: (visible: boolean) => set(() => ({ lessonSelectorModalVisible: visible })),
 
 	displaySlideNumbers: false,
 	setDisplaySlideNumbers: (display: boolean) => set(() => ({ displaySlideNumbers: display })),

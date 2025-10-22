@@ -63,7 +63,7 @@ export function base64DecodeUnicode(input: string) {
 export function legacyBase64Decode(data: number[]) {
     try {
         return atob(data.map(byte => String.fromCharCode(byte)).join(''));
-    } catch (e) {
+    } catch {
         return new TextDecoder("utf-8").decode(new Uint8Array(data));
     }
 }

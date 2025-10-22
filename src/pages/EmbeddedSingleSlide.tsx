@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Viewer from "../components/Viewer";
 import { fetchProject } from "lib/api";
 import { toast } from "react-toastify";
-import { Project, Slide, Annotation } from "types";
+import { Project } from "types";
 import ToggleSidebar from "../components/project/ToggleSidebar";
 import Annotations from "../components/Annotations";
 import { useStore } from "../lib/StateStore";
+import { parseSlideTourEntries } from "../components/ProjectView";
 
 type Slugs = {
     host: string;
@@ -15,14 +16,8 @@ type Slugs = {
 }
 
 export default function EmbeddedSingleSlide() {
-    const [annotations, setAnnotations] = useState([]);
-    const [slide, setSlide] = useState<Slide | null>(null);
-    const [ sideBarVisible, setSidebarVisible ] = useStore(state => [
-      state.sidebarVisible, state.setSidebarVisible
-    ]);
-
-    const [server, initializeServer] = useStore(state => [
-        state.server, state.initializeServer
+    const [ server, initializeServer, setSlide, setSlideTour, sideBarVisible, setSidebarVisible ] = useStore(state => [
+        state.server, state.initializeServer, state.setSlide, state.setSlideTour, state.sidebarVisible, state.setSidebarVisible
     ]);
 
     const slugs = useParams<Slugs>();
@@ -39,6 +34,7 @@ export default function EmbeddedSingleSlide() {
         fetchProject(slugs.project)
             .then((data: Project) => {
                 if (data.images.length == 0) {
+                    toast.error("Lesson has no slides associated.")
                     return;
                 }
 
@@ -47,20 +43,14 @@ export default function EmbeddedSingleSlide() {
                 )
 
                 if (slide) {
-                    const annotations = JSON.parse(slide.annotations || "[]");
-                    annotations.sort((a: Annotation, b: Annotation) => {
-                        // Check that both annotations have a name.
-                        if (!a.properties.name || !b.properties.name) {
-                            return 0;
-                        }
-
-                        return a.properties.name.localeCompare(b.properties.name, undefined, { numeric: true, sensitivity: 'base' });
+                    setSlideTour({
+                        active: false,
+                        index: 0,
+                        entries: parseSlideTourEntries(slide)
                     });
-
-                    // TODO: Add support for slide tours
-
-                    setAnnotations(annotations);
                     setSlide(slide);
+                } else {
+                    toast.error("Could not find provided slide.")
                 }
             }).catch(e => {
                 console.error(e);
@@ -69,7 +59,7 @@ export default function EmbeddedSingleSlide() {
     }, [server]);
 
     return (
-        <main className="flex h-full shadow-lg rounded-lg overflow-hidden">
+        <main className="flex h-full border border-gray-300 rounded-lg overflow-hidden">
             <div
               className={`w-1/4 border-r rounded-l-lg overflow-hidden ${sideBarVisible ? "bg-gray-50" : "w-4 bg-gray-100 cursor-pointer"} transition-all ease-in-out duration-500`}
               onClick={() => sideBarVisible ? null : setSidebarVisible(true) }
@@ -80,13 +70,13 @@ export default function EmbeddedSingleSlide() {
                     </div>
 
                     <div className="h-full overflow-y-auto scrollbar bg-gray-50">
-                        <Annotations annotations={annotations} />
+                        <Annotations />
                     </div>
                 </div>
             </div>
 
             <div className="flex-grow bg-white">
-                <Viewer slide={slide} />
+                <Viewer />
             </div>
         </main>
     );

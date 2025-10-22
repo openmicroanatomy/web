@@ -6,14 +6,13 @@ import { EduServer } from "types";
 import { fetchServers, fetchOrganizations, fetchWorkspaces } from "lib/api";
 import { toast } from "react-toastify";
 import { useStore } from "../lib/StateStore";
-import { AllSelector } from "../components/AllSelector";
+import { LessonSelectorModal } from "../components/LessonSelectorModal";
 
 export default function Home() {
     const [ servers, setServers ] = useState<EduServer[]>([]);
     const [ loading, setLoading ] = useState(true);
 
     const [ initializeServer ] = useStore(state => [ state.initializeServer ]);
-    const [ project ] = useStore(state => [ state.project ]);
 
     useEffect(() => {
         (async () => {
@@ -46,9 +45,10 @@ export default function Home() {
         return <p>Loading ...</p>;
     }
 
-    if (project) {
-        return <ProjectView project={project} />;
-    } else {
-        return <AllSelector servers={servers} />;
-    }
+    return (
+        <>
+            <LessonSelectorModal servers={servers} />
+            <ProjectView />
+        </>
+    )
 };
