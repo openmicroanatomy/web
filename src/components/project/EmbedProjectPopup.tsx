@@ -52,10 +52,10 @@ export default function EmbedProjectPopup({ slide }: Props) {
         <PopupLarge 
             activator={
                 <a
-                    className="rounded--button"
+                    className="rounded--button font-mono"
                     title="Embed on another website"
                 >
-                    &lt;&gt;
+                    &lt;/&gt;
                 </a>
             }
         >

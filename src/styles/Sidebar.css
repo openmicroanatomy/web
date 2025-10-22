@@ -1,7 +1,7 @@
 @reference "../index.css";
 
 .rounded--button {
-    @apply h-8 w-8 text-lg text-center border bg-white border-gray-200 rounded-sm;
+    @apply inline-flex justify-center items-center h-8 w-8 text-lg text-center border bg-white border-gray-200 rounded-sm;
 }
 
 .rounded--button:hover {

@@ -10,7 +10,7 @@ import { useMediaQuery } from "react-responsive";
 import Annotations from "./Annotations";
 import Slides from "./Slides";
 import { AnnotationDetail } from "./AnnotationDetail";
-import { AnnotationIcon, ArrowLeftIcon, CollectionIcon, PhotographIcon, QuestionMarkCircleIcon} from "@heroicons/react/outline";
+import { ArrowLeftIcon, ChatBubbleBottomCenterIcon, PhotoIcon, QuestionMarkCircleIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 import SlideTour from "./SlideTour";
 import { parseSlideTourEntries } from "../lib/helpers";
 import { useStore } from "../lib/StateStore";
@@ -55,7 +55,7 @@ export default function ProjectView({ embedded = false }: Props) {
             <Tabs className="h-full flex flex-col-reverse overflow-hidden" selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
                 <TabList className="react-tabs__tab-list">
                     <Tab>
-                        <CollectionIcon className="w-5 h-5 m-auto" />
+                        <RectangleStackIcon className="w-5 h-5 m-auto" />
                         <p>Slides</p>
                     </Tab>
 
@@ -65,11 +65,11 @@ export default function ProjectView({ embedded = false }: Props) {
                     </Tab>
 
                     <Tab>
-                        <AnnotationIcon className="w-5 h-5 m-auto" />
+                        <ChatBubbleBottomCenterIcon className="w-5 h-5 m-auto" />
                         <p>Annotations</p>
                     </Tab>
                     <Tab>
-                        <PhotographIcon className="w-5 h-5 m-auto" />
+                        <PhotoIcon className="w-5 h-5 m-auto" />
                         <p>Viewer</p>
                     </Tab>
                 </TabList>
