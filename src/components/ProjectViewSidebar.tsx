@@ -27,8 +27,8 @@ export default function ProjectViewSidebar({ embedded }: Props) {
                         </a>
                     }
 
-                    <div className="flex justify-end gap-1">
-                        <EmbedProjectPopup slide={slide} />
+                    <div className="flex justify-end gap-1 ml-auto">
+                        { !embedded && <EmbedProjectPopup slide={slide} />}
 
                         <ToggleSidebar />
                     </div>

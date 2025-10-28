@@ -1,9 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Viewer from "../components/Viewer";
 import { fetchProject } from "lib/api";
 import { toast } from "react-toastify";
-import { Project } from "types";
 import ToggleSidebar from "../components/project/ToggleSidebar";
 import Annotations from "../components/Annotations";
 import { useStore } from "../lib/StateStore";
@@ -16,29 +15,27 @@ type Slugs = {
 }
 
 export default function EmbeddedSingleSlide() {
-    const [ server, initializeServer, setSlide, setSlideTour, sideBarVisible, setSidebarVisible ] = useStore(state => [
-        state.server, state.initializeServer, state.setSlide, state.setSlideTour, state.sidebarVisible, state.setSidebarVisible
+    const [ server, initializeServer, slide, setSlide, setSlideTour, sideBarVisible, setSidebarVisible ] = useStore(state => [
+        state.server, state.initializeServer, state.slide, state.setSlide, state.setSlideTour, state.sidebarVisible, state.setSidebarVisible
     ]);
+
+    const [ loading, setLoading ] = useState(true);
 
     const slugs = useParams<Slugs>();
     
     useEffect(() => {
-        initializeServer({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" }, [], []);
-    }, []);
+        (async function() {
+            try {
+                initializeServer({ id: "embedded-host", name: "Embedded host", host: ("https://" + slugs.host), img: "" }, [], []);
 
-    useEffect(() => {
-        if (!server) {
-            return;
-        }
+                const project = await fetchProject(slugs.project);
 
-        fetchProject(slugs.project)
-            .then((data: Project) => {
-                if (data.images.length == 0) {
+                if (project.images.length == 0) {
                     toast.error("Lesson has no slides associated.")
                     return;
                 }
 
-                const slide = data.images.find(
+                const slide = project.images.find(
                     slide => slide.serverBuilder.uri.indexOf(slugs.slide) > -1
                 )
 
@@ -48,15 +45,30 @@ export default function EmbeddedSingleSlide() {
                         index: 0,
                         entries: parseSlideTourEntries(slide)
                     });
+
                     setSlide(slide);
                 } else {
                     toast.error("Could not find provided slide.")
                 }
-            }).catch(e => {
-                console.error(e);
-                toast.error(e.message);
-            })
-    }, [server]);
+            } catch (e) {
+                console.error("Error while initializing or loading slide", e);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
+
+    if (loading) {
+        return <p className="font-bold">Loading ...</p>
+    }
+
+    if (!server) {
+        return <p className="font-bold">Error: missing server from URL.</p>
+    }
+
+    if (!slide) {
+        return <p className="font-bold">Error while loading slide; see console for possibly additional information</p>
+    }
 
     return (
         <main className="flex h-full border border-gray-300 rounded-lg overflow-hidden">

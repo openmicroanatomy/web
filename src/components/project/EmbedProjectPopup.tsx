@@ -1,27 +1,41 @@
 import PopupLarge from "components/PopupLarge";
 import { EduServer, Slide } from "types";
 import { useStore } from "../../lib/StateStore";
+import { LinkIcon } from "@heroicons/react/24/outline";
 
 type Props = {
     slide: Slide | null;
 }
 
-function EmbedFrameTemplate(data: string) { // TODO: remove leading tabs
-    return `<iframe
-            class="embedded-qupath-slide"
-            src="https://qupath.oulu.fi/#!/embed/${data}"
-            width="1200px"
-            height="600px"
-            loading="lazy"
-            allow="fullscreen"
-            style="border: 1px solid #ccc"></iframe>`;
+function CreateIFrame(path: string) {
+    return [
+        `<iframe`,
+        `   class="embedded-qupath-slide"`,
+        `   src="${CreateEmbedLink(path)}"`,
+        `   width="1200px"`,
+        `   height="600px"`,
+        `   loading="lazy"`,
+        `   allow="fullscreen"`,
+        `   style="border: 1px solid #ccc"></iframe>`
+    ].join("\n");
 }
 
-function ShareLink(data: string) {
-    return `https://qupath.oulu.fi/#!/embed/${data}`;
+/**
+ * Create an embed link relative to this OpenMicroanatomy instance.
+ * @param path
+ */
+function CreateEmbedLink(path: string) {
+    return `${window.location.href}embed/${path}`;
 }
 
-function CreateUrl(host: EduServer, projectId: string, slide: Slide | null = null) {
+/**
+ * Gets the absolute URL for provided project or slide. Slide is optional.
+ * This strips any http:// or https:// protocol from the URL. OpenMicroanatomy assumes that it uses https://
+ * @param host
+ * @param projectId
+ * @param slide optional
+ */
+function GetURL(host: EduServer, projectId: string, slide: Slide | null = null) {
     let url = host.host;
 
     if (url.endsWith("/")) {
@@ -53,38 +67,43 @@ export default function EmbedProjectPopup({ slide }: Props) {
             activator={
                 <a
                     className="rounded--button font-mono"
-                    title="Embed on another website"
+                    title="Share and embed"
                 >
-                    &lt;/&gt;
+                    <LinkIcon width={20} height={20} />
                 </a>
             }
         >
             <p className="font-bold">Share current project</p>
-            <a href={ShareLink(CreateUrl(server, project.id))} className="block border bg-slate-50 rounded p-4">
-                {ShareLink(CreateUrl(server, project.id))}
+            <a href={CreateEmbedLink(GetURL(server, project.id))} className="block border bg-slate-50 rounded p-4 hover:underline">
+                {CreateEmbedLink(GetURL(server, project.id))}
             </a>
 
             <p className="font-bold">Share current slide</p>
             { slide ? 
-                <a href={ShareLink(CreateUrl(server, project.id, slide))} className="block border bg-slate-50 rounded p-4">
-                    {ShareLink(CreateUrl(server, project.id, slide))}
+                <a href={CreateEmbedLink(GetURL(server, project.id, slide))} className="block border bg-slate-50 rounded p-4 hover:underline">
+                    {CreateEmbedLink(GetURL(server, project.id, slide))}
                 </a>
             :
                 <p className="italic">No slide currently opened</p>    
             }
 
-            <p className="font-bold pt-4">Embed current project</p>
-            <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ EmbedFrameTemplate(CreateUrl(server, project.id)) }</pre>
+            <details className="py-4">
+                <summary className={"font-bold cursor-pointer"}>Embed current project</summary>
 
-            <p className="font-bold">Embed current slide</p>
+                <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">{ CreateIFrame(GetURL(server, project.id)) }</pre>
+            </details>
 
-            { slide ? 
-                <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">
-                    { EmbedFrameTemplate(CreateUrl(server, project.id, slide)) }
-                </pre>
-            :
-                <p className="italic">No slide currently opened</p>    
-            }
-        </PopupLarge>  
+            <details>
+                <summary className="font-bold cursor-pointer">Embed current slide</summary>
+
+                { slide ?
+                    <pre className="border whitespace-pre-wrap bg-slate-50 rounded p-2">
+                        { CreateIFrame(GetURL(server, project.id, slide)) }
+                    </pre>
+                :
+                    <p className="italic">No slide currently opened</p>
+                }
+            </details>
+        </PopupLarge>
     )
 }
