@@ -1,6 +1,6 @@
 /*
  * Types prefixed with <code>Edu</code> are types returned by the OpenMicroanatomy Server.
- * See "Schemas" at the bottom of https://demo.edu.qupath.yli-hallila.fi/swagger
+ * See "Schemas" at the bottom of https://qupath.oulu.fi/swagger
  */
 
 export type EduServerConfiguration = {
