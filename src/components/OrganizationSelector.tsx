@@ -1,11 +1,19 @@
 import Select from 'react-select'
 import { useMemo } from "react";
 import { useStore } from "../lib/StateStore";
+import { EduOrganization } from "../types";
+import { setValue } from "../lib/localStorage";
+import Constants from "../lib/constants";
 
 export default function OrganizationSelector() {
     const [ server, organizations, workspaces, organization, setOrganization ] = useStore(state => [
       state.server, state.organizations, state.workspaces, state.organization, state.setOrganization
     ]);
+
+    function handleChangeOrganization(newOrganization: EduOrganization | null) {
+        setOrganization(newOrganization);
+        setValue(Constants.PREVIOUS_ORGANIZATION_KEY, newOrganization);
+    }
 
     // Remove organizations with zero workspaces.
 
@@ -33,7 +41,7 @@ export default function OrganizationSelector() {
             getOptionLabel={org => org.name}
             getOptionValue={org => org.id}
             defaultValue={organization}
-            onChange={e => setOrganization(e)}
+            onChange={org => handleChangeOrganization(org)}
             menuPortalTarget={document.querySelector("dialog")}
             styles={{ menuPortal: (base) => ({ ...base, position: "fixed" })}}
         />

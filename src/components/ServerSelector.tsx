@@ -56,7 +56,7 @@ export default function ServerSelector({ servers }: Props) {
 
                 initializeServer(selectedServer, organizations, workspaces);
 
-                setValue(Constants.LOCALSTORAGE_HOST_KEY, selectedServer);
+                setValue(Constants.PREVIOUS_HOST_KEY, selectedServer);
             } else {
                 toast.error("Please check your internet connection and that you're connecting to the a valid server.");
             }
@@ -87,7 +87,7 @@ export default function ServerSelector({ servers }: Props) {
                     className="bg-white button button-red"
                     onClick={() => {
                         initializeServer(null, [], []);
-                        setValue(Constants.LOCALSTORAGE_HOST_KEY, null);
+                        setValue(Constants.PREVIOUS_HOST_KEY, null);
                     }}
                 >
                     &#10005;
